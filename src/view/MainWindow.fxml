@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.SubScene?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -10,26 +9,25 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="690.0" prefWidth="986.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1">
-   <left>
-      <TreeView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </left>
    <center>
       <VBox BorderPane.alignment="CENTER">
          <children>
             <TableView prefHeight="370.0" prefWidth="786.0" VBox.vgrow="ALWAYS">
               <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
+                <TableColumn editable="false" prefWidth="120.0" text="Titel" />
+                <TableColumn editable="false" prefWidth="118.0" text="Nutzername" />
+                  <TableColumn editable="false" prefWidth="83.0" text="Passwort" />
+                  <TableColumn editable="false" prefWidth="334.0" text="URL" />
+                  <TableColumn editable="false" minWidth="1.0" prefWidth="130.0" text="Gültig bis" />
               </columns>
             </TableView>
             <AnchorPane prefHeight="200.0" prefWidth="786.0" VBox.vgrow="NEVER">
@@ -106,7 +104,7 @@
       </VBox>
    </center>
    <top>
-      <VBox prefHeight="44.0" prefWidth="981.0" BorderPane.alignment="CENTER">
+      <VBox prefWidth="986.0" BorderPane.alignment="CENTER">
          <children>
           <MenuBar prefHeight="22.0" prefWidth="981.0" VBox.vgrow="NEVER">
             <menus>
@@ -147,12 +145,19 @@
               </Menu>
             </menus>
           </MenuBar>
-            <SubScene height="36.0" width="986.0">
-              <root>
-                <Region />
-              </root>
-            </SubScene>
+            <Pane prefHeight="75.0" prefWidth="986.0">
+               <children>
+                  <Label layoutX="428.0" layoutY="27.0" text="Toolbar Placeholder" />
+               </children>
+            </Pane>
          </children>
       </VBox>
    </top>
+   <left>
+      <Pane prefHeight="583.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="30.0" layoutY="281.0" text="Treeview Placeholder" />
+         </children>
+      </Pane>
+   </left>
 </BorderPane>
