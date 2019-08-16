@@ -16,6 +16,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import view.MainWindowToolbarController?>
 <?import view.TagTree?>
 
 <fx:root prefHeight="690.0" type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/8.0.999-ea"
@@ -167,7 +168,7 @@
                         </Menu>
                     </menus>
                 </MenuBar>
-                <fx:include source="MainWindowToolbar.fxml"/>
+                <MainWindowToolbarController />
             </children>
         </VBox>
     </top>
