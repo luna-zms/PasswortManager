@@ -1,10 +1,13 @@
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
-public class SetMaser {
+public class SetMasterPasswordController
+{
 
     @FXML
     private ResourceBundle resources;
@@ -22,13 +25,25 @@ public class SetMaser {
 	private HBox passwordFieldBase;
 	
 	@FXML
-	private CustomPasswordFieldViewController passwordFieldBaseController;
+	private CustomPasswordFieldViewController customPasswordFieldBaseController;
 	
 	@FXML
 	private HBox passwordFieldRepeat;
 	
 	@FXML
-	private CustomPasswordFieldViewController passwordFieldReapeatController;
+	private CustomPasswordFieldViewController customPasswordFieldReapeatController;
+	
+	public SetMasterPasswordController() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SetMasterPasswordView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+        try {
+            loader.load();
+        } catch (IOException e) {
+           
+            e.printStackTrace();
+        }
+    }
 	
     @FXML
     void initialize() {
