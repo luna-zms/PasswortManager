@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -37,12 +36,8 @@
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Datei: " GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Master-Passwort:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <PasswordField GridPane.columnIndex="2" GridPane.rowIndex="2">
-               <tooltip>
-                  <Tooltip text="Passwort eingeben" />
-               </tooltip>
-            </PasswordField>
-            <TextField promptText="Passwort-Archiv" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <fx:include fx:id="customPasswordFieldStartWindow" maxWidth="188.0" minWidth="100.0" prefHeight="26.0" prefWidth="113.0" source="CustomPasswordField.fxml" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="choosePasswordAchivePath" promptText="Passwort-Archiv" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <tooltip>
                   <Tooltip text="Wähle das verschlüsselte Passwort-Archiv" />
                </tooltip>
