@@ -56,6 +56,7 @@ public class TagTree extends TreeView<Tag> {
                 TreeItem<Tag> parent = getTreeItem().getParent();
 
                 if (parent != null) {
+                    // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
                     parent.getValue().getSubTags().remove(current.getValue());
                     parent.getChildren().remove(current);
                 } else {
