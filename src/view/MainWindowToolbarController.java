@@ -11,34 +11,34 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
 public class MainWindowToolbarController extends GridPane {
-	
+
 	@FXML
 	private Button addEntryToolbar;
-	
+
 	@FXML
 	private Button addCategoryToolbar;
-	
+
 	@FXML
 	private Button saveDatabaseToolbar;
-	
+
 	@FXML
 	private Button openDatabaseToolbar;
-	
+
 	@FXML
 	private Button setMasterPasswordToolbar;
-	
+
 	@FXML
 	private Button importDatabaseToolbar;
-	
+
 	@FXML
 	private Button exportDatabaseToolbar;
-	
+
 	@FXML
 	private Button searchButtonSearchbar;
 
 	@FXML
-	private MenuButton filterMenuSearchbar;
-	
+	private MenuButton selectedColumnsSearchbar;
+
 	public MainWindowToolbarController() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
 		loader.setRoot(this);
@@ -46,36 +46,37 @@ public class MainWindowToolbarController extends GridPane {
 		try {
 			loader.load();
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
-		
-		Image addEntryImage = new Image(getClass().getResourceAsStream("add_entry_toolbar_icon.png"));
+	}
+	public void initialize() {
+		Image addEntryImage = new Image(getClass().getResourceAsStream("/view/resources/add_entry_toolbar_icon.png"));
 		addEntryToolbar.setGraphic(new ImageView(addEntryImage));
 
-		Image addCategoryImage = new Image(getClass().getResourceAsStream("add_category_toolbar_icon.png"));
+		Image addCategoryImage = new Image(getClass().getResourceAsStream("/view/resources/add_category_toolbar_icon.png"));
 		addCategoryToolbar.setGraphic(new ImageView(addCategoryImage));
 
-		Image saveDatabaseImage = new Image(getClass().getResourceAsStream("save_toolbar_icon.png"));
+		Image saveDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_toolbar_icon.png"));
 		saveDatabaseToolbar.setGraphic(new ImageView(saveDatabaseImage));
 
-		Image openDatabaseImage = new Image(getClass().getResourceAsStream("open_toolbar_icon.png"));
+		Image openDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/open_toolbar_icon.png"));
 		openDatabaseToolbar.setGraphic(new ImageView(openDatabaseImage));
 
-		Image setMasterPwImage = new Image(getClass().getResourceAsStream("change_master_password_toolbar_icon.png"));
+		Image setMasterPwImage = new Image(getClass().getResourceAsStream("/view/resources/change_master_password_toolbar_icon.png"));
 		setMasterPasswordToolbar.setGraphic(new ImageView(setMasterPwImage));
 
-		Image importImage = new Image(getClass().getResourceAsStream("import_toolbar_icon.png"));
+		Image importImage = new Image(getClass().getResourceAsStream("/view/resources/import_toolbar_icon.png"));
 		importDatabaseToolbar.setGraphic(new ImageView(importImage));
 
-		Image exportImage = new Image(getClass().getResourceAsStream("export_toolbar_icon.png"));
+		Image exportImage = new Image(getClass().getResourceAsStream("/view/resources/export_toolbar_icon.png"));
 		exportDatabaseToolbar.setGraphic(new ImageView(exportImage));
 
 
-		Image searchButtonImage = new Image(getClass().getResourceAsStream("search_icon.png"));
+		Image searchButtonImage = new Image(getClass().getResourceAsStream("/view/resources/search_icon_15px.png"));
 		searchButtonSearchbar.setGraphic(new ImageView(searchButtonImage));
 
-		Image filterButtonImage = new Image(getClass().getResourceAsStream("filter_icon.png"));
-		filterMenuSearchbar.setGraphic(new ImageView(filterButtonImage));
+		Image filterButtonImage = new Image(getClass().getResourceAsStream("/view/resources/filter_icon_20px.png"));
+		selectedColumnsSearchbar.setGraphic(new ImageView(filterButtonImage));
 	}
 }

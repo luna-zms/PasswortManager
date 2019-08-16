@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="75.0" maxWidth="1.7976931348623157E308" prefHeight="75.0" prefWidth="796.0" style="-fx-border-style: solid none solid none; -fx-border-color: #b5b5b5; -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="75.0" maxWidth="1.7976931348623157E308" prefHeight="75.0" prefWidth="796.0" style="-fx-border-style: solid none solid none; -fx-border-color: #b5b5b5; -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="423.0" />
       <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="382.0" minWidth="300.0" prefWidth="373.0" />
@@ -77,7 +77,7 @@
             <Insets />
          </GridPane.margin>
          <padding>
-            <Insets bottom="5.0" top="5.0" />
+            <Insets bottom="5.0" left="5.0" top="5.0" />
          </padding>
       </ToolBar>
       <GridPane hgap="5.0" maxHeight="75.0" maxWidth="382.0" minHeight="75.0" minWidth="300.0" prefHeight="75.0" prefWidth="349.0" vgap="5.0" GridPane.columnIndex="1">
@@ -113,7 +113,10 @@
             </Label>
             <FlowPane hgap="5.0" maxWidth="110.0" minWidth="110.0" prefHeight="200.0" prefWidth="110.0" GridPane.columnIndex="2" GridPane.valignment="CENTER">
                <children>
-                  <Button fx:id="searchButtonToolbar" defaultButton="true" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" text="Suche" />
+                  <Button fx:id="searchButtonSearchbar" defaultButton="true" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" text="Suche">
+                     <padding>
+                        <Insets left="-3.0" />
+                     </padding></Button>
                   <MenuButton fx:id="selectedColumnsSearchbar" contentDisplay="GRAPHIC_ONLY" ellipsisString="   " maxHeight="26.0" maxWidth="40.0" minHeight="26.0" minWidth="35.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="40.0" text="MenuButton">
                     <items>
                         <CustomMenuItem fx:id="titleSelectedSearchbar" hideOnClick="false" mnemonicParsing="false" text="Titel">
@@ -148,6 +151,9 @@
                      <tooltip>
                         <Tooltip text="Wähle aus, welche Spalten in die Suche miteinbezogen werden" />
                      </tooltip>
+                     <padding>
+                        <Insets left="-4.0" />
+                     </padding>
                   </MenuButton>
                </children>
                <GridPane.margin>
@@ -163,4 +169,4 @@
          </padding>
       </GridPane>
    </children>
-</GridPane>
+</fx:root>
