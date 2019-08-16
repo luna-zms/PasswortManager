@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
+import model.Tag;
 
 public class MainWindowViewController extends BorderPane {
     @FXML // fx:id="entryNamePreview"
@@ -24,6 +25,9 @@ public class MainWindowViewController extends BorderPane {
     @FXML // fx:id="tagListPreview"
     private ListView<?> tagListPreview; // Value injected by FXMLLoader
 
+    @FXML // fx:id="tagTree"
+    private TagTree tagTree; // Value injected by FXMLLoader
+
     public MainWindowViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowView.fxml"));
         loader.setRoot(this);
@@ -33,5 +37,10 @@ public class MainWindowViewController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // TODO: Fetch from model
+        Tag rootTag = new Tag("Root Tag");
+
+        tagTree.init(TagTree.TreeMode.EDIT, rootTag);
     }
 }
