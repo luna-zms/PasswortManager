@@ -2,8 +2,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 
-public class PleaseProvideControllerClassName {
+public class SetMaser {
 
     @FXML
     private ResourceBundle resources;
@@ -16,7 +17,19 @@ public class PleaseProvideControllerClassName {
 
     @FXML
     private Button cancelButton;
-
+    
+	@FXML
+	private HBox passwordFieldBase;
+	
+	@FXML
+	private CustomPasswordFieldViewController passwordFieldBaseController;
+	
+	@FXML
+	private HBox passwordFieldRepeat;
+	
+	@FXML
+	private CustomPasswordFieldViewController passwordFieldReapeatController;
+	
     @FXML
     void initialize() {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
