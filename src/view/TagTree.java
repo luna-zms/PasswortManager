@@ -1,6 +1,5 @@
 package view;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -10,12 +9,10 @@ import model.Tag;
 public class TagTree extends TreeView<Tag> {
     public enum TreeMode {
         EDIT,
-        CHECKBOX;
+        CHECKBOX
     }
 
-    public TagTree(final TreeMode mode, Tag rootTag) {
-        super();
-
+    public void init(final TreeMode mode, Tag rootTag) {
         setCellFactory(treeview -> {
             switch (mode) {
                 case EDIT:
@@ -40,7 +37,7 @@ public class TagTree extends TreeView<Tag> {
         public TagTreeEditCell() {
             // FUCK YOU JAVA
             super();
-            setConverter(new StringConverter<>() {
+            setConverter(new StringConverter<Tag>() {
                 @Override
                 public String toString(Tag tag) {
                     return tag.getName();
@@ -53,9 +50,9 @@ public class TagTree extends TreeView<Tag> {
                 }
             });
 
-            var menu = new ContextMenu();
-            var edit = new MenuItem("Edit");
-            var delete = new MenuItem("Delete");
+            ContextMenu menu = new ContextMenu();
+            MenuItem edit = new MenuItem("Edit");
+            MenuItem delete = new MenuItem("Delete");
 
             edit.setOnAction(event -> this.startEdit());
 
