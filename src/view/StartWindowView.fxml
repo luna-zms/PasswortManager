@@ -7,10 +7,11 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<GridPane prefHeight="177.0" prefWidth="460.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane prefHeight="173.0" prefWidth="408.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
    </columnConstraints>
@@ -21,13 +22,11 @@
    <children>
       <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="156.0" prefWidth="460.0">
         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="144.0" minWidth="10.0" prefWidth="36.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="289.0" minWidth="10.0" prefWidth="128.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="338.0" minWidth="10.0" prefWidth="183.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="5.0" prefWidth="15.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="0.0" prefWidth="32.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="5.0" prefWidth="15.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="0.0" prefWidth="47.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="144.0" minWidth="0.0" prefWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="289.0" minWidth="10.0" prefWidth="119.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="338.0" minWidth="10.0" prefWidth="186.0" />
+            <ColumnConstraints hgrow="SOMETIMES" prefWidth="15.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="0.0" prefWidth="119.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="117.0" minHeight="10.0" prefHeight="55.0" vgrow="SOMETIMES" />
@@ -49,21 +48,24 @@
                </tooltip>
             </TextField>
             <Button mnemonicParsing="false" text="..." GridPane.columnIndex="4" GridPane.rowIndex="1" />
-            <Button mnemonicParsing="false" text="+" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+            <Pane prefHeight="200.0" prefWidth="200.0" />
          </children>
       </GridPane>
-      <GridPane prefHeight="201.0" prefWidth="461.0" GridPane.rowIndex="1">
+      <GridPane prefHeight="62.0" prefWidth="401.0" GridPane.rowIndex="1">
         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="387.0" minWidth="10.0" prefWidth="375.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="144.0" minWidth="10.0" prefWidth="65.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="387.0" minWidth="10.0" prefWidth="314.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="144.0" minWidth="10.0" prefWidth="74.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="45.0" minHeight="9.0" prefHeight="26.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="54.0" minHeight="8.0" prefHeight="27.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" prefWidth="65.0" text="Öffnen" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button mnemonicParsing="false" text="Archiv erstellen" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" text="Öffnen" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" text="Neues Archiv ..." GridPane.rowIndex="1">
+               <tooltip>
+                  <Tooltip text="Neues Passwort-Archiv erstellen" />
+               </tooltip></Button>
          </children>
          <GridPane.margin>
             <Insets />
