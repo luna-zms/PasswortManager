@@ -7,20 +7,20 @@ import view.MainWindowViewController;
 
 
 public class Main extends Application {
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-			MainWindowViewController mainWindowViewController = new MainWindowViewController();
-			Scene scene = new Scene(mainWindowViewController);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            MainWindowViewController mainWindowViewController = new MainWindowViewController();
+            Scene scene = new Scene(mainWindowViewController);
+            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
