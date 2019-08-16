@@ -100,7 +100,7 @@
                     <children>
                         <Button fx:id="searchButtonSearchbar" defaultButton="true" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" text="Suche">
                             <padding>
-                                <Insets left="-3.0" />
+                                <Insets left="-1.0" />
                             </padding>
                         </Button>
                         <MenuButton fx:id="selectedColumnsSearchbar" contentDisplay="GRAPHIC_ONLY" ellipsisString="   " maxHeight="26.0" maxWidth="40.0" minHeight="26.0" minWidth="35.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="40.0" text="MenuButton">
@@ -138,7 +138,7 @@
                                 <Tooltip text="Wähle aus, welche Spalten in die Suche miteinbezogen werden" />
                             </tooltip>
                             <padding>
-                                <Insets left="-4.0" />
+                                <Insets left="-5.0" />
                             </padding>
                         </MenuButton>
                     </children>
