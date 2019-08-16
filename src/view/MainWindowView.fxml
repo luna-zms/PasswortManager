@@ -147,7 +147,7 @@
           </MenuBar>
             <Pane prefHeight="75.0" prefWidth="986.0">
                <children>
-                  <Label layoutX="428.0" layoutY="27.0" text="Toolbar Placeholder" />
+                  <fx:include source="MainWindowToolbar.fxml" />
                </children>
             </Pane>
          </children>
