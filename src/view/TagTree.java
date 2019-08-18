@@ -14,6 +14,7 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public void init(final TreeMode mode, Tag rootTag) {
+
         setCellFactory(treeView -> {
             if (mode == TreeMode.EDIT)
                 return new TagTreeEditCell();
@@ -28,7 +29,32 @@ public class TagTree extends TreeView<Tag> {
         }
     }
 
-    private static class TagTreeEditCell extends TextFieldTreeCell<Tag> {
+    private TreeItem<Tag> getSelectedItem() {
+        return getSelectionModel().getSelectedItem();
+    }
+
+    public Tag getSelected() {
+        return getSelectedItem().getValue();
+    }
+
+    public void deleteSelected() {
+        TreeItem<Tag> selected = getSelectedItem();
+        TreeItem<Tag> parent = selected.getParent();
+
+        if (parent != null) {  // Cannot delete root node
+            // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
+            parent.getValue().getSubTags().remove(selected.getValue());
+            parent.getChildren().remove(selected);
+        }
+
+        refresh();
+    }
+
+    public void editSelected() {
+        this.edit(getSelectedItem());
+    }
+
+    private class TagTreeEditCell extends TextFieldTreeCell<Tag> {
         TagTreeEditCell() {
             super();
 
@@ -50,27 +76,12 @@ public class TagTree extends TreeView<Tag> {
             MenuItem edit = new MenuItem("Bearbeiten");
             MenuItem delete = new MenuItem("Löschen");
 
-            edit.setOnAction(event -> startEdit());
-            delete.setOnAction(this::delete);
+            edit.setOnAction(event -> editSelected());
+            delete.setOnAction(event -> deleteSelected());
 
             menu.getItems().addAll(edit, delete);
 
             setContextMenu(menu);
-        }
-
-        @SuppressWarnings("PMD.UnusedFormalParameter")
-        private void delete(ActionEvent event) {
-            TreeItem<Tag> current = getTreeItem();
-            TreeItem<Tag> parent = getTreeItem().getParent();
-
-            if (parent != null) {
-                // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
-                parent.getValue().getSubTags().remove(current.getValue());
-                parent.getChildren().remove(current);
-            } else {
-                getTreeView().setRoot(null);
-            }
-            getTreeView().refresh();
         }
     }
 
