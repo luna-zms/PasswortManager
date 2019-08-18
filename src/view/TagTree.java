@@ -1,5 +1,6 @@
 package view;
 
+import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -13,14 +14,10 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public void init(final TreeMode mode, Tag rootTag) {
-        setCellFactory(treeview -> {
-            switch (mode) {
-                case EDIT:
-                    return new TagTreeEditCell();
-                //case CHECKBOX:
-                default:
-                    return new CheckBoxTreeCell<>();
-            }
+        setCellFactory(treeView -> {
+            if (mode == TreeMode.EDIT)
+                return new TagTreeEditCell();
+            return new CheckBoxTreeCell<>();
         });
 
         if (mode == TreeMode.CHECKBOX) {
@@ -31,12 +28,10 @@ public class TagTree extends TreeView<Tag> {
         }
     }
 
-    private class TagTreeEditCell extends TextFieldTreeCell<Tag> {
-        //private Tag tag;
-
-        public TagTreeEditCell() {
-            // FUCK YOU JAVA
+    private static class TagTreeEditCell extends TextFieldTreeCell<Tag> {
+        TagTreeEditCell() {
             super();
+
             setConverter(new StringConverter<Tag>() {
                 @Override
                 public String toString(Tag tag) {
@@ -44,54 +39,59 @@ public class TagTree extends TreeView<Tag> {
                 }
 
                 @Override
-                public Tag fromString(String s) {
-                    getTreeItem().getValue().setName(s);
-                    return getTreeItem().getValue();
+                public Tag fromString(String str) {
+                    Tag tag = getTreeItem().getValue();
+                    tag.setName(str);
+                    return tag;
                 }
             });
 
             ContextMenu menu = new ContextMenu();
-            MenuItem edit = new MenuItem("Edit");
-            MenuItem delete = new MenuItem("Delete");
+            MenuItem edit = new MenuItem("Bearbeiten");
+            MenuItem delete = new MenuItem("Löschen");
 
-            edit.setOnAction(event -> this.startEdit());
-
-            delete.setOnAction(event -> {
-                if (getTreeItem().getParent() != null) {
-                    getTreeItem().getParent().getValue().getSubTags().remove(getTreeItem().getValue());
-                    getTreeItem().getParent().getChildren().remove(getTreeItem());
-                } else {
-                    getTreeView().setRoot(null);
-                }
-                getTreeView().refresh();
-            });
+            edit.setOnAction(event -> startEdit());
+            delete.setOnAction(this::delete);
 
             menu.getItems().addAll(edit, delete);
 
             setContextMenu(menu);
         }
-    }
 
-    private class TagTreeCheckBoxItem extends CheckBoxTreeItem<Tag> {
-        public TagTreeCheckBoxItem(Tag tag) {
-            super(tag);
-            setIndependent(true);
-            setExpanded(true);
+        @SuppressWarnings("PMD.UnusedFormalParameter")
+        private void delete(ActionEvent event) {
+            TreeItem<Tag> current = getTreeItem();
+            TreeItem<Tag> parent = getTreeItem().getParent();
 
-            for (Tag subtag : tag.getSubTags()) {
-                this.getChildren().add(new TagTreeCheckBoxItem(subtag));
+            if (parent != null) {
+                // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
+                parent.getValue().getSubTags().remove(current.getValue());
+                parent.getChildren().remove(current);
+            } else {
+                getTreeView().setRoot(null);
             }
+            getTreeView().refresh();
         }
     }
 
-    private class TagTreeEditItem extends TreeItem<Tag> {
-        public TagTreeEditItem(Tag tag) {
+    private static class TagTreeCheckBoxItem extends CheckBoxTreeItem<Tag> {
+        TagTreeCheckBoxItem(Tag tag) {
             super(tag);
+
+            setIndependent(true);
             setExpanded(true);
 
-            for (Tag subtag : tag.getSubTags()) {
-                this.getChildren().add(new TagTreeEditItem(subtag));
-            }
+            tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeCheckBoxItem(subtag)));
+        }
+    }
+
+    private static class TagTreeEditItem extends TreeItem<Tag> {
+        TagTreeEditItem(Tag tag) {
+            super(tag);
+
+            setExpanded(true);
+
+            tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeEditItem(subtag)));
         }
     }
 }
