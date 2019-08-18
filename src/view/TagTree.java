@@ -49,8 +49,6 @@ public class TagTree extends TreeView<Tag> {
 
         selected.getChildren().add(newItem);
         selected.getValue().getSubTags().add(newTag);
-
-        edit(newItem);
     }
 
     private ContextMenu createContextMenu() {
@@ -90,8 +88,6 @@ public class TagTree extends TreeView<Tag> {
     }
 
     private class TagTreeCell extends TreeCell<Tag> implements ChangeListener<Boolean> {
-        private boolean newlyCreated;
-
         private CheckBox checkbox;
 
         TagTreeCell(boolean hasCheckBox) {
@@ -125,6 +121,9 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private void finishEdit(String str) {
+            if(getItem() == null)
+                return;
+
             if (!str.isEmpty()) {
                 Tag tag = getItem();
                 tag.setName(str);
@@ -135,6 +134,14 @@ public class TagTree extends TreeView<Tag> {
             }
         }
 
+        private void setToTextField() {
+            TextField tf = createEditTextField();
+
+            setText(null);
+            setGraphic(tf);
+            tf.requestFocus();
+        }
+
         @Override
         protected void updateItem(Tag tag, boolean empty) {
             super.updateItem(tag, empty);
@@ -142,13 +149,13 @@ public class TagTree extends TreeView<Tag> {
             if (empty) {
                 setText(null);
                 setGraphic(null);
-
-                newlyCreated = false;
             } else {
-                newlyCreated = tag.getName().isEmpty();
-
-                setText(tag.getName());
-                setGraphic(checkbox);
+                if (tag.getName().isEmpty()) {
+                    setToTextField();
+                } else {
+                    setText(tag.getName());
+                    setGraphic(checkbox);
+                }
             }
         }
 
@@ -156,12 +163,7 @@ public class TagTree extends TreeView<Tag> {
         public void startEdit() {
             super.startEdit();
 
-            TextField tf = createEditTextField();
-
-            setText(null);
-            setGraphic(tf);
-
-            tf.requestFocus();
+            setToTextField();
         }
 
         @Override
@@ -176,10 +178,12 @@ public class TagTree extends TreeView<Tag> {
         public void cancelEdit() {
             super.cancelEdit();
 
-            if (newlyCreated) {
+            Tag tag = getItem();
+
+            if (tag.getName().isEmpty()) {
                 deleteItem(getTreeItem());
             } else {
-                setText(getItem().getName());
+                setText(tag.getName());
                 setGraphic(checkbox);
             }
         }
