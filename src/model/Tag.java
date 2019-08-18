@@ -9,8 +9,12 @@ public class Tag {
     private String name;
     private List<Tag> subTags;
 
+    public Tag() {
+        this("");
+    }
+
     public Tag(String name) {
-        subTags = new ArrayList<>();
+        this.subTags = new ArrayList<>();
         this.name = name;
     }
 
