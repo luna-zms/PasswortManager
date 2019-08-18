@@ -54,7 +54,7 @@ public class TagTree extends TreeView<Tag> {
     private ContextMenu createContextMenu() {
         ContextMenu menu = new ContextMenu();
 
-        MenuItem create = new MenuItem("New");
+        MenuItem create = new MenuItem("Neu");
         MenuItem edit = new MenuItem("Bearbeiten");
         MenuItem delete = new MenuItem("Löschen");
 
