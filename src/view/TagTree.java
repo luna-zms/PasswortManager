@@ -3,6 +3,7 @@ package view;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import model.Tag;
 
 public class TagTree extends TreeView<Tag> {
@@ -101,7 +102,7 @@ public class TagTree extends TreeView<Tag> {
         private TextField createEditTextField() {
             TextField tf = new TextField(getItem().getName());
 
-            tf.setOnKeyPressed(keyEvent -> {
+            tf.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
                 switch (keyEvent.getCode()) {
                     case ENTER:
                         finishEdit(tf.getText());
@@ -112,6 +113,7 @@ public class TagTree extends TreeView<Tag> {
                     default:
                         break;
                 }
+                keyEvent.consume();
             });
 
             tf.focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -163,21 +165,23 @@ public class TagTree extends TreeView<Tag> {
 
         @Override
         public void startEdit() {
-            setToTextField();
-
             super.startEdit();
+
+            setToTextField();
         }
 
         @Override
         public void commitEdit(Tag tag) {
+            super.commitEdit(tag);
+
             setText(tag.getName());
             setGraphic(checkbox);
-
-            super.commitEdit(tag);
         }
 
         @Override
         public void cancelEdit() {
+            super.cancelEdit();
+
             Tag tag = getItem();
 
             if (tag.getName().isEmpty()) {
@@ -186,8 +190,6 @@ public class TagTree extends TreeView<Tag> {
                 setText(tag.getName());
                 setGraphic(checkbox);
             }
-
-            super.cancelEdit();
         }
 
         @Override
