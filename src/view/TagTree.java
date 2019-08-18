@@ -46,8 +46,8 @@ public class TagTree extends TreeView<Tag> {
             });
 
             ContextMenu menu = new ContextMenu();
-            MenuItem edit = new MenuItem("Edit");
-            MenuItem delete = new MenuItem("Delete");
+            MenuItem edit = new MenuItem("Bearbeiten");
+            MenuItem delete = new MenuItem("Löschen");
 
             edit.setOnAction(event -> startEdit());
 
