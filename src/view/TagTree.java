@@ -22,17 +22,19 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public void deleteSelected() {
-        TreeItem<Tag> selected = getSelectedItem();
+        deleteItem(getSelectedItem());
+    }
 
-        if (selected == null)
+    private void deleteItem(TreeItem<Tag> item) {
+        if (item == null)
             return;
 
-        TreeItem<Tag> parent = selected.getParent();
+        TreeItem<Tag> parent = item.getParent();
 
         if (parent != null) {  // Cannot delete root node
             // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
-            parent.getValue().getSubTags().remove(selected.getValue());
-            parent.getChildren().remove(selected);
+            parent.getValue().getSubTags().remove(item.getValue());
+            parent.getChildren().remove(item);
         } // TODO: maybe display some warning?
     }
 
@@ -140,6 +142,8 @@ public class TagTree extends TreeView<Tag> {
             if (empty) {
                 setText(null);
                 setGraphic(null);
+
+                newlyCreated = false;
             } else {
                 newlyCreated = tag.getName().isEmpty();
 
@@ -173,7 +177,7 @@ public class TagTree extends TreeView<Tag> {
             super.cancelEdit();
 
             if (newlyCreated) {
-                deleteSelected(); // FIXME: maybe not this one?
+                deleteItem(getTreeItem());
             } else {
                 setText(getItem().getName());
                 setGraphic(checkbox);
