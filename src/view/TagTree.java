@@ -14,11 +14,18 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public void init(final TreeMode mode, Tag rootTag) {
-
         setCellFactory(treeView -> {
-            if (mode == TreeMode.EDIT)
-                return new TagTreeEditCell();
-            return new CheckBoxTreeCell<>();
+            if (mode == TreeMode.EDIT) {
+                TextFieldTreeCell<Tag> c = new TextFieldTreeCell<>();
+                c.setConverter(converterFor(c));
+                c.setContextMenu(createContextMenu());
+                return c;
+            }
+            else {
+                CheckBoxTreeCell<Tag> c = new CheckBoxTreeCell<>();
+                c.setContextMenu(createContextMenu());
+                return c;
+            }
         });
 
         if (mode == TreeMode.CHECKBOX) {
@@ -54,35 +61,33 @@ public class TagTree extends TreeView<Tag> {
         this.edit(getSelectedItem());
     }
 
-    private class TagTreeEditCell extends TextFieldTreeCell<Tag> {
-        TagTreeEditCell() {
-            super();
+    private ContextMenu createContextMenu() {
+        ContextMenu menu = new ContextMenu();
+        MenuItem edit = new MenuItem("Bearbeiten");
+        MenuItem delete = new MenuItem("Löschen");
 
-            setConverter(new StringConverter<Tag>() {
-                @Override
-                public String toString(Tag tag) {
-                    return tag.getName();
-                }
+        edit.setOnAction(event -> editSelected());
+        delete.setOnAction(event -> deleteSelected());
 
-                @Override
-                public Tag fromString(String str) {
-                    Tag tag = getTreeItem().getValue();
-                    tag.setName(str);
-                    return tag;
-                }
-            });
+        menu.getItems().addAll(edit, delete);
 
-            ContextMenu menu = new ContextMenu();
-            MenuItem edit = new MenuItem("Bearbeiten");
-            MenuItem delete = new MenuItem("Löschen");
+        return menu;
+    }
 
-            edit.setOnAction(event -> editSelected());
-            delete.setOnAction(event -> deleteSelected());
+    private StringConverter<Tag> converterFor(final TreeCell<Tag> cell) {
+        return new StringConverter<Tag>() {
+            @Override
+            public String toString(Tag tag) {
+                return tag.getName();
+            }
 
-            menu.getItems().addAll(edit, delete);
-
-            setContextMenu(menu);
-        }
+            @Override
+            public Tag fromString(String str) {
+                Tag tag = cell.getTreeItem().getValue();
+                tag.setName(str);
+                return tag;
+            }
+        };
     }
 
     private static class TagTreeCheckBoxItem extends CheckBoxTreeItem<Tag> {
