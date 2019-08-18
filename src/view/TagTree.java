@@ -161,23 +161,21 @@ public class TagTree extends TreeView<Tag> {
 
         @Override
         public void startEdit() {
-            super.startEdit();
-
             setToTextField();
+
+            super.startEdit();
         }
 
         @Override
         public void commitEdit(Tag tag) {
-            super.commitEdit(tag);
-
             setText(tag.getName());
             setGraphic(checkbox);
+
+            super.commitEdit(tag);
         }
 
         @Override
         public void cancelEdit() {
-            super.cancelEdit();
-
             Tag tag = getItem();
 
             if (tag.getName().isEmpty()) {
@@ -186,6 +184,8 @@ public class TagTree extends TreeView<Tag> {
                 setText(tag.getName());
                 setGraphic(checkbox);
             }
+
+            super.cancelEdit();
         }
 
         @Override
