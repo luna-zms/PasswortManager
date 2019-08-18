@@ -64,6 +64,8 @@ public class TagTree extends TreeView<Tag> {
 
         menu.getItems().addAll(create, new SeparatorMenuItem(), edit, delete);
 
+        menu.setOnShowing(event -> delete.setDisable(getSelectedItem() == getRoot()));
+
         return menu;
     }
 
