@@ -1,5 +1,6 @@
 package view;
 
+import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -38,9 +39,9 @@ public class TagTree extends TreeView<Tag> {
                 }
 
                 @Override
-                public Tag fromString(String s) {
+                public Tag fromString(String str) {
                     Tag tag = getTreeItem().getValue();
-                    tag.setName(s);
+                    tag.setName(str);
                     return tag;
                 }
             });
@@ -50,24 +51,26 @@ public class TagTree extends TreeView<Tag> {
             MenuItem delete = new MenuItem("Löschen");
 
             edit.setOnAction(event -> startEdit());
-
-            delete.setOnAction(event -> {
-                TreeItem<Tag> current = getTreeItem();
-                TreeItem<Tag> parent = getTreeItem().getParent();
-
-                if (parent != null) {
-                    // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
-                    parent.getValue().getSubTags().remove(current.getValue());
-                    parent.getChildren().remove(current);
-                } else {
-                    getTreeView().setRoot(null);
-                }
-                getTreeView().refresh();
-            });
+            delete.setOnAction(this::delete);
 
             menu.getItems().addAll(edit, delete);
 
             setContextMenu(menu);
+        }
+
+        @SuppressWarnings("PMD.UnusedFormalParameter")
+        private void delete(ActionEvent event) {
+            TreeItem<Tag> current = getTreeItem();
+            TreeItem<Tag> parent = getTreeItem().getParent();
+
+            if (parent != null) {
+                // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
+                parent.getValue().getSubTags().remove(current.getValue());
+                parent.getChildren().remove(current);
+            } else {
+                getTreeView().setRoot(null);
+            }
+            getTreeView().refresh();
         }
     }
 
