@@ -16,9 +16,6 @@ public class MainWindowToolbarViewController extends GridPane {
     private Button addEntryToolbar;
 
     @FXML
-    private Button addCategoryToolbar;
-
-    @FXML
     private Button saveDatabaseToolbar;
 
     @FXML
@@ -53,9 +50,6 @@ public class MainWindowToolbarViewController extends GridPane {
     public void initialize() {
         Image addEntryImage = new Image(getClass().getResourceAsStream("/view/resources/add_entry_toolbar_icon.png"));
         addEntryToolbar.setGraphic(new ImageView(addEntryImage));
-
-        Image addCategoryImage = new Image(getClass().getResourceAsStream("/view/resources/add_category_toolbar_icon.png"));
-        addCategoryToolbar.setGraphic(new ImageView(addCategoryImage));
 
         Image saveDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_toolbar_icon.png"));
         saveDatabaseToolbar.setGraphic(new ImageView(saveDatabaseImage));

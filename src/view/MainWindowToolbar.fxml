@@ -32,11 +32,6 @@
                         <Tooltip text="Eintrag hinzufügen" />
                     </tooltip>
                 </Button>
-                <Button fx:id="addCategoryToolbar" contentDisplay="GRAPHIC_ONLY" maxHeight="50.0" maxWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0">
-                    <tooltip>
-                        <Tooltip text="Kategorie hinzufügen" />
-                    </tooltip>
-                </Button>
                 <Separator halignment="RIGHT" maxHeight="50.0" orientation="VERTICAL" prefHeight="50.0">
                     <padding>
                         <Insets left="3.0" />
@@ -148,7 +143,7 @@
                 </FlowPane>
                 <CheckBox fx:id="searchEverywhereSearchbar" mnemonicParsing="false" text="Suche überall" GridPane.rowIndex="1">
                     <tooltip>
-                        <Tooltip text="Suche in allen Textspalten" />
+                        <Tooltip text="Suche in allen Tags" />
                     </tooltip>
                 </CheckBox>
                 <DatePicker maxWidth="105.0" minWidth="105.0" prefHeight="26.0" prefWidth="105.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
