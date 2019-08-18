@@ -121,7 +121,7 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private void finishEdit(String str) {
-            if(getItem() == null)
+            if (getItem() == null)
                 return;
 
             if (!str.isEmpty()) {
