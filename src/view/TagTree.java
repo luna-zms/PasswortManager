@@ -6,6 +6,9 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import model.Tag;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class TagTree extends TreeView<Tag> {
     public void init(final boolean hasCheckBoxes, Tag rootTag) {
         setCellFactory(treeView -> new TagTreeCell(hasCheckBoxes));
@@ -18,8 +21,8 @@ public class TagTree extends TreeView<Tag> {
         return getSelectionModel().getSelectedItem();
     }
 
-    public Tag getSelected() {
-        return getSelectedItem().getValue();
+    public List<Tag> getSelected() {
+        return ((TagTreeItem) getRoot()).getSelectedSubTags();
     }
 
     public void deleteSelected() {
@@ -87,6 +90,18 @@ public class TagTree extends TreeView<Tag> {
 
         void setChecked(boolean checked) {
             this.checked = checked;
+        }
+
+        List<Tag> getSelectedSubTags() {
+            List<Tag> selectedSubItems = getChildren()
+                    .stream()
+                    .flatMap(treeitem -> ((TagTreeItem) treeitem).getSelectedSubTags().stream())
+                    .collect(Collectors.toList());
+
+            if (isChecked())
+                selectedSubItems.add(this.getValue());
+
+            return selectedSubItems;
         }
     }
 
