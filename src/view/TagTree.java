@@ -25,6 +25,10 @@ public class TagTree extends TreeView<Tag> {
         return ((TagTreeItem) getRoot()).getSelectedSubTags();
     }
 
+    public Tag getSelectedTag() {
+        return getSelectedItem() == null ? null : getSelectedItem().getValue();
+    }
+
     public void deleteSelected() {
         deleteItem(getSelectedItem());
     }
@@ -65,7 +69,8 @@ public class TagTree extends TreeView<Tag> {
         MenuItem delete = new MenuItem("Löschen");
 
         createTag.setOnAction(event -> createBelowSelected());
-        createEntry.setOnAction(event -> {}); // TODO: open add entry dialog
+        createEntry.setOnAction(event -> {
+        }); // TODO: open add entry dialog
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
 
