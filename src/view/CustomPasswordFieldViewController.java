@@ -48,8 +48,6 @@ public class CustomPasswordFieldViewController extends HBox {
         assert textField != null : "fx:id=\"textField\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
         assert eyeButton != null : "fx:id=\"eyeButton\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
         assert checkButton != null : "fx:id=\"checkButton\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
-        
-        textField.setText("test");
     }
 }
 
