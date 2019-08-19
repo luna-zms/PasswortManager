@@ -97,7 +97,7 @@ public class TagTree extends TreeView<Tag> {
         List<Tag> getSelectedSubTags() {
             List<Tag> selectedSubItems = getChildren()
                     .stream()
-                    .flatMap(treeitem -> ((TagTreeItem) treeitem).getSelectedSubTags().stream())
+                    .flatMap(treeItem -> ((TagTreeItem) treeItem).getSelectedSubTags().stream())
                     .collect(Collectors.toList());
 
             if (isChecked())
