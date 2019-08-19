@@ -43,7 +43,7 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public void editSelected() {
-        this.edit(getSelectedItem());
+        edit(getSelectedItem());
     }
 
     public void createBelowSelected() {
@@ -99,7 +99,7 @@ public class TagTree extends TreeView<Tag> {
                     .collect(Collectors.toList());
 
             if (isChecked())
-                selectedSubItems.add(this.getValue());
+                selectedSubItems.add(getValue());
 
             return selectedSubItems;
         }
