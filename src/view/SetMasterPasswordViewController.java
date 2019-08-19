@@ -1,3 +1,4 @@
+package view;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -6,7 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
-public class SetMasterPasswordController
+public class SetMasterPasswordViewController
 {
 
     @FXML
@@ -33,7 +34,7 @@ public class SetMasterPasswordController
 	@FXML
 	private CustomPasswordFieldViewController customPasswordFieldReapeatController;
 	
-	public SetMasterPasswordController() {
+	public SetMasterPasswordViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SetMasterPasswordView.fxml"));
         loader.setRoot(this);
         loader.setController(this);
