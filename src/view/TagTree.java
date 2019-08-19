@@ -51,6 +51,7 @@ public class TagTree extends TreeView<Tag> {
         Tag newTag = new Tag();
         TagTreeItem newItem = new TagTreeItem(newTag);
 
+        // TODO: delegate to controller
         selected.getChildren().add(newItem);
         selected.getValue().getSubTags().add(newTag);
     }
@@ -156,6 +157,7 @@ public class TagTree extends TreeView<Tag> {
                 cancelEdit();
             } else {
                 Tag tag = getItem();
+                // TODO: delegate to controller
                 tag.setName(str);
 
                 commitEdit(tag);
