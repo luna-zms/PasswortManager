@@ -128,13 +128,17 @@ public class TagTree extends TreeView<Tag> {
             if (getItem() == null)
                 return;
 
-            if (!str.isEmpty()) {
+            boolean isDuplicate = getTreeItem().getParent() != null && getTreeItem().getParent().getValue().hasSubTag(str);
+
+            // TODO: maybe show a warning/info message when isDuplicate is true
+
+            if (str.isEmpty() || isDuplicate) {
+                cancelEdit();
+            } else {
                 Tag tag = getItem();
                 tag.setName(str);
 
                 commitEdit(tag);
-            } else {
-                cancelEdit();
             }
         }
 
