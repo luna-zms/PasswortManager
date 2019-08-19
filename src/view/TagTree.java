@@ -21,7 +21,7 @@ public class TagTree extends TreeView<Tag> {
         return getSelectionModel().getSelectedItem();
     }
 
-    public List<Tag> getSelected() {
+    public List<Tag> getCheckedTags() {
         return ((TagTreeItem) getRoot()).getSelectedSubTags();
     }
 
