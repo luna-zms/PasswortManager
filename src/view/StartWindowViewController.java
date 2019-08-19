@@ -5,18 +5,15 @@ import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 
-public class StartWindowViewController {
+public class StartWindowViewController extends GridPane {
 	
 	@FXML
 	private TextField choosePasswordAchivePath;
 	
 	@FXML
-	private HBox customPasswordFieldStartWindow;
-	
-	//@FXML
-	//private CusomPasswordFieldViewController customPasswordFieldStartWindowController;
+	private CustomPasswordFieldViewController customPasswordField;
 
 	public StartWindowViewController() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StartWindowView.fxml"));
