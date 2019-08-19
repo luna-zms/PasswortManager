@@ -58,15 +58,17 @@ public class TagTree extends TreeView<Tag> {
     private ContextMenu createContextMenu() {
         ContextMenu menu = new ContextMenu();
 
-        MenuItem create = new MenuItem("Neu");
+        MenuItem createTag = new MenuItem("Neues Schlagwort");
+        MenuItem createEntry = new MenuItem("Neuer Eintrag");
         MenuItem edit = new MenuItem("Bearbeiten");
         MenuItem delete = new MenuItem("Löschen");
 
-        create.setOnAction(event -> createBelowSelected());
+        createTag.setOnAction(event -> createBelowSelected());
+        createEntry.setOnAction(event -> {}); // TODO: open add entry dialog
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
 
-        menu.getItems().addAll(create, new SeparatorMenuItem(), edit, delete);
+        menu.getItems().addAll(createEntry, createTag, new SeparatorMenuItem(), edit, delete);
 
         menu.setOnShowing(event -> delete.setDisable(getSelectedItem() == getRoot()));
 
