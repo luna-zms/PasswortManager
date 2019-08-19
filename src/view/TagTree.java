@@ -100,12 +100,12 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private TextField createEditTextField() {
-            TextField tf = new TextField(getItem().getName());
+            TextField wtf = new TextField(getItem().getName());
 
-            tf.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+            wtf.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
                 switch (keyEvent.getCode()) {
                     case ENTER:
-                        finishEdit(tf.getText());
+                        finishEdit(wtf.getText());
                         break;
                     case ESCAPE:
                         cancelEdit();
@@ -116,12 +116,12 @@ public class TagTree extends TreeView<Tag> {
                 keyEvent.consume();
             });
 
-            tf.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            wtf.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue)
-                    finishEdit(tf.getText());
+                    finishEdit(wtf.getText());
             });
 
-            return tf;
+            return wtf;
         }
 
         private void finishEdit(String str) {
