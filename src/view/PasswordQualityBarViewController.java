@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class PasswordQualityBarViewController {
 
-    static private final String[] percentageToColor = new String[] {
+    static private final String[] PERCENTAGE_TO_COLOR = new String[] {
             "#000000",
             "#d32f2f",
             "#d3322f",
@@ -137,6 +137,6 @@ public class PasswordQualityBarViewController {
 
         int colorIndex = (int) value*100;
 
-        qualityBar.setStyle("-fx-accent: " + percentageToColor[colorIndex]);
+        qualityBar.setStyle("-fx-accent: " + PERCENTAGE_TO_COLOR[colorIndex]);
     }
 }
