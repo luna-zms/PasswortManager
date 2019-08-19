@@ -139,11 +139,11 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private void setToTextField() {
-            TextField tf = createEditTextField();
+            TextField editTextField = createEditTextField();
 
             setText(null);
-            setGraphic(tf);
-            tf.requestFocus();
+            setGraphic(editTextField);
+            editTextField.requestFocus();
         }
 
         @Override
