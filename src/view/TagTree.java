@@ -105,6 +105,8 @@ public class TagTree extends TreeView<Tag> {
             wtf.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
                 switch (keyEvent.getCode()) {
                     case ENTER:
+                        keyEvent.consume();
+
                         finishEdit(wtf.getText());
                         break;
                     case ESCAPE:
@@ -113,7 +115,6 @@ public class TagTree extends TreeView<Tag> {
                     default:
                         break;
                 }
-                keyEvent.consume();
             });
 
             wtf.focusedProperty().addListener((observable, oldValue, newValue) -> {
