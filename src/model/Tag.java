@@ -1,10 +1,9 @@
 package model;
 
-import javafx.scene.control.TreeItem;
-
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("PMD.ShortClassName")
 public class Tag {
     private String name;
     private List<Tag> subTags;
