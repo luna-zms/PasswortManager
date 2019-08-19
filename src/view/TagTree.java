@@ -110,6 +110,8 @@ public class TagTree extends TreeView<Tag> {
                         finishEdit(wtf.getText());
                         break;
                     case ESCAPE:
+                        keyEvent.consume();
+
                         cancelEdit();
                         break;
                     default:
