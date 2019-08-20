@@ -1,15 +1,18 @@
 package view;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 
-public class CreateModifyEntryViewController {
+public class CreateModifyEntryViewController extends AnchorPane {
 
     @FXML
     private ResourceBundle resources;
@@ -55,7 +58,19 @@ public class CreateModifyEntryViewController {
 
     @FXML
     private Button cancelButton;
-
+    
+    public CreateModifyEntryViewController() {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
+		loader.setRoot(this);
+		loader.setController(this);
+		try {
+			loader.load();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+	}
+    
     @FXML
     void initialize() {
         assert entryName != null : "fx:id=\"entryName\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
