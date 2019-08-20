@@ -3,8 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -12,6 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import view.EntryListViewController?>
 <?import view.MainWindowToolbarViewController?>
 <?import view.TagTree?>
 
@@ -22,16 +21,8 @@
             <children>
                 <VBox prefHeight="583.0" prefWidth="779.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <TableView prefHeight="370.0" prefWidth="786.0" VBox.vgrow="ALWAYS">
-                            <columns>
-                                <TableColumn editable="false" prefWidth="120.0" text="Titel" />
-                                <TableColumn editable="false" prefWidth="118.0" text="Nutzername" />
-                                <TableColumn editable="false" prefWidth="83.0" text="Passwort" />
-                                <TableColumn editable="false" prefWidth="334.0" text="URL" />
-                                <TableColumn editable="false" minWidth="1.0" prefWidth="134.0" text="Gültig bis" />
-                            </columns>
-                        </TableView>
-                        <AnchorPane prefHeight="200.0" prefWidth="786.0" VBox.vgrow="NEVER">
+                        <EntryListViewController fx:id="entryTable" VBox.vgrow="ALWAYS"/>
+                        <AnchorPane prefHeight="200.0" VBox.vgrow="NEVER">
                             <children>
                                 <GridPane AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0"
                                           AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
