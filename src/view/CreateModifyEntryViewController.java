@@ -27,7 +27,7 @@ public class CreateModifyEntryViewController {
     private TextField repeatPassword;
 
     @FXML
-    private PasswordQualityBarViewController passwordQualityBar;
+    private PasswordQualityBarController passwordQualityBar;
 
     @FXML
     private TextField password;
