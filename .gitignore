@@ -1,5 +1,6 @@
 *.template
 bin/
+out/
 **/*.class
 .idea
-Projekt1.iml
+*.iml
