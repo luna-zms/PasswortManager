@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import view.EntryListViewController?>
+<?import view.EntryPreviewViewController?>
 <?import view.MainWindowToolbarViewController?>
 <?import view.TagTree?>
 
@@ -22,92 +16,7 @@
                 <VBox prefHeight="583.0" prefWidth="779.0" HBox.hgrow="ALWAYS">
                     <children>
                         <EntryListViewController fx:id="entryTable" VBox.vgrow="ALWAYS"/>
-                        <AnchorPane prefHeight="200.0" VBox.vgrow="NEVER">
-                            <children>
-                                <GridPane AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0"
-                                          AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
-                                    <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="140.0" minWidth="10.0"
-                                                           prefWidth="115.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="223.0" minWidth="10.0"
-                                                           prefWidth="157.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="206.0" minWidth="10.0"
-                                                           prefWidth="160.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="139.0" minWidth="10.0"
-                                                           prefWidth="91.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="224.0" minWidth="10.0"
-                                                           prefWidth="217.0" />
-                                    </columnConstraints>
-                                    <rowConstraints>
-                                        <RowConstraints maxHeight="54.0" minHeight="10.0" prefHeight="32.0"
-                                                        vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="59.0" minHeight="10.0" prefHeight="32.0"
-                                                        vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="100.0" minHeight="10.0" prefHeight="96.0"
-                                                        vgrow="SOMETIMES" />
-                                    </rowConstraints>
-                                    <children>
-                                        <Label text="Eintragsname:" GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <Label text="Nutzername:" GridPane.rowIndex="1" GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <Label text="URL:" GridPane.rowIndex="2" GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <Label fx:id="entryNamePreview" text="entryNamePlaceholder"
-                                               GridPane.columnIndex="1" GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <Label fx:id="usernamePreview" text="usernamePlaceholder"
-                                               GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <Label fx:id="urlPreview" text="urlPlaceholder" GridPane.columnIndex="1"
-                                               GridPane.rowIndex="2" GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <Label text="Gültig bis:" GridPane.columnIndex="3" GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <Label text="Tags:" GridPane.columnIndex="3" GridPane.rowIndex="1"
-                                               GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <Label fx:id="validUntilPreview" text="validUntilPlaceholder"
-                                               GridPane.columnIndex="4" GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </Label>
-                                        <ListView fx:id="tagListPreview" prefHeight="200.0" prefWidth="200.0"
-                                                  GridPane.columnIndex="4" GridPane.rowIndex="1" GridPane.rowSpan="2"
-                                                  GridPane.valignment="TOP">
-                                            <GridPane.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </GridPane.margin>
-                                        </ListView>
-                                    </children>
-                                </GridPane>
-                            </children>
-                        </AnchorPane>
+                        <EntryPreviewViewController fx:id="entryPreview" prefHeight="200.0" VBox.vgrow="NEVER"/>
                     </children>
                 </VBox>
             </children>

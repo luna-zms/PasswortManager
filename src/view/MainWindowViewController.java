@@ -5,28 +5,15 @@ import java.io.IOException;
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import model.Tag;
 
 public class MainWindowViewController extends BorderPane {
     private PMController pmController;
 
-    @FXML // fx:id="entryNamePreview"
-    private Label entryNamePreview; // Value injected by FXMLLoader
 
-    @FXML // fx:id="usernamePreview"
-    private Label usernamePreview; // Value injected by FXMLLoader
-
-    @FXML // fx:id="urlPreview"
-    private Label urlPreview; // Value injected by FXMLLoader
-
-    @FXML // fx:id="validUntilPreview"
-    private Label validUntilPreview; // Value injected by FXMLLoader
-
-    @FXML // fx:id="tagListPreview"
-    private ListView<?> tagListPreview; // Value injected by FXMLLoader
+    @FXML // fx:id="entryTable"
+    private EntryListViewController entryTable; // Value injected by FXMLLoader
 
     @FXML // fx:id="tagTree"
     private TagTree tagTree; // Value injected by FXMLLoader
@@ -43,6 +30,9 @@ public class MainWindowViewController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Bind preview to update when table selection changes
+        entryPreview.entryProperty().bind(entryTable.getSelectionModel().selectedItemProperty());
 
         // TODO: Fetch from model
         Tag rootTag = new Tag("Root Tag");
