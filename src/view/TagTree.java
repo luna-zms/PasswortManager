@@ -65,7 +65,8 @@ public class TagTree extends TreeView<Tag> {
         MenuItem delete = new MenuItem("Löschen");
 
         createTag.setOnAction(event -> createBelowSelected());
-        createEntry.setOnAction(event -> {}); // TODO: open add entry dialog
+        createEntry.setOnAction(event -> {
+        }); // TODO: open add entry dialog
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
 
@@ -112,8 +113,10 @@ public class TagTree extends TreeView<Tag> {
         private CheckBox checkbox;
 
         TagTreeCell(boolean hasCheckBox) {
-            if (hasCheckBox)
+            if (hasCheckBox) {
                 checkbox = new CheckBox();
+                checkbox.selectedProperty().addListener(this);
+            }
             setContextMenu(createContextMenu());
         }
 
@@ -184,6 +187,7 @@ public class TagTree extends TreeView<Tag> {
                     setToTextField();
                 } else {
                     setText(tag.getName());
+                    checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
                     setGraphic(checkbox);
                 }
             }
