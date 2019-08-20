@@ -3,12 +3,13 @@ package view;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 
-public class PasswordQualityBarViewController {
+public class PasswordQualityBarViewController extends HBox {
 
-    static private final String[] percentageToColor = new String[] {
+    static private final String[] PERCENTAGE_TO_COLOR = new String[] {
             "#000000",
             "#d32f2f",
             "#d3322f",
@@ -116,7 +117,7 @@ public class PasswordQualityBarViewController {
     private ProgressBar qualityBar;
 
     public PasswordQualityBarViewController() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/PasswordQualityBar.fxml"));
         loader.setRoot(this);
         loader.setController(this);
         try {
@@ -135,8 +136,8 @@ public class PasswordQualityBarViewController {
         assert value >= 0 && value <= 1: "'value' must be in range [0,1]!";
         qualityBar.setProgress(value);
 
-        int colorIndex = (int) value*100;
+        int colorIndex = (int) (value*100);
 
-        qualityBar.setStyle("-fx-accent: " + percentageToColor[colorIndex]);
+        qualityBar.setStyle("-fx-accent: " + PERCENTAGE_TO_COLOR[colorIndex]);
     }
 }

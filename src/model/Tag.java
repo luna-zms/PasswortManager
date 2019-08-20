@@ -1,16 +1,19 @@
 package model;
 
-import javafx.scene.control.TreeItem;
-
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("PMD.ShortClassName")
 public class Tag {
     private String name;
     private List<Tag> subTags;
 
+    public Tag() {
+        this("");
+    }
+
     public Tag(String name) {
-        subTags = new ArrayList<>();
+        this.subTags = new ArrayList<>();
         this.name = name;
     }
 
@@ -24,5 +27,9 @@ public class Tag {
 
     public List<Tag> getSubTags() {
         return subTags;
+    }
+
+    public boolean hasSubTag(String name) {
+        return subTags.stream().anyMatch(subtag -> subtag.name.equals(name));
     }
 }
