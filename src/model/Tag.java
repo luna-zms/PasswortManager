@@ -39,9 +39,13 @@ public class Tag {
     public Map<Tag, String> createPathMap() {
         if (subTags.isEmpty()) return Collections.singletonMap(this, name);
 
-        return subTags
+        Map<Tag, String> children = subTags
                 .stream()
                 .flatMap(subtag -> subtag.createPathMap().entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> name + "\\" + e.getValue()));
+
+        children.put(this, name);
+
+        return children;
     }
 }
