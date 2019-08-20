@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import view.TagTree?>
+<?import view.PasswordQualityBarController?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.CreateModifyEntryView">
    <children>
@@ -49,7 +50,7 @@
                   <Label text="Passwort:" GridPane.rowIndex="2" />
                   <TextField fx:id="repeatPassword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <Label text="Passwort wiederholen:" GridPane.rowIndex="3" />
-                  <fx:include source="PasswordQualityBar.fxml" fx:id="passwordQualityBar" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER" />
+                  <PasswordQualityBarController fx:id="passwordQualityBar" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER" />
                   <Label text="Passwortqualität:" GridPane.rowIndex="4" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                      <children>

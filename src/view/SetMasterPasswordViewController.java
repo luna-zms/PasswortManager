@@ -42,7 +42,7 @@ public class SetMasterPasswordViewController extends GridPane
 	private CustomPasswordFieldViewController customPasswordFieldOldPasswordViewController;
 	
 	@FXML
-	private PasswordQualityBarViewController masterPasswordQualityBar;
+	private PasswordQualityBarController masterPasswordQualityBar;
 	
 	public SetMasterPasswordViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SetMasterPasswordView.fxml"));

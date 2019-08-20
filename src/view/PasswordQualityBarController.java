@@ -7,7 +7,7 @@ import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 
-public class PasswordQualityBarViewController extends HBox {
+public class PasswordQualityBarController extends HBox {
 
     static private final String[] PERCENTAGE_TO_COLOR = new String[] {
             "#000000",
@@ -116,7 +116,7 @@ public class PasswordQualityBarViewController extends HBox {
     @FXML
     private ProgressBar qualityBar;
 
-    public PasswordQualityBarViewController() {
+    public PasswordQualityBarController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/PasswordQualityBar.fxml"));
         loader.setRoot(this);
         loader.setController(this);
