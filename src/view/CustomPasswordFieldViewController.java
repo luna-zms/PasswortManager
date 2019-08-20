@@ -5,13 +5,16 @@ package view;
  */
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.layout.HBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CustomPasswordFieldViewController {
+public class CustomPasswordFieldViewController extends HBox {
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -27,14 +30,24 @@ public class CustomPasswordFieldViewController {
 
     @FXML // fx:id="checkButton"
     private Button checkButton; // Value injected by FXMLLoader
-
+    
+    public CustomPasswordFieldViewController() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CustomPasswordField.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+        try {
+            loader.load();
+        } catch (IOException e) {
+           
+            e.printStackTrace();
+        }
+    }
+    
     @FXML
-        // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert textField != null : "fx:id=\"textField\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
         assert eyeButton != null : "fx:id=\"eyeButton\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
         assert checkButton != null : "fx:id=\"checkButton\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
-
     }
 }
 
