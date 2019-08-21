@@ -17,14 +17,14 @@ public class PMController {
     private EntryController entryController;
 
     /**
-     *  
+     *
      */
     public String setMasterPassword(String s) {
-	return null;
+        return null;
     }
 
     public boolean validateMasterPassword(String pwd) {
-	return false;
+        return false;
     }
 
 }

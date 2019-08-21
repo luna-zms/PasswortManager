@@ -1,23 +1,22 @@
 package controller;
 
+import model.Entry;
+
 import java.util.List;
 import java.util.function.Predicate;
-
-import model.Entry;
 
 public class EntryController {
 
     protected PMController pmController;
 
     /**
-     *  
+     *
      */
     public void addEntry(Entry e) {
 
     }
 
     /**
-     * 
      * @param old
      * @param edited
      */
@@ -26,19 +25,18 @@ public class EntryController {
     }
 
     /**
-     *  
+     *
      */
     public void removeEntry(Entry e) {
 
     }
 
     /**
-     * 
      * @param p
      * @return
      */
     public List<Entry> filter(Predicate<Entry> p) {
-	return null;
+        return null;
     }
 
 }

@@ -1,8 +1,5 @@
 package util;
 
-import controller.SerializationController;
-import controller.PasswordController;
-
 import java.util.EnumSet;
 
 public class PasswordGeneratorSettings {
@@ -16,7 +13,7 @@ public class PasswordGeneratorSettings {
     private PasswordGeneratorSettings passwordGeneratorSettings;
 
     /**
-     *  
+     *
      */
     public PasswordGeneratorSettings() {
 

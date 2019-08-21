@@ -1,10 +1,8 @@
 package model;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class PasswordManager {
 
