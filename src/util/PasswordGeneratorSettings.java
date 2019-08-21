@@ -5,29 +5,29 @@ import controller.PasswordController;
 
 public class PasswordGeneratorSettings {
 
-	private int length;
+    private int length;
 
-	private EnumSet<CharGroup> charGroups;
+    private EnumSet<CharGroup> charGroups;
 
-	private CharGroup charGroup;
+    private CharGroup charGroup;
 
-	private PasswordGeneratorSettings passwordGeneratorSettings;
+    private PasswordGeneratorSettings passwordGeneratorSettings;
 
-	private CharGroup charGroup;
+    private CharGroup charGroup;
 
-	/**
-	 *  
-	 */
-	public PasswordGeneratorSettings() {
+    /**
+     *  
+     */
+    public PasswordGeneratorSettings() {
 
-	}
+    }
 
-	public void selectCharGroup(int CharGroup) {
+    public void selectCharGroup(int CharGroup) {
 
-	}
+    }
 
-	public void setLength(int length) {
+    public void setLength(int length) {
 
-	}
+    }
 
 }

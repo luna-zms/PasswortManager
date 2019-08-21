@@ -4,29 +4,27 @@ import model.PasswordManager;
 
 public class PMController {
 
-	private SerializationController serializationController;
+    private TagController tagController;
 
-	private TagController tagController;
+    private PasswordManager passwordManager;
 
-	private PasswordManager passwordManager;
+    protected PasswordController passwordController;
 
-	protected PasswordController passwordController;
+    private LoadSaveController loadSaveController;
 
-	private LoadSaveController loadSaveController;
+    private ImportExportController importExportController;
 
-	private ImportExportController importExportController;
+    private EntryController entryController;
 
-	private EntryController entryController;
+    /**
+     *  
+     */
+    public String setMasterPassword(String s) {
+	return null;
+    }
 
-	/**
-	 *  
-	 */
-	public String setMasterPassword(String s) {
-		return null;
-	}
-
-	public boolean validateMasterPassword(String pwd) {
-		return false;
-	}
+    public boolean validateMasterPassword(String pwd) {
+	return false;
+    }
 
 }

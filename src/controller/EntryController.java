@@ -7,38 +7,38 @@ import model.Entry;
 
 public class EntryController {
 
-	protected PMController pmController;
+    protected PMController pmController;
 
-	/**
-	 *  
-	 */
-	public void addEntry(Entry e) {
+    /**
+     *  
+     */
+    public void addEntry(Entry e) {
 
-	}
+    }
 
-	/**
-	 * 
-	 * @param old
-	 * @param edited
-	 */
-	public void editEntry(Entry old, Entry edited) {
+    /**
+     * 
+     * @param old
+     * @param edited
+     */
+    public void editEntry(Entry old, Entry edited) {
 
-	}
+    }
 
-	/**
-	 *  
-	 */
-	public void removeEntry(Entry e) {
+    /**
+     *  
+     */
+    public void removeEntry(Entry e) {
 
-	}
+    }
 
-	/**
-	 * 
-	 * @param p
-	 * @return
-	 */
-	public List<Entry> filter(Predicate<Entry> p) {
-		return null;
-	}
+    /**
+     * 
+     * @param p
+     * @return
+     */
+    public List<Entry> filter(Predicate<Entry> p) {
+	return null;
+    }
 
 }
