@@ -10,7 +10,7 @@ public class PMController {
 
 	private PasswordManager passwordManager;
 
-	protected PasswordController pmController;
+	protected PasswordController passwordController;
 
 	private LoadSaveController loadSaveController;
 

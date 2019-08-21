@@ -4,7 +4,7 @@ import util.PasswordGeneratorSettings;
 
 public class PasswordController {
 
-	private PMController pMController;
+	private PMController pmController;
 
 	/**
 	 *  

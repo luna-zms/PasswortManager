@@ -19,7 +19,12 @@ public class TagController {
 	public void removeTag(Tag parent, Tag child) {
 
 	}
-
+	
+	/**
+	 * 
+	 * @param t
+	 * @param rename
+	 */
 	public void renameTag(Tag t, String rename) {
 
 	}

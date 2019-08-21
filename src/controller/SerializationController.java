@@ -1,5 +1,7 @@
 package controller;
 
+import java.io.OutputStream;
+
 import model.Tag;
 
 public abstract class SerializationController {
@@ -12,7 +14,12 @@ public abstract class SerializationController {
 	 *  
 	 */
 	public abstract void save(String path);
-
+	
+	/**
+	 * 
+	 * @param path
+	 * @return
+	 */
 	protected Tag createTagFromPath(String[ ] path) {
 		return null;
 	}

@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.List;
+import java.util.function.Predicate;
+
 import model.Entry;
 
 public class EntryController {
@@ -13,6 +16,11 @@ public class EntryController {
 
 	}
 
+	/**
+	 * 
+	 * @param old
+	 * @param edited
+	 */
 	public void editEntry(Entry old, Entry edited) {
 
 	}
@@ -24,6 +32,11 @@ public class EntryController {
 
 	}
 
+	/**
+	 * 
+	 * @param p
+	 * @return
+	 */
 	public List<Entry> filter(Predicate<Entry> p) {
 		return null;
 	}
