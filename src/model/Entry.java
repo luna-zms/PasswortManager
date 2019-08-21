@@ -4,6 +4,8 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Entry {
@@ -11,6 +13,7 @@ public class Entry {
     private URL url;
     private LocalDateTime createdAt, lastModified, validUntil;
     private SecurityQuestion securityQuestion;
+    private List<Tag> tags;
 
     public Entry(String title, String password) {
         this.title = title;
@@ -18,6 +21,7 @@ public class Entry {
 
         createdAt = LocalDateTime.now();
         lastModified = createdAt;
+        tags = new ArrayList<>();
     }
 
     public String getTitle() {
@@ -98,6 +102,10 @@ public class Entry {
 
     public void setSecurityQuestion(SecurityQuestion securityQuestion) {
         this.securityQuestion = securityQuestion;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
     }
 
     private static String stringFromDateTime(LocalDateTime dateTime) {
