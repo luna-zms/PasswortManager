@@ -1,8 +1,5 @@
 package view;
 
-import java.io.IOException;
-
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -12,6 +9,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import model.Entry;
 import model.Tag;
+
+import java.io.IOException;
+
+import static util.BindingUtils.makeBinding;
 
 public class EntryPreviewViewController extends HBox {
     private ObjectProperty<Entry> entry = new SimpleObjectProperty<>();
@@ -42,22 +43,10 @@ public class EntryPreviewViewController extends HBox {
         }
 
         // Bind labels to update whenever entry object changes
-        title.textProperty().bind(Bindings.createStringBinding(
-                () -> entry.get() != null ? entry.get().getTitle() : "",
-                entry
-        ));
-        url.textProperty().bind(Bindings.createStringBinding(
-                () -> entry.get() != null ? entry.get().getUrlString() : "",
-                entry
-        ));
-        username.textProperty().bind(Bindings.createStringBinding(
-                () -> entry.get() != null ? entry.get().getUsername() : "",
-                entry
-        ));
-        validUntil.textProperty().bind(Bindings.createStringBinding(
-                () -> entry.get() != null ? entry.get().getValidUntilString() : "",
-                entry
-        ));
+        title.textProperty().bind(makeBinding(entry, Entry::getTitle, ""));
+        url.textProperty().bind(makeBinding(entry, Entry::getUrlString, ""));
+        username.textProperty().bind(makeBinding(entry, Entry::getUsername, ""));
+        validUntil.textProperty().bind(makeBinding(entry, Entry::getValidUntilString, ""));
     }
 
     public ObjectProperty<Entry> entryProperty() {
