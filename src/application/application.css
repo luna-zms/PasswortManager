@@ -13,3 +13,7 @@
 	-fx-background-color: white; 
 	-fx-border-style: solid;
 }
+
+* {
+    -fx-background-radius: 0;
+}
