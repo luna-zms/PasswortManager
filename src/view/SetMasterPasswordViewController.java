@@ -7,6 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class SetMasterPasswordViewController extends GridPane
 {
@@ -41,8 +43,18 @@ public class SetMasterPasswordViewController extends GridPane
 	@FXML 
 	private CustomPasswordFieldViewController customPasswordFieldOldPasswordViewController;
 	
+	@FXML 
+	private HBox masterPasswordQualityBar;
+	
 	@FXML
-	private PasswordQualityBarViewController masterPasswordQualityBar;
+	private PasswordQualityBarViewController masterPasswordQualityBarController;
+	
+	@FXML
+	private GridPane gueltigBisWidget;
+	
+	@FXML 
+	private CustomExpirationDateViewController customExpirationDateViewController;
+	
 	
 	public SetMasterPasswordViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SetMasterPasswordView.fxml"));
