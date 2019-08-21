@@ -19,12 +19,15 @@ public class PMController {
     /**
      *
      */
-    public String setMasterPassword(String s) {
-        return null;
+    public void setMasterPassword(String s) {
+
     }
 
     public boolean validateMasterPassword(String pwd) {
         return false;
     }
 
+    public PasswordManager getPasswordManager() {
+        return passwordManager;
+    }
 }
