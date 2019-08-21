@@ -44,7 +44,7 @@ public class SetMasterPasswordViewController extends GridPane
 	private CustomPasswordFieldViewController customPasswordFieldOldPasswordViewController;
 	
 	@FXML 
-	private HBox masterPasswordQualityBar;
+	private PasswordQualityBarController masterPasswordQualityBar;
 	
 	@FXML
 	private PasswordQualityBarViewController masterPasswordQualityBarController;

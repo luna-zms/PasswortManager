@@ -3,3 +3,17 @@
 .text-area *.text {
     -fx-text-alignment: center;
 }
+
+.text-field {
+	-fx-background-color: white; 
+	-fx-border-style: solid;
+}
+
+.text-area {
+	-fx-background-color: white; 
+	-fx-border-style: solid;
+}
+
+* {
+    -fx-background-radius: 0;
+}

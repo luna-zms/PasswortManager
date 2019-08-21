@@ -41,6 +41,6 @@ public class MainWindowViewController extends BorderPane {
         // TODO: Fetch from model
         Tag rootTag = new Tag("Root Tag");
 
-        tagTree.init(false, rootTag);
+        tagTree.init(true, rootTag);
     }
 }

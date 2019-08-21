@@ -1,7 +1,10 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("PMD.ShortClassName")
 public class Tag {
@@ -31,5 +34,18 @@ public class Tag {
 
     public boolean hasSubTag(String name) {
         return subTags.stream().anyMatch(subtag -> subtag.name.equals(name));
+    }
+
+    public Map<Tag, String> createPathMap() {
+        if (subTags.isEmpty()) return Collections.singletonMap(this, name);
+
+        Map<Tag, String> children = subTags
+                .stream()
+                .flatMap(subtag -> subtag.createPathMap().entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> name + "\\" + e.getValue()));
+
+        children.put(this, name);
+
+        return children;
     }
 }
