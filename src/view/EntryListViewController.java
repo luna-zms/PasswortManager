@@ -1,7 +1,5 @@
 package view;
 
-import java.util.function.Predicate;
-
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -9,6 +7,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Entry;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class EntryListViewController extends TableView<Entry> {
     private Predicate<Entry> filter;
@@ -30,9 +32,17 @@ public class EntryListViewController extends TableView<Entry> {
         // Ensure columns use available width
         setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
 
-        this.setPlaceholder(new Label("Keine Einträge gefunden."));
+        // Make placeholder German
+        setPlaceholder(new Label("Keine Einträge gefunden."));
 
-        this.getColumns().setAll(titleColumn, usernameColumn, passwordColumn, urlColumn, validUntilColumn);
+        // Make Java happy by specifying the exact types
+        List<TableColumn<Entry, String>> columns = new ArrayList<>();
+        columns.add(titleColumn);
+        columns.add(usernameColumn);
+        columns.add(passwordColumn);
+        columns.add(urlColumn);
+        columns.add(validUntilColumn);
+        getColumns().setAll(columns);
     }
 
 
