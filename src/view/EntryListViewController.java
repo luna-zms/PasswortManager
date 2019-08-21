@@ -23,11 +23,16 @@ public class EntryListViewController extends TableView<Entry> {
         TableColumn<Entry, String> urlColumn = new TableColumn<>("URL");
         TableColumn<Entry, String> validUntilColumn = new TableColumn<>("Gültig bis");
 
+        // Bind columns to getters of Entry
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         passwordColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper("*****"));
         urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
-        validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntil"));
+        // Use getter with specific string formatting
+        validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntilString"));
+
+        // Right-align date column
+        validUntilColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
 
         // Ensure columns use available width
         setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
