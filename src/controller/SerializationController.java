@@ -1,5 +1,6 @@
 package controller;
 
+import model.Entry;
 import model.Tag;
 import org.apache.commons.csv.CSVRecord;
 
