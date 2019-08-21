@@ -3,6 +3,8 @@ package util;
 import controller.SerializationController;
 import controller.PasswordController;
 
+import java.util.EnumSet;
+
 public class PasswordGeneratorSettings {
 
     private int length;
@@ -12,8 +14,6 @@ public class PasswordGeneratorSettings {
     private CharGroup charGroup;
 
     private PasswordGeneratorSettings passwordGeneratorSettings;
-
-    private CharGroup charGroup;
 
     /**
      *  
