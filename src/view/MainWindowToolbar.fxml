@@ -91,6 +91,13 @@
 						<Tooltip text="Exportiere CSV" />
 					</tooltip>
 				</Button>
+				<Button fx:id="generatePasswordToolbar" contentDisplay="GRAPHIC_ONLY"
+						maxHeight="50.0" maxWidth="50.0" mnemonicParsing="false"
+						prefHeight="50.0" prefWidth="50.0">
+					<tooltip>
+						<Tooltip text="Passwort generieren" />
+					</tooltip>
+				</Button>
 			</items>
 			<GridPane.margin>
 				<Insets />
@@ -117,7 +124,7 @@
 					prefHeight="31.0" vgrow="SOMETIMES" />
 			</rowConstraints>
 			<children>
-				<TextField prefHeight="27.0" prefWidth="237.0" promptText="Suchbegriffe"
+				<TextField fx:id="searchFieldSearchbar" prefHeight="27.0" prefWidth="237.0" promptText="Suchbegriffe"
 					GridPane.columnSpan="2">
 					<padding>
 						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -198,7 +205,7 @@
 						<Font size="12.0" />
 					</font>
 				</CheckBox>
-				<DatePicker maxWidth="115.0" minWidth="115.0" prefHeight="26.0"
+				<DatePicker fx:id="filterExpiringSearchbar" maxWidth="115.0" minWidth="115.0" prefHeight="26.0"
 					prefWidth="115.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
 					<tooltip>
 						<Tooltip text="Nur Einträge anzeigen, die bis zu diesem Datum ablaufen" />
