@@ -34,11 +34,19 @@ public abstract class SerializationController {
      * Creates the Tag pointed to by path, constructing parent Tags if needed
      *
      * @param path A path in the Tag tree, as an array of tag names
-     * @return The Tag pointed to by path
+     * @return The Tag pointed to by path or null iff path is null
      */
     protected Tag createTagFromPath(String[] path) {
+    	if (path == null) return null;
+    	
         Tag currentTag = pmController.getPasswordManager().getRootTag();
-        for (String part : path) {
+        
+        if (currentTag == null) {
+        	currentTag = new Tag(path[0]);
+        	pmController.getPasswordManager().setRootTag(currentTag);
+        }
+        
+        for (String part : Arrays.copyOfRange(path, 1, path.length)) {
             if (currentTag.hasSubTag(part)) {
                 currentTag = currentTag.getSubTags().stream().filter(tag -> tag.getName().equals(part)).findFirst().get();
             } else {
@@ -56,6 +64,8 @@ public abstract class SerializationController {
      * @param os The OutputStream to write into
      */
     protected void writeEntriesToStream(OutputStream outputStream) throws IOException {
+    	if (outputStream == null) return;
+    	
         List<Entry> entries = pmController.getPasswordManager().getEntries();
         Map<Tag, String> pathMap = pmController.getPasswordManager().getRootTag().createPathMap();
 
