@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public abstract class SerializationController {
 
-    protected static final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
     protected PMController pmController;
 
     public abstract void load(String path);
@@ -71,9 +71,9 @@ public abstract class SerializationController {
                     entry.getUsername(),
                     entry.getPassword(),
                     entry.getUrl(),
-                    entry.getCreatedAt().format(dateFormat),
-                    entry.getLastModified().format(dateFormat),
-                    entry.getValidUntil().format(dateFormat),
+                    entry.getCreatedAt().format(DATE_FORMAT),
+                    entry.getLastModified().format(DATE_FORMAT),
+                    entry.getValidUntil().format(DATE_FORMAT),
                     entry.getNote(),
                     entry.getSecurityQuestion().getQuestion(),
                     entry.getSecurityQuestion().getAnswer(),
@@ -97,9 +97,9 @@ public abstract class SerializationController {
             Entry entry = new Entry(record.get(EntryTableHeader.TITLE), record.get(EntryTableHeader.PASSWORD));
 
             entry.setUsername(record.get(EntryTableHeader.USERNAME));
-            entry.setCreatedAt(LocalDateTime.parse(record.get(EntryTableHeader.CREATED_AT), dateFormat));
-            entry.setLastModified(LocalDateTime.parse(record.get(EntryTableHeader.LAST_MODIFIED), dateFormat));
-            entry.setValidUntil(LocalDateTime.parse(record.get(EntryTableHeader.VALID_UNTIL), dateFormat));
+            entry.setCreatedAt(LocalDateTime.parse(record.get(EntryTableHeader.CREATED_AT), DATE_FORMAT));
+            entry.setLastModified(LocalDateTime.parse(record.get(EntryTableHeader.LAST_MODIFIED), DATE_FORMAT));
+            entry.setValidUntil(LocalDateTime.parse(record.get(EntryTableHeader.VALID_UNTIL), DATE_FORMAT));
             entry.setNote(record.get(EntryTableHeader.NOTE));
             String question = record.get(EntryTableHeader.SECURITY_QUESTION);
             String answer = record.get(EntryTableHeader.SECURITY_QUESTION_ANSWER);
