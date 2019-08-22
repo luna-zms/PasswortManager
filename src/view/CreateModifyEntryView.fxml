@@ -133,7 +133,7 @@
                                 <Insets />
                             </GridPane.margin>
                         </TextField>
-                        <TextField fx:id="Answer" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                        <TextField fx:id="answer" GridPane.columnIndex="1" GridPane.rowIndex="8">
                             <GridPane.margin>
                                 <Insets />
                             </GridPane.margin>

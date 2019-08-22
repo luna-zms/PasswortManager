@@ -3,6 +3,8 @@ package view;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -12,6 +14,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import model.Entry;
+import model.SecurityQuestion;
 
 public class CreateModifyEntryViewController extends AnchorPane {
 
@@ -41,12 +45,15 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
     @FXML
     private TextField url;
+    
+    @FXML
+    private CustomExpirationDateViewController validDatePicker;
 
     @FXML
-    private TextField tags;
+    private TextField securityQuestion;
 
     @FXML
-    private Button tagListButton;
+    private TextField answer;
 
     @FXML
     private TextArea notes;
@@ -60,6 +67,10 @@ public class CreateModifyEntryViewController extends AnchorPane {
     @FXML
     private Button cancelButton;
     
+    private Entry oldEntry = null;
+    
+    private PMController pmController = null;
+    
     public CreateModifyEntryViewController() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
 		loader.setRoot(this);
@@ -71,36 +82,73 @@ public class CreateModifyEntryViewController extends AnchorPane {
 			e.printStackTrace();
 		}
 		
-		cancelButton.setOnAction(e -> {
-			Stage stage = (Stage) getScene().getWindow();
-			stage.close();
+		
+		repeatPassword.setPromptText("Passwort wiederholen");
+		String errorTitle = "Fehler: Eintrag erstellen";
+		
+		cancelButton.setOnAction(event -> {
+			if(isModified()){
+				//TODO: open dialog
+			} else {
+				Stage stage = (Stage) getScene().getWindow();
+				stage.close();
+			}
 		});
 		
-		okButton.setOnAction(e -> {
-//			String entryName = entryName.getText();
-//			String password = password.getText();		//TODO: Implement getText in CutomPasswordField
-//			String repeatPassword = repeatPassword.getText();
-//			
-//			if(entryName.isEmpty()) {
-//				errorMessage("", "");
-//			}
-//			
-//			if(password.equals(repeatPassword)) {
-//				Enrty entry = new Entry(entryName, password);
-//			} else {
-//				//TODO: Error: passwords are not equal
-//			}
+		okButton.setOnAction(event -> {
+			String entryNameString = entryName.getText();
+			String passwordString = password.getText();		//TODO: Implement getText in CutomPasswordField
+			String repeatPasswordString = repeatPassword.getText();
 			
+			if(entryNameString.isEmpty()) {
+				errorMessage(errorTitle, "Eintragsname ist leer" ,"Das Feld Eintragsname darf nicht leer sein.");
+				return;
+			}
+			
+			if(!passwordString.equals(repeatPasswordString)) {
+				errorMessage(errorTitle, "Passwörter sind nicht gleich", "Bitte geben sie zweimal das gleiche Passwort ein.");
+				return;
+			}
 			Stage stage = (Stage) getScene().getWindow();
 			stage.close();
 		});
 	}
     
-    void errorMessage(String title, String content) {
+    private void errorMessage(String title, String header, String content) {
     	Alert errorAlert = new Alert(AlertType.ERROR);
-    	errorAlert.setHeaderText(title);
+    	errorAlert.setTitle(title);
+    	errorAlert.setHeaderText(header);
     	errorAlert.setContentText(content);
     	errorAlert.showAndWait();
+    }
+    
+    private boolean isModified() {
+    	if(oldEntry == null) {
+    		if(!entryName.getText().isEmpty()) return true;
+    		if(!userName.getText().isEmpty()) return true;
+    		if(!password.getText().isEmpty()) return true;
+    		if(!repeatPassword.getText().isEmpty()) return true;
+    		if(!url.getText().isEmpty()) return true;
+    		if(!securityQuestion.getText().isEmpty()) return true;
+    		if(!answer.getText().isEmpty()) return true;
+    		if(!notes.getText().isEmpty()) return true;
+    		
+    		return false;
+    	} else {
+    		if(entryName.equals(oldEntry.getTitle())) return true;
+    		if(userName.equals(oldEntry.getUsername())) return true;
+    		if(password.equals(oldEntry.getPassword())) return true;
+    		if(repeatPassword.equals(oldEntry.getPassword())) return true;
+    		if(url.equals(oldEntry.getUrlString())) return true;
+    		
+    		SecurityQuestion question = oldEntry.getSecurityQuestion();
+    		
+    		if(securityQuestion.equals(question.getQuestion())) return true;
+    		if(answer.equals(question.getAnswer())) return true;
+    		if(notes.equals(oldEntry.getNote())) return true;
+    		
+    		return false;
+    	}
     }
     
     @FXML
@@ -112,12 +160,32 @@ public class CreateModifyEntryViewController extends AnchorPane {
         assert password != null : "fx:id=\"password\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert generatePasswordButton != null : "fx:id=\"generatePasswordButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert url != null : "fx:id=\"url\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
-        assert tags != null : "fx:id=\"tags\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
-        assert tagListButton != null : "fx:id=\"tagListButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert notes != null : "fx:id=\"notes\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert tagTree != null : "fx:id=\"tagTree\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
 
+    }
+    public void setOldEntry(Entry entry) {
+    	oldEntry = entry;
+    	entryName.setText(entry.getTitle());
+    	userName.setText(entry.getUsername());
+    	//password.setText(entry.getPassword());
+    	//repeatPassword.setText(entry.getPassword());
+    	url.setText(entry.getUrlString());
+    	//validDatePicker.setDate(entry.getValidUntil());
+    	SecurityQuestion question = entry.getSecurityQuestion();
+    	securityQuestion.setText(question.getQuestion());
+    	answer.setText(question.getAnswer());
+    	notes.setText(entry.getNote());
+    	//tagTree.setCheckedTags(entry.getTags());
+    }
+    
+    public void setPMController(PMController pmController) {
+    	this.pmController = pmController;
+    }
+    
+    public void init() {
+    	tagTree.init(true, pmController.getPasswordManager().getRootTag());
     }
 }
