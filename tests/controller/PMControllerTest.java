@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -40,22 +41,24 @@ public class PMControllerTest {
      *            Length of the returned password
      * @return randomly generated password
      */
-    public static String createRandomPassword(int length) {
+    public static byte[] createRandomPassword(int length) {
         SecureRandom pwdGenerator = new SecureRandom();
 
         byte[] randomBytes = new byte[20];
         pwdGenerator.nextBytes(randomBytes);
 
-        return Base64.encode(randomBytes);
+        return randomBytes;
     }
 
     @Before
     public void setUp() throws Exception {
         pmController = new PMController();
 
-        usedPassword = createRandomPassword(20);
+        byte[] randomBytes = createRandomPassword(20);
+        usedPassword = new String(randomBytes);
+        String safePassword = Base64.encode(usedPassword.getBytes());
 
-        KeySpec specs = new PBEKeySpec(usedPassword.toCharArray());
+        KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
         SecretKeyFactory skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
 
         try {
@@ -86,7 +89,7 @@ public class PMControllerTest {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successfull!");
         }
-        
+
         System.out.print("Run Test with no password:");
         try {
             pmController.setMasterPassword(null);
@@ -99,7 +102,10 @@ public class PMControllerTest {
     }
 
     public void testSetMasterPasswordRandom() {
-        String testPassword = createRandomPassword(10);
+        byte[] randomBytes = createRandomPassword(20);
+        String testPassword = new String(randomBytes);
+        String safePassword = Base64.encode(testPassword.getBytes());
+
         SecretKeyFactory skFactory;
         try {
             skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
@@ -107,7 +113,7 @@ public class PMControllerTest {
             fail("Error within SecretKeyFactory! Please check your Java installation!");
             return;
         }
-        KeySpec specs = new PBEKeySpec(testPassword.toCharArray());
+        KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
 
         SecretKey expectedKey;
 
@@ -119,8 +125,8 @@ public class PMControllerTest {
         }
 
         pmController.setMasterPassword(testPassword);
-        assertTrue("setMasterPassword calculates a wrong key!",
-                pmController.getPasswordManager().getMasterPasswordKey().equals(expectedKey));
+        assertTrue("setMasterPassword calculates a wrong key!", Arrays.equals(
+                pmController.getPasswordManager().getMasterPasswordKey().getEncoded(), expectedKey.getEncoded()));
     }
 
     @Test
@@ -145,20 +151,21 @@ public class PMControllerTest {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successfull!");
         }
-        
+
         System.out.print("Run Test with no password:");
         try {
             pmController.validateMasterPassword(null);
             fail("validateMasterPassword throws no exception despite being given a null object!");
             return;
-        } catch (IllegalArgumentException noPasswordException) {
+        } catch (IllegalArgumentException PasswordException) {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successfull!");
         }
     }
 
     public void testValidateMasterPasswordRandom() {
-        String testPassword = createRandomPassword(10);
+        byte[] randomBytes = createRandomPassword(20);
+        String testPassword = new String(randomBytes);
 
         boolean result = pmController.validateMasterPassword(testPassword);
         assertTrue("validateMasterPassword accepts a wrong password or declines a correct one!",
