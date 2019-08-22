@@ -40,11 +40,11 @@ public abstract class SerializationController {
         Tag currentTag = pmController.getPasswordManager().getRootTag();
         for (String part : path) {
             if (currentTag.hasSubTag(part)) {
-                currentTag = currentTag.getSubTags().stream().filter(t -> t.getName().equals(part)).findFirst().get();
+                currentTag = currentTag.getSubTags().stream().filter(tag -> tag.getName().equals(part)).findFirst().get();
             } else {
-                Tag t = new Tag(part);
-                currentTag.getSubTags().add(t);
-                currentTag = t;
+                Tag tag = new Tag(part);
+                currentTag.getSubTags().add(tag);
+                currentTag = tag;
             }
         }
         return currentTag;
@@ -55,11 +55,11 @@ public abstract class SerializationController {
      *
      * @param os The OutputStream to write into
      */
-    protected void writeEntriesToStream(OutputStream os) throws IOException {
+    protected void writeEntriesToStream(OutputStream outputStream) throws IOException {
         List<Entry> entries = pmController.getPasswordManager().getEntries();
         Map<Tag, String> pathMap = pmController.getPasswordManager().getRootTag().createPathMap();
 
-        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(os), CSVFormat.DEFAULT);
+        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), CSVFormat.DEFAULT);
 
         // Print Header
         printer.printRecord(EntryTableHeader.values());
@@ -110,7 +110,7 @@ public abstract class SerializationController {
             String[] paths = tagPaths.split(";");
             entry.getTags().addAll(
                     Arrays.stream(paths)
-                            .map(p -> p.split("\\\\"))
+                            .map(path -> path.split("\\\\"))
                             .map(this::createTagFromPath)
                             .collect(Collectors.toList())
             );
@@ -125,6 +125,7 @@ public abstract class SerializationController {
         TITLE, USERNAME, PASSWORD, CREATED_AT, LAST_MODIFIED, VALID_UNTIL, NOTE, SECURITY_QUESTION, SECURITY_QUESTION_ANSWER, TAG_PATHS;
 
         @Override
+        @SuppressWarnings("PMD.CyclomaticComplexity")
         public String toString() {
             switch (this) {
                 case TITLE:
