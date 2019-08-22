@@ -1,5 +1,9 @@
 package view;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -7,10 +11,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Entry;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
 
 public class EntryListViewController extends TableView<Entry> {
     private Predicate<Entry> filter;

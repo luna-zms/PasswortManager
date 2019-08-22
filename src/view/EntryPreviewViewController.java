@@ -1,5 +1,7 @@
 package view;
 
+import java.io.IOException;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -9,8 +11,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import model.Entry;
 import model.Tag;
-
-import java.io.IOException;
 
 import static util.BindingUtils.makeBinding;
 

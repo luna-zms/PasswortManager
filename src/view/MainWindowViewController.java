@@ -55,7 +55,8 @@ public class MainWindowViewController extends BorderPane {
         URL url = null;
         try {
             url = new URL("http://example.com");
-        } catch (MalformedURLException e) {}
+        } catch (MalformedURLException e) {
+        }
 
         entry.setUrl(url);
         entry.setValidUntil(LocalDateTime.MAX);

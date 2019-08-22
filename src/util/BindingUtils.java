@@ -3,11 +3,11 @@ package util;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import javafx.beans.Observable;
+import java.util.function.Function;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
-
-import java.util.function.Function;
 
 public class BindingUtils {
     private BindingUtils() {
