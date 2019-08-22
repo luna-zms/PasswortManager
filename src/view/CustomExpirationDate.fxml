@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<fx:root prefHeight="26.0" prefWidth="325.0" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="26.0" prefWidth="325.0" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="317.0" minWidth="10.0" prefWidth="161.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.0" minWidth="10.0" prefWidth="146.0" />
@@ -19,7 +19,7 @@
       <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="253.0">
+      <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="192.0">
          <children>
             <CheckBox fx:id="checkBoxExpirationDate" mnemonicParsing="false" />
             <DatePicker fx:id="datePickerExpirationDate" prefHeight="26.0" prefWidth="255.0" promptText="Ablaufdatum" />
