@@ -55,9 +55,7 @@ public class CustomExpirationDateViewController extends GridPane {
     void initialize() {
         checkBoxExpirationDate.setSelected(false);
         datePickerExpirationDate.setDisable(true);
-		daysUntilExpiration.setDisable(true);
-        
-        //datePickerExpirationDate.setValue(LocalDate.MIN.plusDays(100));
+        daysUntilExpiration.setDisable(true);
         
         
         datePickerExpirationDate.setOnAction(event ->{
@@ -74,11 +72,6 @@ public class CustomExpirationDateViewController extends GridPane {
         daysUntilExpiration.valueProperty().addListener((obs, oldValue, newValue) -> {
             datePickerExpirationDate.setValue(LocalDate.now().plusDays(newValue));
         });
-        
-        /*datePickerExpirationDate.valueProperty().bind(Bindings.createObjectBinding(
-        	() -> LocalDate.now().plusDays(daysUntilExpiration.getValue(),
-        	daysUntilExpiration.valueProperty()
-        ));*/
         
         checkBoxExpirationDate.setOnAction(event -> {
         	if (event.getSource() instanceof CheckBox) {
