@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -87,6 +88,10 @@ public abstract class SerializationController {
      * @param csvEntries CSV records to parse.
      */
     protected void parseEntries(Iterable<CSVRecord> csvEntries) {
+    	parseEntries(csvEntries, new ArrayList<>());
+    }
+    
+    private void parseEntries(Iterable<CSVRecord> csvEntries, List<String> extraTags) {
         List<Entry> entries = pmController.getPasswordManager().getEntries();
         for (CSVRecord record : csvEntries) {
             Entry entry = new Entry(record.get(EntryTableHeader.TITLE), record.get(EntryTableHeader.PASSWORD));
@@ -112,6 +117,8 @@ public abstract class SerializationController {
 
             entries.add(entry);
         }
+        
+        extraTags.forEach(str -> createTagFromPath(str.split("\\\\")));
     }
 
     private enum EntryTableHeader {
