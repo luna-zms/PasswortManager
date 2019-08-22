@@ -47,6 +47,7 @@ public class MainWindowToolbarViewController extends GridPane {
             e.printStackTrace();
         }
     }
+
     public void initialize() {
         Image addEntryImage = new Image(getClass().getResourceAsStream("/view/resources/add_entry_toolbar_icon.png"));
         addEntryToolbar.setGraphic(new ImageView(addEntryImage));

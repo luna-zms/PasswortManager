@@ -2,8 +2,8 @@ package model;
 
 /**
  * This class is about setting privacy issues
- * @author sopr016
  *
+ * @author sopr016
  */
 public class SecurityQuestion {
     private String question, answer;
