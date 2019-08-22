@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -51,6 +52,7 @@ public class SetMasterPasswordViewController extends GridPane {
     @FXML
     private CustomExpirationDateViewController customExpirationDateViewController;
 
+    private PMController pmController;
 
     public SetMasterPasswordViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SetMasterPasswordView.fxml"));
@@ -68,5 +70,9 @@ public class SetMasterPasswordViewController extends GridPane {
     void initialize() {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
+    }
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
     }
 }

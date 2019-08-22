@@ -55,7 +55,7 @@ public class MainWindowToolbarViewController extends GridPane {
     @FXML
     private DatePicker filterExpiringSearchbar;
 
-    PMController pmController;
+    private PMController pmController;
 
     public MainWindowToolbarViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
@@ -113,6 +113,7 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initStyle(StageStyle.UTILITY);
             CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
+            dialogController.setPmController(pmController);
             Scene scene = new Scene(dialogController);
             dialog.setScene(scene);
             dialog.showAndWait();
@@ -147,6 +148,7 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initStyle(StageStyle.UTILITY);
             SetMasterPasswordViewController dialogController = new SetMasterPasswordViewController();
+            dialogController.setPmController(pmController);
             Scene scene = new Scene(dialogController);
             dialog.setScene(scene);
             dialog.showAndWait();
@@ -191,6 +193,7 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initStyle(StageStyle.UTILITY);
             GeneratePasswordViewController dialogController = new GeneratePasswordViewController();
+            dialogController.setPmController(pmController);
             Scene scene = new Scene(dialogController);
             dialog.setScene(scene);
             dialog.showAndWait();*/
@@ -221,5 +224,10 @@ public class MainWindowToolbarViewController extends GridPane {
 
             // TODO: start search and filter (using EntryController.filter)
         });
+
+    }
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
     }
 }

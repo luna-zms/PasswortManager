@@ -3,6 +3,8 @@ package view;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -59,7 +61,9 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
     @FXML
     private Button cancelButton;
-    
+
+    private PMController pmController;
+
     public CreateModifyEntryViewController() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
 		loader.setRoot(this);
@@ -67,42 +71,42 @@ public class CreateModifyEntryViewController extends AnchorPane {
 		try {
 			loader.load();
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
-		
+
 		cancelButton.setOnAction(e -> {
 			Stage stage = (Stage) getScene().getWindow();
 			stage.close();
 		});
-		
+
 		okButton.setOnAction(e -> {
 //			String entryName = entryName.getText();
 //			String password = password.getText();		//TODO: Implement getText in CutomPasswordField
 //			String repeatPassword = repeatPassword.getText();
-//			
+//
 //			if(entryName.isEmpty()) {
 //				errorMessage("", "");
 //			}
-//			
+//
 //			if(password.equals(repeatPassword)) {
 //				Enrty entry = new Entry(entryName, password);
 //			} else {
 //				//TODO: Error: passwords are not equal
 //			}
-			
+
 			Stage stage = (Stage) getScene().getWindow();
 			stage.close();
 		});
 	}
-    
+
     void errorMessage(String title, String content) {
     	Alert errorAlert = new Alert(AlertType.ERROR);
     	errorAlert.setHeaderText(title);
     	errorAlert.setContentText(content);
     	errorAlert.showAndWait();
     }
-    
+
     @FXML
     void initialize() {
         assert entryName != null : "fx:id=\"entryName\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
@@ -119,5 +123,10 @@ public class CreateModifyEntryViewController extends AnchorPane {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
 
+    }
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
+        tagTree.setPmController(pmController);
     }
 }
