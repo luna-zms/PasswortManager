@@ -1,8 +1,5 @@
 package controller;
 
-import java.io.OutputStream;
-import java.util.List;
-
 import model.Entry;
 import model.SecurityQuestion;
 import model.Tag;
@@ -22,30 +19,8 @@ import java.util.stream.Collectors;
 
 public abstract class SerializationController {
 
-    protected PMController pmController;
-
-    private enum EntryTableHeader {
-        TITLE, USERNAME, PASSWORD, CREATEDAT, LASTMODIFIED, VALIDUNTIL, NOTE, SECURITYQUESTION, SECURITYQUESTIONANSWER, TAGPATHS;
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case TITLE: return "Title";
-                case USERNAME: return "Username";
-                case PASSWORD: return "Password";
-                case CREATEDAT: return "CreatedAt";
-                case LASTMODIFIED: return "LastModified";
-                case VALIDUNTIL: return "ValidUntil";
-                case NOTE: return "Note";
-                case SECURITYQUESTION: return "SecurityQuestion";
-                case SECURITYQUESTIONANSWER: return "SecurityQuestionAnswer";
-                case TAGPATHS: return "TagPaths";
-                default: return ""; // Note: Never used. This switch is exhaustive
-            }
-        }
-    }
-
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    protected PMController pmController;
 
     public abstract void load(String path);
 
@@ -76,6 +51,7 @@ public abstract class SerializationController {
 
     /**
      * Writes all entries stored in the PasswordManager into the given OutputStream
+     *
      * @param os The OutputStream to write into
      */
     protected void writeEntriesToStream(OutputStream os) throws IOException {
@@ -85,7 +61,7 @@ public abstract class SerializationController {
         CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(os), CSVFormat.DEFAULT);
 
         // Print Header
-        printer.printRecord((Object[]) EntryTableHeader.values());
+        printer.printRecord(EntryTableHeader.values());
         // Print Entries
         for (Entry entry : entries) {
             String paths = entry.getTags().stream().map(pathMap::get).collect(Collectors.joining(";"));
@@ -107,6 +83,7 @@ public abstract class SerializationController {
 
     /**
      * Parses CSVRecords into Entries. Entries are added to the password manager. Tags are added to the tag tree.
+     *
      * @param csvEntries CSV records to parse.
      */
     protected void parseEntries(Iterable<CSVRecord> csvEntries) {
@@ -134,6 +111,38 @@ public abstract class SerializationController {
             );
 
             entries.add(entry);
+        }
+    }
+
+    private enum EntryTableHeader {
+        TITLE, USERNAME, PASSWORD, CREATEDAT, LASTMODIFIED, VALIDUNTIL, NOTE, SECURITYQUESTION, SECURITYQUESTIONANSWER, TAGPATHS;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case TITLE:
+                    return "Title";
+                case USERNAME:
+                    return "Username";
+                case PASSWORD:
+                    return "Password";
+                case CREATEDAT:
+                    return "CreatedAt";
+                case LASTMODIFIED:
+                    return "LastModified";
+                case VALIDUNTIL:
+                    return "ValidUntil";
+                case NOTE:
+                    return "Note";
+                case SECURITYQUESTION:
+                    return "SecurityQuestion";
+                case SECURITYQUESTIONANSWER:
+                    return "SecurityQuestionAnswer";
+                case TAGPATHS:
+                    return "TagPaths";
+                default:
+                    return ""; // Note: Never used. This switch is exhaustive
+            }
         }
     }
 }
