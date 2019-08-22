@@ -24,6 +24,10 @@ public class Entry {
         tags = new ArrayList<>();
     }
 
+    private static String stringFromDateTime(LocalDateTime dateTime) {
+        return dateTime != null ? dateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : "";
+    }
+
     public String getTitle() {
         return title;
     }
@@ -106,9 +110,5 @@ public class Entry {
 
     public List<Tag> getTags() {
         return tags;
-    }
-
-    private static String stringFromDateTime(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : "";
     }
 }

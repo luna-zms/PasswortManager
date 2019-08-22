@@ -4,6 +4,11 @@ package view;
  * Sample Skeleton for 'CustomPasswordField.fxml' Controller Class
  */
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,11 +22,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.ResourceBundle;
 
 public class CustomPasswordFieldViewController extends HBox {
 
@@ -57,7 +57,7 @@ public class CustomPasswordFieldViewController extends HBox {
 
     @FXML
     void initialize() {
-        assert passwordField != null: "fx:id=\"passwordField\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
+        assert passwordField != null : "fx:id=\"passwordField\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
         assert textField != null : "fx:id=\"textField\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
         assert eyeButton != null : "fx:id=\"eyeButton\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
         assert copyButton != null : "fx:id=\"checkButton\" was not injected: check your FXML file 'CustomPasswordField.fxml'.";
@@ -99,6 +99,7 @@ public class CustomPasswordFieldViewController extends HBox {
 
     /**
      * Set prompt text of the password field manually.
+     *
      * @param prompt Prompt text to be displayed inside the password field.
      */
     public void setPromptText(String prompt) {

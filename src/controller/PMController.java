@@ -19,9 +19,8 @@ public class PMController {
     /**
      * Set a new master password. The master password is encrypted via a KDF and
      * then this method will update the current PasswordManager instance.
-     * 
-     * @param password
-     *            A string containing the new master password.
+     *
+     * @param password A string containing the new master password.
      */
     public void setMasterPassword(String password) {
 
@@ -30,11 +29,10 @@ public class PMController {
     /**
      * Check whether a given master password is actually correct for the
      * currently selected database.
-     * 
-     * @param password
-     *            A string containing the password to check.
+     *
+     * @param password A string containing the password to check.
      * @return true if the password is the current database's master password;
-     *         else false.
+     * else false.
      */
     public boolean validateMasterPassword(String password) {
         return false;
