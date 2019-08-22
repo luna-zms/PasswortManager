@@ -11,8 +11,8 @@
 <?import javafx.scene.text.Text?>
 <?import view.CustomPasswordFieldViewController?>
 
-<fx:root type="javafx.scene.layout.GridPane" prefHeight="175.0" prefWidth="513.0"
-         xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="javafx.scene.layout.GridPane" prefHeight="175.0"
+         prefWidth="513.0" xmlns="http://javafx.com/javafx/8.0.65">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
     </columnConstraints>

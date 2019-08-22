@@ -15,8 +15,8 @@
 <?import view.PasswordQualityBarController?>
 <?import view.ValidDatePickerController?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
-            prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1"
             fx:controller="view.CreateModifyEntryView">
     <children>
         <GridPane layoutY="67.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"

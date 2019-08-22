@@ -8,8 +8,8 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<fx:root type="javafx.scene.layout.GridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-         minWidth="-Infinity" prefHeight="38.0" prefWidth="410.0" xmlns:fx="http://javafx.com/fxml/1"
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="javafx.scene.layout.GridPane" maxHeight="-Infinity" maxWidth="-Infinity"
+         minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="410.0"
          xmlns="http://javafx.com/javafx/11.0.1">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="192.0" minWidth="10.0" prefWidth="116.0" />

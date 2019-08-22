@@ -28,14 +28,6 @@ public class ValidDatePickerController extends GridPane {
     @FXML
     private TextField daysValid;
 
-    @FXML
-    void initialize() {
-        assert hasValidDate != null : "fx:id=\"hasValidDate\" was not injected: check your FXML file 'ValidDatePicker.fxml'.";
-        assert validDate != null : "fx:id=\"validDate\" was not injected: check your FXML file 'ValidDatePicker.fxml'.";
-        assert daysValid != null : "fx:id=\"daysValid\" was not injected: check your FXML file 'ValidDatePicker.fxml'.";
-
-    }
-
     public ValidDatePickerController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ValidDatePicker.fxml"));
         loader.setRoot(this);
@@ -45,5 +37,13 @@ public class ValidDatePickerController extends GridPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    void initialize() {
+        assert hasValidDate != null : "fx:id=\"hasValidDate\" was not injected: check your FXML file 'ValidDatePicker.fxml'.";
+        assert validDate != null : "fx:id=\"validDate\" was not injected: check your FXML file 'ValidDatePicker.fxml'.";
+        assert daysValid != null : "fx:id=\"daysValid\" was not injected: check your FXML file 'ValidDatePicker.fxml'.";
+
     }
 }
