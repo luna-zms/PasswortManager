@@ -54,7 +54,5 @@ public class PasswordManager {
 
     public List<Entry> getEntries() {
         return entries;
-
-
     }
 }
