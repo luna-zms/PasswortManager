@@ -11,7 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import com.sun.org.apache.xml.internal.security.utils.Base64;
+import java.util.Base64;
 
 import model.PasswordManager;
 
@@ -41,15 +41,15 @@ public class PMController {
         } else if( password == "" ) {
             throw new IllegalArgumentException("The master password may not be empty!");
         }
-        String safePassword = Base64.encode(password.getBytes());        
+        String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
         SecretKeyFactory skFactory;
-        
+
         try {
             skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
         } catch (NoSuchAlgorithmException noSuchAlgorithm) {
             throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
         }
-        
+
         KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
         SecretKey derivedKey;
 
@@ -58,7 +58,7 @@ public class PMController {
         } catch (InvalidKeySpecException invalidKeySpec) {
             throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
         }
-        
+
         passwordManager.setMasterPasswordKey(derivedKey);
     }
 
@@ -76,16 +76,16 @@ public class PMController {
         } else if( password == "" ) {
             throw new IllegalArgumentException("The master password may not be empty!");
         }
-        
-        String safePassword = Base64.encode(password.getBytes());        
+
+        String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
         SecretKeyFactory skFactory;
-        
+
         try {
             skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
         } catch (NoSuchAlgorithmException noSuchAlgorithm) {
             throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
         }
-        
+
         KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
         SecretKey derivedKey;
 
@@ -94,7 +94,7 @@ public class PMController {
         } catch (InvalidKeySpecException invalidKeySpec) {
             throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
         }
-        
+
         return Arrays.equals(derivedKey.getEncoded(), passwordManager.getMasterPasswordKey().getEncoded());
     }
 
