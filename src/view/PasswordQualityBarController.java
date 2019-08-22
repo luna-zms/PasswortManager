@@ -1,15 +1,15 @@
 package view;
 
+import java.io.IOException;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 
-import java.io.IOException;
-
 public class PasswordQualityBarController extends HBox {
 
-    static private final String[] PERCENTAGE_TO_COLOR = new String[] {
+    static private final String[] PERCENTAGE_TO_COLOR = new String[]{
             "#000000",
             "#d32f2f",
             "#d3322f",
@@ -129,14 +129,15 @@ public class PasswordQualityBarController extends HBox {
     }
 
     /**
-     *  Define the password quality. Updates the underlying progress bar and sets its color accordingly.
+     * Define the password quality. Updates the underlying progress bar and sets its color accordingly.
+     *
      * @param value Define the password quality; takes values from 0 (bad quality) to 1 (good quality).
      */
     public void setQuality(double value) {
-        assert value >= 0 && value <= 1: "'value' must be in range [0,1]!";
+        assert value >= 0 && value <= 1 : "'value' must be in range [0,1]!";
         qualityBar.setProgress(value);
 
-        int colorIndex = (int) (value*100);
+        int colorIndex = (int) (value * 100);
 
         qualityBar.setStyle("-fx-accent: " + PERCENTAGE_TO_COLOR[colorIndex]);
     }

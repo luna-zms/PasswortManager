@@ -5,13 +5,13 @@
 }
 
 .text-field {
-	-fx-background-color: white; 
-	-fx-border-style: solid;
+    -fx-background-color: white;
+    -fx-border-style: solid;
 }
 
 .text-area {
-	-fx-background-color: white; 
-	-fx-border-style: solid;
+    -fx-background-color: white;
+    -fx-border-style: solid;
 }
 
 * {
