@@ -24,6 +24,11 @@ public class PasswordManager {
         entries = new ArrayList<>();
     }
 
+    public void mergeWith(List<Entry> newEntries, Tag newRootTag){
+        entries.addAll(newEntries);
+        rootTag.mergeWith(newRootTag);
+    }
+
     public SecretKey getMasterPasswordKey() {
         return masterPasswordKey;
     }
