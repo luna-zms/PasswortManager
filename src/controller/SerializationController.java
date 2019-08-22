@@ -91,7 +91,7 @@ public abstract class SerializationController {
     	parseEntries(csvEntries, new ArrayList<>());
     }
     
-    private void parseEntries(Iterable<CSVRecord> csvEntries, List<String> extraTags) {
+    protected void parseEntries(Iterable<CSVRecord> csvEntries, List<String> extraTags) {
         List<Entry> entries = pmController.getPasswordManager().getEntries();
         for (CSVRecord record : csvEntries) {
             Entry entry = new Entry(record.get(EntryTableHeader.TITLE), record.get(EntryTableHeader.PASSWORD));
