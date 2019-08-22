@@ -16,7 +16,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
-
 <fx:root maxHeight="75.0" maxWidth="1.7976931348623157E308"
 	prefHeight="75.0" prefWidth="796.0"
 	style="-fx-border-style: solid none solid none; -fx-border-color: #b5b5b5; -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );"
