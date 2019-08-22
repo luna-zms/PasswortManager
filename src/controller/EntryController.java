@@ -1,9 +1,9 @@
 package controller;
 
-import model.Entry;
-
 import java.util.List;
 import java.util.function.Predicate;
+
+import model.Entry;
 
 public class EntryController {
 

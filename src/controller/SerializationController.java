@@ -1,11 +1,11 @@
 package controller;
 
+import java.io.OutputStream;
+import java.util.List;
+
 import model.Entry;
 import model.Tag;
 import org.apache.commons.csv.CSVRecord;
-
-import java.io.OutputStream;
-import java.util.List;
 
 public abstract class SerializationController {
 

@@ -1,14 +1,14 @@
 package view;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import java.time.LocalDateTime;
-import java.time.LocalDate;
 
 public class SetMasterPasswordViewController extends GridPane {
 
@@ -24,35 +24,35 @@ public class SetMasterPasswordViewController extends GridPane {
     @FXML
     private Button cancelButton;
 
-	@FXML
-	private HBox passwordFieldBase;
+    @FXML
+    private HBox passwordFieldBase;
 
-	@FXML
-	private CustomPasswordFieldViewController customPasswordFieldBaseViewController;
+    @FXML
+    private CustomPasswordFieldViewController customPasswordFieldBaseViewController;
 
-	@FXML
-	private HBox passwordFieldRepeat;
+    @FXML
+    private HBox passwordFieldRepeat;
 
-	@FXML
-	private CustomPasswordFieldViewController customPasswordFieldViewController;
+    @FXML
+    private CustomPasswordFieldViewController customPasswordFieldViewController;
 
-	@FXML
-	private HBox passwordFieldOldPassword;
+    @FXML
+    private HBox passwordFieldOldPassword;
 
-	@FXML
-	private CustomPasswordFieldViewController customPasswordFieldOldPasswordViewController;
+    @FXML
+    private CustomPasswordFieldViewController customPasswordFieldOldPasswordViewController;
 
-	@FXML
-	private PasswordQualityBarController masterPasswordQualityBar;
+    @FXML
+    private PasswordQualityBarController masterPasswordQualityBar;
 
-	@FXML
-	private GridPane gueltigBisWidget;
+    @FXML
+    private GridPane gueltigBisWidget;
 
-	@FXML
-	private CustomExpirationDateViewController customExpirationDateViewController;
+    @FXML
+    private CustomExpirationDateViewController customExpirationDateViewController;
 
 
-	public SetMasterPasswordViewController() {
+    public SetMasterPasswordViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SetMasterPasswordView.fxml"));
         loader.setRoot(this);
         loader.setController(this);
