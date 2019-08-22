@@ -32,8 +32,21 @@ public class Tag {
         return subTags;
     }
 
+    public void mergeWith(Tag tag) {
+        tag.subTags.forEach(subtag -> {
+            Tag existing = getSubTagByName(subtag.getName());
+
+            if (existing != null) existing.mergeWith(subtag);
+            else subTags.add(subtag);
+        });
+    }
+
+    public Tag getSubTagByName(String name) {
+        return subTags.stream().filter(subtag -> name.equals(subtag.name)).findFirst().orElse(null);
+    }
+
     public boolean hasSubTag(String name) {
-        return subTags.stream().anyMatch(subtag -> subtag.name.equals(name));
+        return getSubTagByName(name) != null;
     }
 
     public Map<Tag, String> createPathMap() {
