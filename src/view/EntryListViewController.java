@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -13,8 +16,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.Entry;
 
 public class EntryListViewController extends TableView<Entry> {
-    private Predicate<Entry> filter;
-    private ObservableList<Entry> entries;
+    // TODO: Maybe replace this with ObjectProperty<Tag> since general filters are supposed to be handled by the controller
+    private ObjectProperty<ObservableList<Entry>> entries = new SimpleObjectProperty<>();
+    private ObjectProperty<Predicate<Entry>> filter = new SimpleObjectProperty<>();
 
     public EntryListViewController() {
         TableColumn<Entry, String> titleColumn = new TableColumn<>("Titel");
@@ -48,22 +52,26 @@ public class EntryListViewController extends TableView<Entry> {
         columns.add(urlColumn);
         columns.add(validUntilColumn);
         getColumns().setAll(columns);
+
+        // Entry setting and filtering
+        entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
+        filter.addListener((obs, oldPred, newPred) -> applyFilter());
     }
 
-
-    public void setFilter(Predicate<Entry> filter) {
-        this.filter = filter;
-        applyFilter();
+    public ObjectProperty<Predicate<Entry>> filterProperty() {
+        return filter;
     }
-
 
     public void setEntries(ObservableList<Entry> entries) {
-        this.entries = entries;
-        applyFilter();
+        this.entries.set(entries);
     }
 
     private void applyFilter() {
-        if (filter != null && entries != null) setItems(entries.filtered(filter));
-        else if (entries != null) setItems(entries);
+        ObservableList<Entry> newEntries = entries.getValue();
+        Predicate<Entry> newFilter = filter.getValue();
+
+        if (newFilter != null && newEntries != null) setItems(newEntries.filtered(newFilter));
+        else if (entries != null) setItems(newEntries);
+        else setEntries(FXCollections.emptyObservableList());
     }
 }

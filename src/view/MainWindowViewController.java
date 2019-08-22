@@ -3,11 +3,10 @@ package view;
 import java.io.IOException;
 
 import controller.PMController;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.BorderPane;
-import model.Entry;
+import util.BindingUtils;
 
 public class MainWindowViewController extends BorderPane {
     private PMController pmController;
@@ -36,6 +35,13 @@ public class MainWindowViewController extends BorderPane {
 
         // Bind preview to update when table selection changes
         entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
+
+        // Filter entries by selected tag
+        entryList.filterProperty().bind(BindingUtils.makeBinding(
+                tagTree.getSelectionModel().selectedItemProperty(),
+                item -> (entry -> entry.getTags().contains(item.getValue())),
+                entry -> true  // Accept all by default
+        ));
     }
 
     public void init() {
