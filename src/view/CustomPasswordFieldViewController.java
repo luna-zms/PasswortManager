@@ -4,6 +4,11 @@ package view;
  * Sample Skeleton for 'CustomPasswordField.fxml' Controller Class
  */
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,11 +22,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.ResourceBundle;
 
 public class CustomPasswordFieldViewController extends HBox {
 

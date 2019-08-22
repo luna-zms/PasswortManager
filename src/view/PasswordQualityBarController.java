@@ -1,11 +1,11 @@
 package view;
 
+import java.io.IOException;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
-
-import java.io.IOException;
 
 public class PasswordQualityBarController extends HBox {
 

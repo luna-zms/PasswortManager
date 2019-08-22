@@ -10,9 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-import java.time.LocalDateTime;
-import java.time.LocalDate;
-
 public class SetMasterPasswordViewController extends GridPane {
 
     @FXML
