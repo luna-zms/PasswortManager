@@ -86,6 +86,16 @@ public class PMControllerTest {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successfull!");
         }
+        
+        System.out.print("Run Test with no password:");
+        try {
+            pmController.setMasterPassword(null);
+            fail("setMasterPassword throws no exception despite being given a null object!");
+            return;
+        } catch (IllegalArgumentException noPasswordException) {
+            // This exception should be thrown, so do nothing here
+            System.out.println(" Successfull!");
+        }
     }
 
     public void testSetMasterPasswordRandom() {
@@ -132,6 +142,16 @@ public class PMControllerTest {
             fail("validateMasterPassword throws no exception despite being given an empty string!");
             return;
         } catch (IllegalArgumentException emptyPasswordException) {
+            // This exception should be thrown, so do nothing here
+            System.out.println(" Successfull!");
+        }
+        
+        System.out.print("Run Test with no password:");
+        try {
+            pmController.validateMasterPassword(null);
+            fail("validateMasterPassword throws no exception despite being given a null object!");
+            return;
+        } catch (IllegalArgumentException noPasswordException) {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successfull!");
         }
