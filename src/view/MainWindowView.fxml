@@ -15,7 +15,7 @@
             <children>
                 <VBox prefHeight="583.0" prefWidth="779.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <EntryListViewController fx:id="entryTable" VBox.vgrow="ALWAYS"/>
+                        <EntryListViewController fx:id="entryList" VBox.vgrow="ALWAYS"/>
                         <EntryPreviewViewController fx:id="entryPreview" prefHeight="200.0" VBox.vgrow="NEVER"/>
                     </children>
                 </VBox>

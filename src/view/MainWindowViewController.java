@@ -12,11 +12,11 @@ import model.Entry;
 public class MainWindowViewController extends BorderPane {
     private PMController pmController;
 
+    @FXML // fx:id="entryList"
+    private EntryListViewController entryList; // Value injected by FXMLLoader
+
     @FXML // fx:id="entryPreview"
     private EntryPreviewViewController entryPreview; // Value injected by FXMLLoader
-
-    @FXML // fx:id="entryTable"
-    private EntryListViewController entryTable; // Value injected by FXMLLoader
 
     @FXML // fx:id="tagTree"
     private TagTree tagTree; // Value injected by FXMLLoader
@@ -35,12 +35,12 @@ public class MainWindowViewController extends BorderPane {
         }
 
         // Bind preview to update when table selection changes
-        entryPreview.entryProperty().bind(entryTable.getSelectionModel().selectedItemProperty());
+        entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
     }
 
     public void init() {
         tagTree.init(false, pmController.getPasswordManager().getRootTag());
-        entryTable.setEntries(pmController.getPasswordManager().entriesObservable());
+        entryList.setEntries(pmController.getPasswordManager().entriesObservable());
     }
 
     public void setPmController(PMController pmController) {
