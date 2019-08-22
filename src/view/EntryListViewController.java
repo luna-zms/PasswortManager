@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import controller.PMController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,6 +20,7 @@ public class EntryListViewController extends TableView<Entry> {
     // TODO: Maybe replace this with ObjectProperty<Tag> since general filters are supposed to be handled by the controller
     private ObjectProperty<ObservableList<Entry>> entries = new SimpleObjectProperty<>();
     private ObjectProperty<Predicate<Entry>> filter = new SimpleObjectProperty<>();
+    private PMController pmController;
 
     public EntryListViewController() {
         TableColumn<Entry, String> titleColumn = new TableColumn<>("Titel");
@@ -64,6 +66,10 @@ public class EntryListViewController extends TableView<Entry> {
 
     public void setEntries(ObservableList<Entry> entries) {
         this.entries.set(entries);
+    }
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
     }
 
     private void applyFilter() {

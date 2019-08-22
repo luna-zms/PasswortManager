@@ -55,6 +55,7 @@ public class MainWindowViewController extends BorderPane {
     }
 
     private void setPmControllers() {
+        entryList.setPmController(pmController);
         entryPreview.setPmController(pmController);
         mainWindowToolbar.setPmController(pmController);
     }
