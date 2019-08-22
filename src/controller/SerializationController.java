@@ -36,7 +36,7 @@ public abstract class SerializationController {
      * @return The Tag pointed to by path
      */
     protected Tag createTagFromPath(String[] path) {
-        Tag currentTag = pmController.getPasswordManager().getTag();
+        Tag currentTag = pmController.getPasswordManager().getRootTag();
         for (String part : path) {
             if (currentTag.hasSubTag(part)) {
                 currentTag = currentTag.getSubTags().stream().filter(t -> t.getName().equals(part)).findFirst().get();
@@ -56,7 +56,7 @@ public abstract class SerializationController {
      */
     protected void writeEntriesToStream(OutputStream os) throws IOException {
         List<Entry> entries = pmController.getPasswordManager().getEntries();
-        Map<Tag, String> pathMap = pmController.getPasswordManager().getTag().createPathMap();
+        Map<Tag, String> pathMap = pmController.getPasswordManager().getRootTag().createPathMap();
 
         CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(os), CSVFormat.DEFAULT);
 
