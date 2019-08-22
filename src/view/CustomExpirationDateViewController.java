@@ -1,4 +1,5 @@
 package view;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -12,6 +13,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.GridPane;
+
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
@@ -55,12 +57,12 @@ public class CustomExpirationDateViewController extends GridPane {
             	checkBoxExpirationDate.setSelected(!newValue);
             }
         });
-        
+
         */
-        
+
         checkBoxExpirationDate.setOnAction(event -> {
-        	if (event.getSource() instanceof CheckBox) {
-        		
+            if (event.getSource() instanceof CheckBox) {
+
             }
         });
     }
