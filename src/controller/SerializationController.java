@@ -92,16 +92,16 @@ public abstract class SerializationController {
             Entry entry = new Entry(record.get(EntryTableHeader.TITLE), record.get(EntryTableHeader.PASSWORD));
 
             entry.setUsername(record.get(EntryTableHeader.USERNAME));
-            entry.setCreatedAt(LocalDateTime.parse(record.get(EntryTableHeader.CREATEDAT), dateFormat));
-            entry.setLastModified(LocalDateTime.parse(record.get(EntryTableHeader.LASTMODIFIED), dateFormat));
-            entry.setValidUntil(LocalDateTime.parse(record.get(EntryTableHeader.VALIDUNTIL), dateFormat));
+            entry.setCreatedAt(LocalDateTime.parse(record.get(EntryTableHeader.CREATED_AT), dateFormat));
+            entry.setLastModified(LocalDateTime.parse(record.get(EntryTableHeader.LAST_MODIFIED), dateFormat));
+            entry.setValidUntil(LocalDateTime.parse(record.get(EntryTableHeader.VALID_UNTIL), dateFormat));
             entry.setNote(record.get(EntryTableHeader.NOTE));
-            String question = record.get(EntryTableHeader.SECURITYQUESTION);
-            String answer = record.get(EntryTableHeader.SECURITYQUESTIONANSWER);
+            String question = record.get(EntryTableHeader.SECURITY_QUESTION);
+            String answer = record.get(EntryTableHeader.SECURITY_QUESTION_ANSWER);
             SecurityQuestion securityQuestion = new SecurityQuestion(question, answer);
             entry.setSecurityQuestion(securityQuestion);
 
-            String tagPaths = record.get(EntryTableHeader.TAGPATHS);
+            String tagPaths = record.get(EntryTableHeader.TAG_PATHS);
             String[] paths = tagPaths.split(";");
             entry.getTags().addAll(
                     Arrays.stream(paths)
@@ -115,7 +115,7 @@ public abstract class SerializationController {
     }
 
     private enum EntryTableHeader {
-        TITLE, USERNAME, PASSWORD, CREATEDAT, LASTMODIFIED, VALIDUNTIL, NOTE, SECURITYQUESTION, SECURITYQUESTIONANSWER, TAGPATHS;
+        TITLE, USERNAME, PASSWORD, CREATED_AT, LAST_MODIFIED, VALID_UNTIL, NOTE, SECURITY_QUESTION, SECURITY_QUESTION_ANSWER, TAG_PATHS;
 
         @Override
         public String toString() {
@@ -126,19 +126,19 @@ public abstract class SerializationController {
                     return "Username";
                 case PASSWORD:
                     return "Password";
-                case CREATEDAT:
+                case CREATED_AT:
                     return "CreatedAt";
-                case LASTMODIFIED:
+                case LAST_MODIFIED:
                     return "LastModified";
-                case VALIDUNTIL:
+                case VALID_UNTIL:
                     return "ValidUntil";
                 case NOTE:
                     return "Note";
-                case SECURITYQUESTION:
+                case SECURITY_QUESTION:
                     return "SecurityQuestion";
-                case SECURITYQUESTIONANSWER:
+                case SECURITY_QUESTION_ANSWER:
                     return "SecurityQuestionAnswer";
-                case TAGPATHS:
+                case TAG_PATHS:
                     return "TagPaths";
                 default:
                     return ""; // Note: Never used. This switch is exhaustive
