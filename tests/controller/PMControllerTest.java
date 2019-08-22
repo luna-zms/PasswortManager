@@ -15,13 +15,13 @@ import javax.crypto.spec.PBEKeySpec;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+import java.util.Base64;
 
 import model.PasswordManager;
 
 /**
  * Class to test the PMController.
- * 
+ *
  * @author sopr010
  *
  */
@@ -36,7 +36,7 @@ public class PMControllerTest {
 
     /**
      * Auxiliary method to create a random password with fixed length.
-     * 
+     *
      * @param length
      *            Length of the returned password
      * @return randomly generated password
@@ -56,7 +56,7 @@ public class PMControllerTest {
 
         byte[] randomBytes = createRandomPassword(20);
         usedPassword = new String(randomBytes);
-        String safePassword = Base64.encode(usedPassword.getBytes());
+        String safePassword = Base64.getEncoder().encodeToString(usedPassword.getBytes());
 
         KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
         SecretKeyFactory skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
@@ -104,7 +104,7 @@ public class PMControllerTest {
     public void testSetMasterPasswordRandom() {
         byte[] randomBytes = createRandomPassword(20);
         String testPassword = new String(randomBytes);
-        String safePassword = Base64.encode(testPassword.getBytes());
+        String safePassword = Base64.getEncoder().encodeToString(testPassword.getBytes());
 
         SecretKeyFactory skFactory;
         try {
