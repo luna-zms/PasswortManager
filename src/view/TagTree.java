@@ -1,13 +1,13 @@
 package view;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import model.Tag;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TagTree extends TreeView<Tag> {
     public void init(final boolean hasCheckBoxes, Tag rootTag) {
@@ -190,8 +190,9 @@ public class TagTree extends TreeView<Tag> {
                 if (tag.getName().isEmpty()) {
                     setToTextField();
                 } else {
+                    if (checkbox != null) checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
+
                     setText(tag.getName());
-                    checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
                     setGraphic(checkbox);
                 }
             }
