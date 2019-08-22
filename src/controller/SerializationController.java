@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public abstract class SerializationController {
 
-    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    protected static final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
     protected PMController pmController;
 
     public abstract void load(String path);
