@@ -1,70 +1,94 @@
 package model;
 
-import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 import javax.crypto.SecretKey;
 
 /**
  * This class is used to save the database dependent application data, e.g. the hashed master password.
- * @author sopr016
  *
+ * @author sopr016
  */
 public class PasswordManager {
     private SecretKey masterPasswordKey;
 
     private LocalDateTime lastModified;
-
     private LocalDateTime validUntil;
 
     private Tag rootTag;
 
     private List<Entry> entries;
 
-    public PasswordManager(){
-    	entries = new ArrayList<>();
+    public PasswordManager(SecretKey masterPasswordKey) {
+        this.masterPasswordKey = masterPasswordKey;
+
+        entries = new ArrayList<>();
+
+        lastModified = null;
+        validUntil = null;
     }
 
-	public SecretKey getMasterPasswordKey() {
-		return masterPasswordKey;
-	}
+    public void mergeWith(List<Entry> newEntries, Tag newRootTag){
+        entries.addAll(newEntries);
+        rootTag.mergeWith(newRootTag);
+    }
 
-	public void setMasterPasswordKey(SecretKey masterPasswordKey) {
-		this.masterPasswordKey = masterPasswordKey;
-	}
+    public SecretKey getMasterPasswordKey() {
+        return masterPasswordKey;
+    }
 
-	public LocalDateTime getLastModified() {
-		return lastModified;
-	}
+    public void setMasterPasswordKey(SecretKey masterPasswordKey) {
+        this.masterPasswordKey = masterPasswordKey;
+    }
 
-	public void setLastModified(LocalDateTime lastModified) {
-		this.lastModified = lastModified;
-	}
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
 
-	public LocalDateTime getValidUntil() {
-		return validUntil;
-	}
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
 
-	public void setValidUntil(LocalDateTime validUntil) {
-		this.validUntil = validUntil;
-	}
+    public LocalDateTime getValidUntil() {
+        return validUntil;
+    }
 
-	public Tag getTag() {
-		return rootTag;
-	}
+    public void setValidUntil(LocalDateTime validUntil) {
+        this.validUntil = validUntil;
+    }
 
-	public void setTag(Tag tag) {
-		this.rootTag = tag;
-	}
+    public Tag getRootTag() {
+        return rootTag;
+    }
 
-	public List<Entry> getEntries() {
-		return entries;
-	}
+    public void setRootTag(Tag tag) {
+        this.rootTag = tag;
+    }
 
-	public void setEntries(List<Entry> entries) {
-		this.entries = entries;
-	}
+    public List<Entry> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(List<Entry> entries) {
+        this.entries = entries;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        PasswordManager that = (PasswordManager) obj;
+        return masterPasswordKey.equals(that.masterPasswordKey) &&
+                Objects.equals(lastModified, that.lastModified) &&
+                Objects.equals(validUntil, that.validUntil) &&
+                Objects.equals(rootTag, that.rootTag) &&
+                entries.equals(that.entries);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(masterPasswordKey, lastModified, validUntil, rootTag, entries);
+    }
 }

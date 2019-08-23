@@ -190,8 +190,9 @@ public class TagTree extends TreeView<Tag> {
                 if (tag.getName().isEmpty()) {
                     setToTextField();
                 } else {
+                    if (checkbox != null) checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
+
                     setText(tag.getName());
-                    checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
                     setGraphic(checkbox);
                 }
             }
