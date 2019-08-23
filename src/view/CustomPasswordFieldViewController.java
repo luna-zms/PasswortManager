@@ -104,6 +104,34 @@ public class CustomPasswordFieldViewController extends HBox {
      */
     public void setPromptText(String prompt) {
         passwordField.setPromptText(prompt);
+        textField.setPromptText(prompt);
+    }
+    
+    /**
+     * Set content of the password field manually.
+     * 
+     * @param text Self-explaining
+     */
+    public void setText(String text) {
+        passwordField.setText(text);
+    }
+    
+    /**
+     * Get content of the password field manually.
+     * 
+     * @returns You may have a guess
+     */
+    public String getText(String text) {
+        return passwordField.getText();
+    }
+    
+    /**
+     * Choose whether to hide the copy button
+     * 
+     * @param hide true if the copy button should not be shown else (default) false
+     */
+    public void hideCopyButton(boolean hide) {
+        copyButton.setManaged(!hide);
+        copyButton.setVisible(!hide);
     }
 }
-

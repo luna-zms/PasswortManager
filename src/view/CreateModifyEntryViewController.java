@@ -181,8 +181,9 @@ public class CreateModifyEntryViewController extends AnchorPane {
     	//tagTree.setCheckedTags(entry.getTags());
     }
     
-    public void setPMController(PMController pmController) {
-    	this.pmController = pmController;
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
+        tagTree.setPmController(pmController);
     }
     
     public void init() {

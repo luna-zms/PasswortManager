@@ -55,7 +55,7 @@ public class MainWindowToolbarViewController extends GridPane {
     @FXML
     private DatePicker filterExpiringSearchbar;
 
-    PMController pmController;
+    private PMController pmController;
 
     public MainWindowToolbarViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
@@ -113,6 +113,7 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initStyle(StageStyle.UTILITY);
             CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
+            dialogController.setPmController(pmController);
             Scene scene = new Scene(dialogController);
             dialog.setScene(scene);
             dialog.showAndWait();
@@ -131,12 +132,12 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Öffne Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien",".pwds");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", ".pwds");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog(dialog);
 
-            if( file == null ) return;
+            if (file == null) return;
         });
     }
 
@@ -147,6 +148,7 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initStyle(StageStyle.UTILITY);
             SetMasterPasswordViewController dialogController = new SetMasterPasswordViewController();
+            dialogController.setPmController(pmController);
             Scene scene = new Scene(dialogController);
             dialog.setScene(scene);
             dialog.showAndWait();
@@ -159,12 +161,12 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Importiere Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien",".csv");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", ".csv");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog(dialog);
 
-            if( file == null ) return;
+            if (file == null) return;
         });
     }
 
@@ -174,26 +176,17 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exportiere Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien",".csv");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", ".csv");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog(dialog);
 
-            if( file == null ) return;
+            if (file == null) return;
         });
     }
 
     private void initializeActionsGeneratePassword() {
         generatePasswordToolbar.setOnAction(event -> {
-            /* // Uncomment, as soon as GeneratePasswordViewController is added
-            Stage dialog = new Stage();
-            dialog.setTitle("Passwort generieren");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.initStyle(StageStyle.UTILITY);
-            GeneratePasswordViewController dialogController = new GeneratePasswordViewController();
-            Scene scene = new Scene(dialogController);
-            dialog.setScene(scene);
-            dialog.showAndWait();*/
         });
     }
 
@@ -201,11 +194,11 @@ public class MainWindowToolbarViewController extends GridPane {
         searchButtonSearchbar.setOnAction(event -> {
             String searchQuery = searchFieldSearchbar.getText();
 
-            if(
+            if (
                     selectedColumnsSearchbar
-                    .getItems()
-                    .stream()
-                    .noneMatch(menuButton -> ((CheckBox) ((CustomMenuItem) menuButton).getContent()).isSelected())
+                            .getItems()
+                            .stream()
+                            .noneMatch(menuButton -> ((CheckBox) ((CustomMenuItem) menuButton).getContent()).isSelected())
             ) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Suchen: Fehler");
@@ -213,7 +206,8 @@ public class MainWindowToolbarViewController extends GridPane {
                 alert.setContentText("Mindestens eine Spalte muss in die Suche\nmiteinbezogen werden, aber keine ist ausgewählt!");
                 alert.showAndWait();
                 return;
-            };
+            }
+            ;
 
             Chronology expiredUntil = filterExpiringSearchbar.getChronology();
 
@@ -221,5 +215,10 @@ public class MainWindowToolbarViewController extends GridPane {
 
             // TODO: start search and filter (using EntryController.filter)
         });
+
+    }
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
     }
 }
