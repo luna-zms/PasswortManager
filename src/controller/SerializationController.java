@@ -31,20 +31,22 @@ public abstract class SerializationController {
     public abstract void save(String path);
 
     /**
-     * Creates the Tag pointed to by path, constructing parent Tags if needed
+     * Creates the tag pointed to by path, constructing parent tags if needed
      *
-     * @param path A path in the Tag tree, as an array of tag names
-     * @return The Tag pointed to by path or null iff path is null
+     * @param path Path in the Tag tree, as an array of tag names
+     * @param root Root of tree to operate on
+     * @return Tag pointed to by path
      */
-    protected Tag createTagFromPath(String[] path) {
-    	if (path == null) return null;
-    	
-        Tag currentTag = pmController.getPasswordManager().getRootTag();
+    protected Tag createTagFromPath(Tag root, String[] path) {
+        if (path == null) return null;
         
-        if (currentTag == null) {
-        	currentTag = new Tag(path[0]);
-        	pmController.getPasswordManager().setRootTag(currentTag);
+        if (root == null) {
+            root = new Tag(path[0]);
+            pmController.getPasswordManager().setRootTag(root);
+            return root;
         }
+        
+        Tag currentTag = root;
         
         for (String part : Arrays.copyOfRange(path, 1, path.length)) {
             if (currentTag.hasSubTag(part)) {
@@ -63,10 +65,9 @@ public abstract class SerializationController {
      *
      * @param os The OutputStream to write into
      */
-    protected void writeEntriesToStream(OutputStream outputStream) throws IOException {
-    	if (outputStream == null) return;
-    	
-        List<Entry> entries = pmController.getPasswordManager().getEntries();
+    protected void writeEntriesToStream(OutputStream outputStream, List<Entry> entries) throws IOException {
+        if (outputStream == null) return;
+        
         Map<Tag, String> pathMap = pmController.getPasswordManager().getRootTag().createPathMap();
 
         CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), CSVFormat.DEFAULT);
@@ -98,12 +99,11 @@ public abstract class SerializationController {
      * @param csvEntries CSV records to parse.
      */
     protected void parseEntries(Iterable<CSVRecord> csvEntries) {
-    	parseEntries(csvEntries, new ArrayList<>());
-    }
-    
-    protected void parseEntries(Iterable<CSVRecord> csvEntries, List<String> extraTags) {
-        List<Entry> entries = pmController.getPasswordManager().getEntries();
+        List<Entry> entries = new ArrayList<>();
+        Tag root = new Tag("build_root");
+        
         for (CSVRecord record : csvEntries) {
+
             Entry entry = new Entry(record.get(EntryTableHeader.TITLE), record.get(EntryTableHeader.PASSWORD));
 
             entry.setUsername(record.get(EntryTableHeader.USERNAME));
@@ -115,22 +115,23 @@ public abstract class SerializationController {
             String answer = record.get(EntryTableHeader.SECURITY_QUESTION_ANSWER);
             SecurityQuestion securityQuestion = new SecurityQuestion(question, answer);
             entry.setSecurityQuestion(securityQuestion);
+            
 
-            String tagPaths = record.get(EntryTableHeader.TAG_PATHS);
+
+            String tagPaths = "build_root\\".concat(record.get(EntryTableHeader.TAG_PATHS));
             String[] paths = tagPaths.split(";");
+            
             entry.getTags().addAll(
                     Arrays.stream(paths)
                             .map(path -> path.split("\\\\"))
-                            .map(this::createTagFromPath)
+                            .map(path -> createTagFromPath(root, path))
                             .collect(Collectors.toList())
             );
 
             entries.add(entry);
         }
-        
-        extraTags.forEach(str -> createTagFromPath(str.split("\\\\")));
     }
-
+    
     private enum EntryTableHeader {
         TITLE, USERNAME, PASSWORD, CREATED_AT, LAST_MODIFIED, VALID_UNTIL, NOTE, SECURITY_QUESTION, SECURITY_QUESTION_ANSWER, TAG_PATHS;
 
