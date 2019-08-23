@@ -17,11 +17,11 @@ import model.PasswordManager;
  * The PMController class provides access to all the
  * different Controller classes needed by View classes
  * as well as the controllers itself.
- * 
+ *
  * It also takes care of calculating a KDF to the
  * given master password and validates the given
  * master password as long as it is set.
- * 
+ *
  * @author sopr010
  */
 public class PMController {
@@ -48,7 +48,7 @@ public class PMController {
     public void setMasterPassword(String password) {
         if( password == null ) {
             throw new IllegalArgumentException("Expected String as password but got null!");
-        } else if( password == "" ) {
+        } else if( password.equals("") ) {
             throw new IllegalArgumentException("The master password may not be empty!");
         }
         String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
@@ -85,27 +85,23 @@ public class PMController {
     public boolean validateMasterPassword(String password) {
         if( password == null ) {
             throw new IllegalArgumentException("Expected String as password but got null!");
-        } else if( password == "" ) {
+        } else if( password.equals("") ) {
             throw new IllegalArgumentException("The master password may not be empty!");
         }
-        
+
         if( passwordManager.getMasterPasswordKey() == null ) throw new IllegalStateException("The master password of passwordManager is not initialized!");
 
         String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
         SecretKeyFactory skFactory;
-
-        try {
-            skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
-        } catch (NoSuchAlgorithmException noSuchAlgorithm) {
-            throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
-        }
-
-        KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
         SecretKey derivedKey;
 
         try {
+            skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
+
+            KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
+
             derivedKey = skFactory.generateSecret(specs);
-        } catch (InvalidKeySpecException invalidKeySpec) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException noSuchAlgorithm) {
             throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
         }
 
