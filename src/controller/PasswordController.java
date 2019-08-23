@@ -1,5 +1,11 @@
 package controller;
 
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
+
+import util.CharGroup;
+import util.PasswordGeneratorSettings;
 import util.PasswordQualityUtil;
 
 public class PasswordController {
@@ -15,7 +21,17 @@ public class PasswordController {
      * @author sopr018
      */
     public String generatePassword(PasswordGeneratorSettings pgs) {
-
+        StringBuilder sb = new StringBuilder();
+        SecureRandom rng = new SecureRandom();
+        List<CharGroup> charGroups = new ArrayList<>(pgs.getCharGroups());
+        int countCharGroups = charGroups.size();
+        for (int i = 0; i < pgs.getLength(); i++) {
+            int ixCharGroup = rng.nextInt(countCharGroups);
+            CharGroup group = charGroups.get(ixCharGroup);
+            int ixChar = rng.nextInt(group.getChars().length);
+            sb.append(group.getChars()[ixChar]);
+        }
+        return sb.toString();
     }
 
     /**
