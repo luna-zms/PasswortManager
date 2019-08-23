@@ -1,7 +1,5 @@
 package controller;
 
-import static org.junit.Assert.fail;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -15,6 +13,17 @@ import java.util.Base64;
 
 import model.PasswordManager;
 
+/**
+ * The PMController class provides access to all the
+ * different Controller classes needed by View classes
+ * as well as the controllers itself.
+ * 
+ * It also takes care of calculating a KDF to the
+ * given master password and validates the given
+ * master password as long as it is set.
+ * 
+ * @author sopr010
+ */
 public class PMController {
 
     private TagController tagController;
@@ -34,7 +43,7 @@ public class PMController {
      * then this method will update the current PasswordManager instance.
      *
      * @param password A string containing the new master password.
-     * @throws IllegalArgumentException When the given string is null or empty
+     * @throws IllegalArgumentException When the given string is null or empty.
      */
     public void setMasterPassword(String password) {
         if( password == null ) {
@@ -70,7 +79,8 @@ public class PMController {
      * @param password A string containing the password to check.
      * @return true if the password is the current database's master password;
      * else false.
-     * @throws IllegalArgumentException When the given string is null or empty
+     * @throws IllegalArgumentException When the given string is null or empty.
+     * @throws IllegalStateException When the password manager is not properly initialized and no secret key is set.
      */
     public boolean validateMasterPassword(String password) {
         if( password == null ) {
@@ -78,6 +88,8 @@ public class PMController {
         } else if( password == "" ) {
             throw new IllegalArgumentException("The master password may not be empty!");
         }
+        
+        if( passwordManager.getMasterPasswordKey() == null ) throw new IllegalStateException("The master password of passwordManager is not initialized!");
 
         String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
         SecretKeyFactory skFactory;
