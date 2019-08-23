@@ -21,8 +21,13 @@ public class PasswordManager {
 
     private List<Entry> entries;
 
-    public PasswordManager() {
+    public PasswordManager(SecretKey masterPasswordKey) {
+        this.masterPasswordKey = masterPasswordKey;
+
         entries = new ArrayList<>();
+
+        lastModified = null;
+        validUntil = null;
     }
 
     public void mergeWith(List<Entry> newEntries, Tag newRootTag){
@@ -76,9 +81,9 @@ public class PasswordManager {
         if (o == null || getClass() != o.getClass()) return false;
         PasswordManager that = (PasswordManager) o;
         return masterPasswordKey.equals(that.masterPasswordKey) &&
-                lastModified.equals(that.lastModified) &&
-                validUntil.equals(that.validUntil) &&
-                rootTag.equals(that.rootTag) &&
+                Objects.equals(lastModified, that.lastModified) &&
+                Objects.equals(validUntil, that.validUntil) &&
+                Objects.equals(rootTag, that.rootTag) &&
                 entries.equals(that.entries);
     }
 
