@@ -28,9 +28,6 @@ public class Tag {
     public List<Tag> getSubTags() {
         return subTags;
     }
-<<<<<<< HEAD
-   
-=======
 
     public void mergeWith(Tag tag) {
         tag.subTags.forEach(subtag -> {
@@ -45,7 +42,6 @@ public class Tag {
         return subTags.stream().filter(subtag -> name.equals(subtag.name)).findFirst().orElse(null);
     }
 
->>>>>>> branch 'dev' of https://sopra-gitlab.cs.tu-dortmund.de/sopra19B/gruppe01/projekt1.git
     public boolean hasSubTag(String name) {
         return getSubTagByName(name) != null;
     }
@@ -62,9 +58,6 @@ public class Tag {
 
         return children;
     }
-<<<<<<< HEAD
-   
-=======
 
     @Override
     public boolean equals(Object obj) {
@@ -79,5 +72,4 @@ public class Tag {
     public int hashCode() {
         return Objects.hash(name, subTags);
     }
->>>>>>> branch 'dev' of https://sopra-gitlab.cs.tu-dortmund.de/sopra19B/gruppe01/projekt1.git
 }
