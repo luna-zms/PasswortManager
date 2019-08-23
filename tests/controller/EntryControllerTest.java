@@ -24,7 +24,7 @@ public class EntryControllerTest {
 	
 	@Before
 	public void setUp(){
-		pm = new PasswordManager();
+		pm = new PasswordManager(null);
 		nullEntry = null;
 		one = new Entry("one", "123Kevin");
 		two = new Entry("two", "123Kevin");
