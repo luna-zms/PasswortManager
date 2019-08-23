@@ -2,24 +2,18 @@ package view;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import model.Entry;
 import model.SecurityQuestion;
 
@@ -72,6 +66,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
     @FXML
     private Button cancelButton;
+<<<<<<< HEAD
     
     private Entry oldEntry = null;
     
@@ -87,6 +82,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
 			
 			e.printStackTrace();
 		}
+		
 		
 		repeatPassword.setPromptText("Passwort wiederholen");
 		String errorTitle = "Fehler: Eintrag erstellen";
@@ -117,17 +113,6 @@ public class CreateModifyEntryViewController extends AnchorPane {
 			Stage stage = (Stage) getScene().getWindow();
 			stage.close();
 		});
-		
-		generatePasswordButton.setOnAction(event -> {
-            Stage dialog = new Stage();
-            dialog.setTitle("Passwort generieren");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            GeneratePasswordViewController dialogController = new GeneratePasswordViewController();
-            //dialogController.setPmController(pmController);
-            Scene scene = new Scene(dialogController);
-            dialog.setScene(scene);
-            dialog.showAndWait();
-        });
 	}
     
     private void errorMessage(String title, String header, String content) {
@@ -164,9 +149,48 @@ public class CreateModifyEntryViewController extends AnchorPane {
     		if(notes.equals(oldEntry.getNote())) return true;
     		
     		return false;
-    	} //TODO creationDate!!!
+    	}
     }
     
+=======
+
+    private PMController pmController;
+
+    public CreateModifyEntryViewController() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+        try {
+            loader.load();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+
+        cancelButton.setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
+
+        okButton.setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
+    }
+
+    /**
+     * Helper method to show an Alert dialog.
+     * @param title Title of the Alert dialog.
+     * @param content Content of the Alert dialog.
+     */
+    void errorMessage(String title, String content) {
+        Alert errorAlert = new Alert(AlertType.ERROR);
+        errorAlert.setHeaderText(title);
+        errorAlert.setContentText(content);
+        errorAlert.showAndWait();
+    }
+
+>>>>>>> 88fa65732a54af6962f7b668737c4bac0f19aba6
     @FXML
     void initialize() {
         assert entryName != null : "fx:id=\"entryName\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
@@ -180,11 +204,9 @@ public class CreateModifyEntryViewController extends AnchorPane {
         assert tagTree != null : "fx:id=\"tagTree\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
-        
-        Image generatePasswordImage = new Image(getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon_small.png"));
-        generatePasswordButton.setGraphic(new ImageView(generatePasswordImage));
-        initializeActionsGeneratePassword();
+
     }
+<<<<<<< HEAD
     public void setOldEntry(Entry entry) {
     	oldEntry = entry;
     	entryName.setText(entry.getTitle());
@@ -200,17 +222,17 @@ public class CreateModifyEntryViewController extends AnchorPane {
     	//tagTree.setCheckedTags(entry.getTags());
     }
     
-    public void setPmController(PMController pmController) {
-        this.pmController = pmController;
-        tagTree.setPmController(pmController);
+    public void setPMController(PMController pmController) {
+    	this.pmController = pmController;
     }
     
     public void init() {
     	tagTree.init(true, pmController.getPasswordManager().getRootTag());
-    }
-    
-    private void initializeActionsGeneratePassword() {
-    	generatePasswordButton.setOnAction(event -> {
-        });
+=======
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
+        tagTree.setPmController(pmController);
+>>>>>>> 88fa65732a54af6962f7b668737c4bac0f19aba6
     }
 }

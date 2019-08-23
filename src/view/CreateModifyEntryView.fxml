@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -15,12 +16,9 @@
 <?import view.PasswordQualityBarController?>
 <?import view.TagTree?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-         type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8.0.999-ea"
-         xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <HBox layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
-              AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <HBox layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
             <children>
                 <GridPane hgap="5.0" minWidth="500.0" HBox.hgrow="NEVER">
                     <columnConstraints>
@@ -37,8 +35,8 @@
                         <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="0.0" prefHeight="183.0"
-                                        vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
@@ -55,30 +53,24 @@
                             </GridPane.margin>
                         </TextField>
                         <Label text="Passwort:" GridPane.rowIndex="2" />
-                        <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.halignment="LEFT"
-                              GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                        <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                             <children>
-                                <CustomPasswordFieldViewController fx:id="password" maxHeight="-Infinity"
-                                                                   maxWidth="1.7976931348623157E308"
-                                                                   minHeight="-Infinity" minWidth="-Infinity"
-                                                                   prefHeight="25.0" HBox.hgrow="ALWAYS">
+                                <CustomPasswordFieldViewController fx:id="password" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" HBox.hgrow="ALWAYS">
                                     <HBox.margin>
                                         <Insets right="10.0" />
                                     </HBox.margin>
                                 </CustomPasswordFieldViewController>
-                                <Button fx:id="generatePasswordButton" maxHeight="-Infinity" minHeight="-Infinity"
-                                        mnemonicParsing="false" prefHeight="26.0" prefWidth="40.0" text="G">
+                                <Button fx:id="generatePasswordButton" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="40.0">
                                     <HBox.margin>
                                         <Insets top="3.0" />
                                     </HBox.margin>
+                           <tooltip>
+                              <Tooltip text="Passwort generieren" />
+                           </tooltip>
                                 </Button>
                             </children>
                         </HBox>
-                        <CustomPasswordFieldViewController fx:id="repeatPassword" maxHeight="-Infinity"
-                                                           maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-                                                           minWidth="-Infinity" prefHeight="25.0"
-                                                           GridPane.columnIndex="1" GridPane.rowIndex="3"
-                                                           HBox.hgrow="ALWAYS">
+                        <CustomPasswordFieldViewController fx:id="repeatPassword" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" GridPane.columnIndex="1" GridPane.rowIndex="3" HBox.hgrow="ALWAYS">
                             <HBox.margin>
                                 <Insets bottom="3.0" right="15.0" />
                             </HBox.margin>
@@ -87,8 +79,7 @@
                             </GridPane.margin>
                         </CustomPasswordFieldViewController>
                         <Label text="Passwortqualität:" GridPane.rowIndex="4" />
-                        <PasswordQualityBarController fx:id="passwordQualityBar" alignment="CENTER"
-                                                      GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <PasswordQualityBarController fx:id="passwordQualityBar" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="4">
                             <GridPane.margin>
                                 <Insets top="3.0" />
                             </GridPane.margin>
@@ -100,25 +91,23 @@
                             </GridPane.margin>
                         </TextField>
                         <Label layoutX="10.0" layoutY="219.0" text="Gültig bis:" GridPane.rowIndex="6" />
-                        <CustomExpirationDateViewController fx:id="validDatePicker" maxHeight="-Infinity"
-                                                            maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-                                                            minWidth="-Infinity" GridPane.columnIndex="1"
-                                                            GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
+                        <CustomExpirationDateViewController fx:id="validDatePicker" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
                             <GridPane.margin>
                                 <Insets left="-5.0" right="-5.0" />
                             </GridPane.margin>
                         </CustomExpirationDateViewController>
-                        <Label text="Notizen:" GridPane.rowIndex="9" />
-                        <TextArea fx:id="notes" centerShape="false" prefHeight="200.0" prefWidth="217.0"
-                                  GridPane.columnIndex="1" GridPane.rowIndex="9">
+                        <Label text="Notizen:" GridPane.rowIndex="9">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin></Label>
+                        <TextArea fx:id="notes" centerShape="false" prefHeight="200.0" prefWidth="217.0" GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.rowSpan="2">
                             <GridPane.margin>
                                 <Insets top="7.0" />
                             </GridPane.margin>
                         </TextArea>
-                        <HBox alignment="BOTTOM_RIGHT" prefHeight="40.0" prefWidth="246.0" GridPane.columnIndex="1"
-                              GridPane.rowIndex="10">
+                        <HBox alignment="BOTTOM_RIGHT" prefHeight="40.0" prefWidth="246.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
                             <children>
-                                <Button fx:id="okButton" mnemonicParsing="false" text="OK">
+                                <Button fx:id="okButton" mnemonicParsing="false" text="Speichern">
                                     <HBox.margin>
                                         <Insets right="20.0" />
                                     </HBox.margin>
