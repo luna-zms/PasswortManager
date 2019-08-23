@@ -1,5 +1,6 @@
 package view;
 
+import controller.PMController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TagTree extends TreeView<Tag> {
+    private PMController pmController;
+
     public void init(final boolean hasCheckBoxes, Tag rootTag) {
         setCellFactory(treeView -> new TagTreeCell(hasCheckBoxes));
 
@@ -234,5 +237,9 @@ public class TagTree extends TreeView<Tag> {
             if (item != null)
                 item.setChecked(newValue);
         }
+    }
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
     }
 }

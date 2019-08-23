@@ -34,6 +34,7 @@ public class PMController {
      * then this method will update the current PasswordManager instance.
      *
      * @param password A string containing the new master password.
+     * @throws IllegalArgumentException When the given string is null or empty
      */
     public void setMasterPassword(String password) {
         if( password == null ) {
@@ -69,6 +70,7 @@ public class PMController {
      * @param password A string containing the password to check.
      * @return true if the password is the current database's master password;
      * else false.
+     * @throws IllegalArgumentException When the given string is null or empty
      */
     public boolean validateMasterPassword(String password) {
         if( password == null ) {
