@@ -1,14 +1,21 @@
 package view;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import controller.PMController;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
-public class CreateModifyEntryViewController {
+public class CreateModifyEntryViewController extends AnchorPane {
 
     @FXML
     private ResourceBundle resources;
@@ -23,13 +30,13 @@ public class CreateModifyEntryViewController {
     private TextField userName;
 
     @FXML
-    private TextField repeatPassword;
+    private CustomPasswordFieldViewController repeatPassword;
 
     @FXML
     private PasswordQualityBarController passwordQualityBar;
 
     @FXML
-    private TextField password;
+    private CustomPasswordFieldViewController password;
 
     @FXML
     private Button generatePasswordButton;
@@ -55,6 +62,42 @@ public class CreateModifyEntryViewController {
     @FXML
     private Button cancelButton;
 
+    private PMController pmController;
+
+    public CreateModifyEntryViewController() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+        try {
+            loader.load();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+
+        cancelButton.setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
+
+        okButton.setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
+    }
+
+    /**
+     * Helper method to show an Alert dialog.
+     * @param title Title of the Alert dialog.
+     * @param content Content of the Alert dialog.
+     */
+    void errorMessage(String title, String content) {
+        Alert errorAlert = new Alert(AlertType.ERROR);
+        errorAlert.setHeaderText(title);
+        errorAlert.setContentText(content);
+        errorAlert.showAndWait();
+    }
+
     @FXML
     void initialize() {
         assert entryName != null : "fx:id=\"entryName\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
@@ -71,5 +114,10 @@ public class CreateModifyEntryViewController {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
 
+    }
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
+        tagTree.setPmController(pmController);
     }
 }
