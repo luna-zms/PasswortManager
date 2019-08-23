@@ -16,6 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import util.WindowFactory;
 
 public class MainWindowToolbarViewController extends GridPane {
 
@@ -108,15 +109,9 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsAddEntry() {
         addEntryToolbar.setOnAction(event -> {
-            Stage dialog = new Stage();
-            dialog.setTitle("Eintrag erstellen");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.initStyle(StageStyle.UTILITY);
             CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
             dialogController.setPmController(pmController);
-            Scene scene = new Scene(dialogController);
-            dialog.setScene(scene);
-            dialog.showAndWait();
+            WindowFactory.showDialog("Eintrag erstellen", dialogController);
         });
     }
 
@@ -128,8 +123,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsOpenDatabase() {
         openDatabaseToolbar.setOnAction(event -> {
-            Stage dialog = new Stage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
+            Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Öffne Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", ".pwds");
@@ -143,22 +137,15 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsSetMasterPassword() {
         setMasterPasswordToolbar.setOnAction(event -> {
-            Stage dialog = new Stage();
-            dialog.setTitle("Einstellungen: Master-Passwort setzen");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.initStyle(StageStyle.UTILITY);
             SetMasterPasswordViewController dialogController = new SetMasterPasswordViewController();
             dialogController.setPmController(pmController);
-            Scene scene = new Scene(dialogController);
-            dialog.setScene(scene);
-            dialog.showAndWait();
+            WindowFactory.showDialog("Einstellungen: Master-Passwort setzen", dialogController);
         });
     }
 
     private void initializeActionsImportDatabase() {
         importDatabaseToolbar.setOnAction(event -> {
-            Stage dialog = new Stage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
+            Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Importiere Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", ".csv");
@@ -172,8 +159,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsExportDatabase() {
         exportDatabaseToolbar.setOnAction(event -> {
-            Stage dialog = new Stage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
+            Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exportiere Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", ".csv");
