@@ -65,46 +65,37 @@ public class CreateModifyEntryViewController extends AnchorPane {
     private PMController pmController;
 
     public CreateModifyEntryViewController() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
-		loader.setRoot(this);
-		loader.setController(this);
-		try {
-			loader.load();
-		} catch (IOException e) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+        try {
+            loader.load();
+        } catch (IOException e) {
 
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
 
-		cancelButton.setOnAction(e -> {
-			Stage stage = (Stage) getScene().getWindow();
-			stage.close();
-		});
+        cancelButton.setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
 
-		okButton.setOnAction(e -> {
-//			String entryName = entryName.getText();
-//			String password = password.getText();		//TODO: Implement getText in CutomPasswordField
-//			String repeatPassword = repeatPassword.getText();
-//
-//			if(entryName.isEmpty()) {
-//				errorMessage("", "");
-//			}
-//
-//			if(password.equals(repeatPassword)) {
-//				Enrty entry = new Entry(entryName, password);
-//			} else {
-//				//TODO: Error: passwords are not equal
-//			}
+        okButton.setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
+    }
 
-			Stage stage = (Stage) getScene().getWindow();
-			stage.close();
-		});
-	}
-
+    /**
+     * Helper method to show an Alert dialog.
+     * @param title Title of the Alert dialog.
+     * @param content Content of the Alert dialog.
+     */
     void errorMessage(String title, String content) {
-    	Alert errorAlert = new Alert(AlertType.ERROR);
-    	errorAlert.setHeaderText(title);
-    	errorAlert.setContentText(content);
-    	errorAlert.showAndWait();
+        Alert errorAlert = new Alert(AlertType.ERROR);
+        errorAlert.setHeaderText(title);
+        errorAlert.setContentText(content);
+        errorAlert.showAndWait();
     }
 
     @FXML

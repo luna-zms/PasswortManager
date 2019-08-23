@@ -64,7 +64,7 @@ public class PMControllerTest {
         try {
             mockPasswordManager = new PasswordManager();
             mockPasswordManager.setMasterPasswordKey(skFactory.generateSecret(specs));
-        } catch ( /* InvalidKeySpecException */ NullPointerException invalidKeySpec) {
+        } catch ( InvalidKeySpecException  invalidKeySpec) {
             fail("Error while generating SecretKey!");
             return;
         }
@@ -77,7 +77,7 @@ public class PMControllerTest {
         for (int i = 0; i < NUMBER_ITERATIONS; i++) {
             System.out.print("Run Test " + (i + 1) + "/" + NUMBER_ITERATIONS + ":");
             testSetMasterPasswordRandom();
-            System.out.println(" Successfull!");
+            System.out.println(" Successful!");
         }
 
         System.out.print("Run Test with empty password:");
@@ -87,7 +87,7 @@ public class PMControllerTest {
             return;
         } catch (IllegalArgumentException emptyPasswordException) {
             // This exception should be thrown, so do nothing here
-            System.out.println(" Successfull!");
+            System.out.println(" Successful!");
         }
 
         System.out.print("Run Test with no password:");
@@ -97,7 +97,7 @@ public class PMControllerTest {
             return;
         } catch (IllegalArgumentException noPasswordException) {
             // This exception should be thrown, so do nothing here
-            System.out.println(" Successfull!");
+            System.out.println(" Successful!");
         }
     }
 
@@ -134,13 +134,13 @@ public class PMControllerTest {
         for (int i = 0; i < NUMBER_ITERATIONS; i++) {
             System.out.print("Run Test " + (i + 1) + "/" + NUMBER_ITERATIONS + ":");
             testValidateMasterPasswordRandom();
-            System.out.println(" Successfull!");
+            System.out.println(" Successful!");
         }
 
         System.out.print("Test with correct password:");
         assertTrue("validateMasterPassword declines the correct password!",
                 pmController.validateMasterPassword(usedPassword));
-        System.out.println(" Successfull!");
+        System.out.println(" Successful!");
 
         System.out.print("Run Test with empty password:");
         try {
@@ -149,7 +149,7 @@ public class PMControllerTest {
             return;
         } catch (IllegalArgumentException emptyPasswordException) {
             // This exception should be thrown, so do nothing here
-            System.out.println(" Successfull!");
+            System.out.println(" Successful!");
         }
 
         System.out.print("Run Test with no password:");
@@ -159,7 +159,7 @@ public class PMControllerTest {
             return;
         } catch (IllegalArgumentException PasswordException) {
             // This exception should be thrown, so do nothing here
-            System.out.println(" Successfull!");
+            System.out.println(" Successful!");
         }
     }
 
