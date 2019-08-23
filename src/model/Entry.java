@@ -23,6 +23,13 @@ public class Entry {
         createdAt = LocalDateTime.now();
         lastModified = createdAt;
         tags = new ArrayList<>();
+
+        username = "";
+        note = "";
+        securityQuestion = new SecurityQuestion("", "");
+
+        url = null;
+        validUntil = null;
     }
 
     private static String stringFromDateTime(LocalDateTime dateTime) {
@@ -122,11 +129,11 @@ public class Entry {
                 username.equals(entry.username) &&
                 password.equals(entry.password) &&
                 note.equals(entry.note) &&
-                url.equals(entry.url) &&
+                Objects.equals(url, entry.url) &&
                 createdAt.equals(entry.createdAt) &&
                 lastModified.equals(entry.lastModified) &&
-                validUntil.equals(entry.validUntil) &&
-                securityQuestion.equals(entry.securityQuestion) &&
+                Objects.equals(validUntil, entry.validUntil) &&
+                Objects.equals(securityQuestion, entry.securityQuestion) &&
                 tags.equals(entry.tags);
     }
 
