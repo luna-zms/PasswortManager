@@ -121,10 +121,10 @@ public class Entry {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Entry entry = (Entry) o;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Entry entry = (Entry) obj;
         return title.equals(entry.title) &&
                 username.equals(entry.username) &&
                 password.equals(entry.password) &&

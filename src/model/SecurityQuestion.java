@@ -36,10 +36,10 @@ public class SecurityQuestion {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SecurityQuestion that = (SecurityQuestion) o;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        SecurityQuestion that = (SecurityQuestion) obj;
         return question.equals(that.question) &&
                 answer.equals(that.answer);
     }

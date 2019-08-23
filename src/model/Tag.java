@@ -52,7 +52,7 @@ public class Tag {
         Map<Tag, String> children = subTags
                 .stream()
                 .flatMap(subtag -> subtag.createPathMap().entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> name + "\\" + e.getValue()));
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> name + "\\" + entry.getValue()));
 
         children.put(this, name);
 
@@ -60,10 +60,10 @@ public class Tag {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Tag tag = (Tag) o;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Tag tag = (Tag) obj;
         return name.equals(tag.name) &&
                 subTags.equals(tag.subTags);
     }

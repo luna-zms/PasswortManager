@@ -76,10 +76,10 @@ public class PasswordManager {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PasswordManager that = (PasswordManager) o;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        PasswordManager that = (PasswordManager) obj;
         return masterPasswordKey.equals(that.masterPasswordKey) &&
                 Objects.equals(lastModified, that.lastModified) &&
                 Objects.equals(validUntil, that.validUntil) &&
