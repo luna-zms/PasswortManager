@@ -62,8 +62,7 @@ public class PMControllerTest {
         SecretKeyFactory skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
 
         try {
-            mockPasswordManager = new PasswordManager();
-            mockPasswordManager.setMasterPasswordKey(skFactory.generateSecret(specs));
+            mockPasswordManager = new PasswordManager(skFactory.generateSecret(specs));
         } catch ( InvalidKeySpecException  invalidKeySpec) {
             fail("Error while generating SecretKey!");
             return;
