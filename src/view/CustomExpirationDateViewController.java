@@ -36,7 +36,24 @@ public class CustomExpirationDateViewController extends GridPane {
     @FXML
     private Spinner<Integer> daysUntilExpiration;
 
-
+    public LocalDate getExpirationDate(){
+		if (!checkBoxExpirationDate.isSelected()) return null;
+		return datePickerExpirationDate.getValue();
+    }
+    
+    public void setExpirationDate(LocalDate date){
+    	if (date == null){
+    		checkBoxExpirationDate.setSelected(false);	
+    	}else if (date.isBefore(LocalDate.now().plusDays(1))){
+    		// Confirmation Dialog Michael
+    	}else{
+    		checkBoxExpirationDate.setSelected(true);
+    		datePickerExpirationDate.setValue(date);
+    	}
+    	
+    }
+    
+    
     public CustomExpirationDateViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CustomExpirationDate.fxml"));
         loader.setRoot(this);
@@ -66,7 +83,10 @@ public class CustomExpirationDateViewController extends GridPane {
         			int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
         			SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
         			temp.setValue(noOfDaysBetween);
+        		}else{
+        			datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
         		}
+        			
         	}
         });
         
