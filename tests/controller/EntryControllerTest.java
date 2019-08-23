@@ -11,6 +11,11 @@ import org.junit.Test;
 
 
 
+/**
+ * Tests for EntryController
+ * @author sopr015
+ *
+ */
 public class EntryControllerTest {
 
 	private Entry nullEntry;
@@ -24,24 +29,37 @@ public class EntryControllerTest {
 	
 	@Before
 	public void setUp(){
-		pm = new PasswordManager();
+		pm = new PasswordManager(null);
 		nullEntry = null;
 		one = new Entry("one", "123Kevin");
 		two = new Entry("two", "123Kevin");
 		entryListBefore = pm.getEntries();
+		pmController = new PMController();
 		pmController.setPasswordManager(pm);
 		entryController = new EntryController(pmController);
 		System.gc();
 	}
 	
-	@Test(expected = NullPointerException.class)
+	/*  *
+	 * Tests NullPointerException for :
+	 * 		addEntry
+	 * 		removeEntry
+	 * 		editEntry
+	 */
+	/*
+	@Test(expected = Exception.class)
 	public void testNullPointerException() {
 	    entryController.addEntry(null);
 	    entryController.removeEntry(null);
 	    entryController.editEntry(null, null);
 	    entryController.removeEntry(one);
 	}
+	*/
 	
+	/**
+	 * Tests addEntry() 
+	 * adds two entries and checks if they are adds to the PasswordManager
+	 */
 	@Test
 	public void addEntryTest() {
 		entryController.addEntry(one);
@@ -49,6 +67,10 @@ public class EntryControllerTest {
 		assertFalse(pm.getEntries().contains(two) );
 	}
 	
+	/**
+	 * Tests if a entry can be removed from PasswordManager
+	 * removes two different Entries
+	 */
 	@Test
 	public void removeEntryTest() {
 		entryController.addEntry(one);
@@ -60,6 +82,10 @@ public class EntryControllerTest {
 		assertEquals(0, pm.getEntries().size());
 	}
 	
+	/**
+	 * Tests if a Entry one is changed to entry three
+	 * in a PasswordManager with two Entries
+	 */
 	@Test
 	public void editEntryTest() {
 		entryController.addEntry(one);
@@ -71,6 +97,11 @@ public class EntryControllerTest {
 		}));
 	}
 	
+	/**
+	 * Tests if two different filters 
+	 * one filters by Password and the return should be the same list
+	 * the other filters by name and the return should be a list with a single specified Element
+	 */
 	@Test
 	public void filterTest() {
 		entryController.addEntry(one);

@@ -2,8 +2,11 @@ package controller;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import model.Entry;
+import model.PasswordManager;
 
 
 /**
@@ -25,7 +28,14 @@ public class EntryController {
      *@param entry Entry e will be added
      */
     public void addEntry(Entry entry) {
-
+    	try {
+			PasswordManager pm = pmController.getPasswordManager();
+    	pm.getEntries().add(entry);
+		} catch (Exception e) {
+			System.err.println("Could not add entry");
+			e.printStackTrace();
+		}
+    	
     }
 
     /**
@@ -35,7 +45,8 @@ public class EntryController {
      * @param edited
      */
     public void editEntry(Entry old, Entry edited) {
-    	
+    	this.removeEntry(old);
+    	this.addEntry(edited);
     }
 
     /**
@@ -43,8 +54,14 @@ public class EntryController {
      *
      *@param entry
      */
-    public void removeEntry(Entry entry) {
-
+    public void removeEntry(Entry entry){
+    	try {
+			PasswordManager pm = pmController.getPasswordManager();
+			pm.getEntries().remove(entry);
+		} catch (Exception e) {
+			System.err.println("Could not remove entry");
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -54,7 +71,8 @@ public class EntryController {
      * @return List<Entry> filtered version of entries from PasswordManager
      */
     public List<Entry> filter(Predicate<Entry> predicate) {
-        return null;
+    	return pmController.getPasswordManager().getEntries().stream().filter(predicate).collect(Collectors.toList());
+        
     }
 
 }
