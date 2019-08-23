@@ -121,7 +121,7 @@ public class CustomPasswordFieldViewController extends HBox {
      * 
      * @returns You may have a guess
      */
-    public String getText(String text) {
+    public String getText() {
         return passwordField.getText();
     }
     
