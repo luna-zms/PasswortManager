@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,124 +13,155 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import model.Entry;
 import model.PasswordManager;
 import model.Tag;
 
 public class SerializationControllerTest extends SerializationController {
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+    }
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		pmController = new PMController();
-		PasswordManager pma = new PasswordManager();
-		pmController.setPasswordManager(pma);
-	}
+    @Before
+    public void setUp() throws Exception {
 
-	@After
-	public void tearDown() throws Exception {
-	}
-	
-	@Test
-	public void testPathLengthOne() {
-		Tag one = this.createTagFromPath(new String[]{"foo"});
-		
-		assertEquals(pmController.getPasswordManager().getRootTag(), one);
-		assertEquals(pmController.getPasswordManager().getRootTag().getSubTags().size(), 0);
-	}
+    }
 
-	@Test
-	public void testValidPaths() {
-		Tag one = this.createTagFromPath(new String[]{"foo", "bar", "blub"});
+    @After
+    public void tearDown() throws Exception {
+    }
+    
+    /**
+     * Tests createTagFromPath with a path of length one.
+     * Expects no new tags to be created
+     */
+    @Test
+    public void testPathLengthOne() {
+        Tag root = new Tag("root");
+        Tag one = createTagFromPath(root, new String[]{"root"});
+        
+        assertEquals("createTagFromPath returns wrong tag", root, one);
+        assertEquals("createTagFromPath creates too many tags", root.getSubTags().size(), 0);
+    }
 
-		Tag root = pmController.getPasswordManager().getRootTag();
-		assertNotNull(root);
-		Tag bar = root.getSubTagByName("bar");
-		assertNotNull(bar);
-		Tag blub = bar.getSubTagByName("blub");
-		assertNotNull(blub);
-		
-		Tag two = this.createTagFromPath(new String[]{"foo", "bar", "baz"});
-		
-		Tag baz = bar.getSubTagByName("baz");
-		assertNotNull(baz);
-		
-		assertEquals(one, blub);
-		assertEquals(two, baz);;
-		
-		assertEquals(root.getSubTags().size(), 1);
-		assertEquals(bar.getSubTags().size(), 2);
-		assertEquals(blub.getSubTags().size(), 0);
-		assertEquals(baz.getSubTags().size(), 0);
-	}
-	
-	@Test
-	public void testValidPath() {
-		Tag one = this.createTagFromPath(new String[]{"foo", "bar", "blub"});
+    /**
+     * Tests createTagFromPath with multiple overlapping paths.
+     * Expects createTagFromPath to construct each tag mentioned in a path exactly once and to create no additional tags
+     */
+    @Test
+    public void testValidPaths() {
+        Tag root = new Tag("root");
+        
+        Tag one = createTagFromPath(root, new String[]{"root", "foo", "bar"});
+        Tag two = createTagFromPath(root, new String[]{"root", "foo", "baz"});
+        
+        Tag foo = root.getSubTagByName("foo");
+        Tag bar = foo.getSubTagByName("bar");
+        Tag baz = foo.getSubTagByName("baz");
+        
+        assertNotNull(foo);
+        assertNotNull(bar);
+        assertNotNull(baz);
+        assertEquals(one, bar);
+        assertEquals(two, baz);
+        assertEquals(root.getSubTags().size(), 1);
+        assertEquals(foo.getSubTags().size(), 2);
+        assertEquals(bar.getSubTags().size(), 0);
+        assertEquals(baz.getSubTags().size(), 0);
+    }
+    
+    /**
+     * Tests createTagFromPath with a single path.
+     * Expects createTagFromPath to create exactly the tags mentioned in the path.
+     */
+    @Test
+    public void testValidPath() {
+        Tag root = new Tag("root");
+        Tag one = createTagFromPath(root, new String[]{"root", "bar", "baz"});
 
-		Tag root = pmController.getPasswordManager().getRootTag();
-		assertNotNull(root);
-		Tag bar = root.getSubTagByName("bar");
-		assertNotNull(bar);
-		Tag blub = bar.getSubTagByName("blub");
-		assertNotNull(blub);
-		
-		assertEquals(one, blub);
-		assertEquals(root.getSubTags().size(), 1);
-		assertEquals(bar.getSubTags().size(), 1);
-		assertEquals(blub.getSubTags().size(), 0);
-	}
-	
-	@Test
-	public void testNullPath() {
-		Tag one = this.createTagFromPath(null);
-		
-		assertEquals(one, null);
-	}
-	
-	@Test
-	public void testWriteEntriesToStreamNull() {
-		try {
-			writeEntriesToStream(null);
-		}
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	@Test
-	public void testWriteEntriesToStreamNoEntries() {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try {
-			writeEntriesToStream(out);
-			String result = out.toString();
-			assertEquals(
-					result,
-					"Title, Username, Password, CreatedAt, LastModified, ValidUntil, Note, SecurityQuestion, SecurityQuestionAnswer, TagPaths"
-			);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+        Tag bar = root.getSubTagByName("bar");
 
-	@Override
-	public void load(String path) {
-		// TODO Auto-generated method stub
-		
-	}
+        Tag baz = bar.getSubTagByName("baz");
+        assertNotNull("createTagFromPath fails to create tag", bar);
+        assertNotNull("createTagFromPath fails to create tag", baz);
+        assertEquals("createTagFromPath returns wrong rag", one, baz);
+        assertEquals("createTagFromPath creates too many tags", root.getSubTags().size(), 1);
+        assertEquals("createTagFromPath creates too many tags", bar.getSubTags().size(), 1);
+        assertEquals("createTagFromPath creates too many tags", baz.getSubTags().size(), 0);
+    }
+    
+    /** Tests writeEntriesToStream without passing any entries.
+     * Expects writeEntriesToStream to print the CSV header to the stream, but no records.
+     */
+    @Test
+    public void testWriteEntriesToStreamNoEntries() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Tag root = new Tag("root");
+        try {
+            writeEntriesToStream(out, new ArrayList<Entry>(), root);
+            String result = out.toString();
+            System.out.println(result);
+            assertTrue(result.equals("Title, Username, Password, Url, CreatedAt, LastModified, ValidUntil, Note, SecurityQuestion, SecurityQuestionAnswer, TagPaths"));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Tests writeEntriesToStream by passing entries and a tag tree.
+     * Expects entries to be printed into the OutputStream correctly.
+     */
+    @Test
+    public void testWriteEntitiesToStreamFull() {
+        Tag root = new Tag("root");
+        Tag foo = new Tag("foo");
+        Tag bar = new Tag("bar");
+        Tag baz = new Tag("baz");
+        
+        root.getSubTags().add(foo);
+        foo.getSubTags().add(bar);
+        foo.getSubTags().add(baz);
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        
+        Entry one = new Entry("one", "one");
+        Entry two = new Entry("two", "two");
+        Entry three = new Entry ("three", "three");
+        ArrayList<Entry> entries = new ArrayList<>();
+        entries.add(one);
+        entries.add(two);
+        entries.add(three);
+        
+        try {
+            System.out.println("Blub");
+            writeEntriesToStream(out, entries, root);
+            String result = out.toString();
+            
+            System.out.println(result);
+            
+            assertTrue(result.equals(""))
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void save(String path) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void load(String path) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void save(String path) {
+        // TODO Auto-generated method stub
+        
+    }
 
 }
