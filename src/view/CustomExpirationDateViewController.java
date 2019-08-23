@@ -49,6 +49,9 @@ public class CustomExpirationDateViewController extends GridPane {
     	}else{
     		checkBoxExpirationDate.setSelected(true);
     		datePickerExpirationDate.setValue(date);
+    		datePickerExpirationDate.setDisable(false);
+			daysUntilExpiration.setDisable(false);
+			datePickerExpirationDate.fireEvent(new ActionEvent());
     	}
     	
     }
@@ -76,17 +79,14 @@ public class CustomExpirationDateViewController extends GridPane {
         daysUntilExpiration.setDisable(true);
         
         
-        datePickerExpirationDate.setOnAction(event ->{
-        	if (event.getSource() instanceof DatePicker) {
-        		LocalDate date = datePickerExpirationDate.getValue();
-        		if (!LocalDate.now().isAfter(date)){
-        			int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
-        			SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
-        			temp.setValue(noOfDaysBetween);
-        		}else{
-        			datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
-        		}
-        			
+        datePickerExpirationDate.setOnAction(event -> {
+        	LocalDate date = datePickerExpirationDate.getValue();
+        	if (!LocalDate.now().isAfter(date)) {
+        		int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
+        		SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
+        		temp.setValue(noOfDaysBetween);
+        	} else {
+        		datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
         	}
         });
         
