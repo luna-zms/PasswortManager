@@ -1,5 +1,18 @@
 package controller;
 
+import static org.junit.Assert.fail;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Arrays;
+
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+
+import java.util.Base64;
+
 import model.PasswordManager;
 
 public class PMController {
@@ -23,7 +36,30 @@ public class PMController {
      * @param password A string containing the new master password.
      */
     public void setMasterPassword(String password) {
+        if( password == null ) {
+            throw new IllegalArgumentException("Expected String as password but got null!");
+        } else if( password == "" ) {
+            throw new IllegalArgumentException("The master password may not be empty!");
+        }
+        String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
+        SecretKeyFactory skFactory;
 
+        try {
+            skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
+        } catch (NoSuchAlgorithmException noSuchAlgorithm) {
+            throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
+        }
+
+        KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
+        SecretKey derivedKey;
+
+        try {
+            derivedKey = skFactory.generateSecret(specs);
+        } catch (InvalidKeySpecException invalidKeySpec) {
+            throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
+        }
+
+        passwordManager.setMasterPasswordKey(derivedKey);
     }
 
     /**
@@ -35,7 +71,31 @@ public class PMController {
      * else false.
      */
     public boolean validateMasterPassword(String password) {
-        return false;
+        if( password == null ) {
+            throw new IllegalArgumentException("Expected String as password but got null!");
+        } else if( password == "" ) {
+            throw new IllegalArgumentException("The master password may not be empty!");
+        }
+
+        String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
+        SecretKeyFactory skFactory;
+
+        try {
+            skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
+        } catch (NoSuchAlgorithmException noSuchAlgorithm) {
+            throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
+        }
+
+        KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
+        SecretKey derivedKey;
+
+        try {
+            derivedKey = skFactory.generateSecret(specs);
+        } catch (InvalidKeySpecException invalidKeySpec) {
+            throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
+        }
+
+        return Arrays.equals(derivedKey.getEncoded(), passwordManager.getMasterPasswordKey().getEncoded());
     }
 
     public TagController getTagController() {
