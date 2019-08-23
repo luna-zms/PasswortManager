@@ -106,7 +106,7 @@ public class SerializationControllerTest extends SerializationController {
             writeEntriesToStream(out, new ArrayList<Entry>(), root);
             String result = out.toString();
             System.out.println(result);
-            assertTrue(result.equals("Title, Username, Password, Url, CreatedAt, LastModified, ValidUntil, Note, SecurityQuestion, SecurityQuestionAnswer, TagPaths"));
+            assertTrue(result.equals("Title,Username,Password,Url,CreatedAt,LastModified,ValidUntil,Note,SecurityQuestion,SecurityQuestionAnswer,TagPaths\r\n"));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -145,7 +145,7 @@ public class SerializationControllerTest extends SerializationController {
             
             System.out.println(result);
             
-            assertTrue(result.equals(""))
+            assertTrue(result.equals(""));
         }
         catch (IOException e) {
             e.printStackTrace();

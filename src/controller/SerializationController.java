@@ -81,7 +81,6 @@ public abstract class SerializationController {
 
         // Print Header
         printer.printRecord(EntryTableHeader.values());
-        printer.println();
         // Print Entries
         for (Entry entry : entries) {
             String paths = entry.getTags().stream().map(pathMap::get).collect(Collectors.joining(";"));
@@ -99,8 +98,8 @@ public abstract class SerializationController {
                     entry.getSecurityQuestion().getAnswer(),
                     paths
             );
-            printer.println();
         }
+        printer.flush();
     }
 
     /**
