@@ -2,6 +2,7 @@ package view;
 
 import java.io.IOException;
 
+import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -10,6 +11,8 @@ import javafx.scene.layout.BorderPane;
 import model.Tag;
 
 public class MainWindowViewController extends BorderPane {
+    private PMController pmController;
+
     @FXML // fx:id="entryNamePreview"
     private Label entryNamePreview; // Value injected by FXMLLoader
 
@@ -28,6 +31,9 @@ public class MainWindowViewController extends BorderPane {
     @FXML // fx:id="tagTree"
     private TagTree tagTree; // Value injected by FXMLLoader
 
+    @FXML // fx:id="mainWindowToolbar"
+    private MainWindowToolbarViewController mainWindowToolbar;
+
     public MainWindowViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowView.fxml"));
         loader.setRoot(this);
@@ -42,5 +48,11 @@ public class MainWindowViewController extends BorderPane {
         Tag rootTag = new Tag("Root Tag");
 
         tagTree.init(true, rootTag);
+    }
+
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
+
+        mainWindowToolbar.setPmController(pmController);
     }
 }

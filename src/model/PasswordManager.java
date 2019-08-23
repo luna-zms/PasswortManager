@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.crypto.SecretKey;
 
 /**
@@ -20,8 +21,13 @@ public class PasswordManager {
 
     private List<Entry> entries;
 
-    public PasswordManager() {
+    public PasswordManager(SecretKey masterPasswordKey) {
+        this.masterPasswordKey = masterPasswordKey;
+
         entries = new ArrayList<>();
+
+        lastModified = null;
+        validUntil = null;
     }
 
     public void mergeWith(List<Entry> newEntries, Tag newRootTag){
@@ -67,5 +73,22 @@ public class PasswordManager {
 
     public void setEntries(List<Entry> entries) {
         this.entries = entries;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        PasswordManager that = (PasswordManager) obj;
+        return masterPasswordKey.equals(that.masterPasswordKey) &&
+                Objects.equals(lastModified, that.lastModified) &&
+                Objects.equals(validUntil, that.validUntil) &&
+                Objects.equals(rootTag, that.rootTag) &&
+                entries.equals(that.entries);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(masterPasswordKey, lastModified, validUntil, rootTag, entries);
     }
 }

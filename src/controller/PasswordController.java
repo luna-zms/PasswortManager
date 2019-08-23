@@ -1,5 +1,7 @@
 package controller;
 
+import util.PasswordQualityUtil;
+
 public class PasswordController {
 
     private PMController pmController;
@@ -15,7 +17,7 @@ public class PasswordController {
      *
      */
     public double checkPasswordQuality(String pwd) {
-        return 0;
+        return PasswordQualityUtil.getNormalizedScore(pwd);
     }
 
 }
