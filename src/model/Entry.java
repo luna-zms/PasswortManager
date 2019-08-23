@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class Entry {
@@ -22,6 +23,13 @@ public class Entry {
         createdAt = LocalDateTime.now();
         lastModified = createdAt;
         tags = new ArrayList<>();
+
+        username = "";
+        note = "";
+        securityQuestion = new SecurityQuestion("", "");
+
+        url = null;
+        validUntil = null;
     }
 
     private static String stringFromDateTime(LocalDateTime dateTime) {
@@ -110,5 +118,27 @@ public class Entry {
 
     public List<Tag> getTags() {
         return tags;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Entry entry = (Entry) o;
+        return title.equals(entry.title) &&
+                username.equals(entry.username) &&
+                password.equals(entry.password) &&
+                note.equals(entry.note) &&
+                Objects.equals(url, entry.url) &&
+                createdAt.equals(entry.createdAt) &&
+                lastModified.equals(entry.lastModified) &&
+                Objects.equals(validUntil, entry.validUntil) &&
+                Objects.equals(securityQuestion, entry.securityQuestion) &&
+                tags.equals(entry.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, username, password, note, url, createdAt, lastModified, validUntil, securityQuestion, tags);
     }
 }

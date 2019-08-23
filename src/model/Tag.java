@@ -1,9 +1,6 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("PMD.ShortClassName")
@@ -60,5 +57,19 @@ public class Tag {
         children.put(this, name);
 
         return children;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return name.equals(tag.name) &&
+                subTags.equals(tag.subTags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, subTags);
     }
 }
