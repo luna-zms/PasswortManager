@@ -74,6 +74,10 @@ public class EntryListViewController extends TableView<Entry> {
         setRowFactory(table -> {
             TableRow<Entry> row = new TableRow<>();
             row.setContextMenu(contextMenu);
+            row.setOnMouseClicked(event -> {
+                // User clicked background => item null => clear selection
+                if (row.getItem() == null) getSelectionModel().clearSelection();
+            });
 
             return row;
         });
