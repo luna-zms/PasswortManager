@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.crypto.SecretKey;
 
 /**
@@ -67,5 +68,22 @@ public class PasswordManager {
 
     public void setEntries(List<Entry> entries) {
         this.entries = entries;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PasswordManager that = (PasswordManager) o;
+        return masterPasswordKey.equals(that.masterPasswordKey) &&
+                lastModified.equals(that.lastModified) &&
+                validUntil.equals(that.validUntil) &&
+                rootTag.equals(that.rootTag) &&
+                entries.equals(that.entries);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(masterPasswordKey, lastModified, validUntil, rootTag, entries);
     }
 }

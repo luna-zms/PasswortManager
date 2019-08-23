@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 /**
  * This class is about setting privacy issues
  *
@@ -31,5 +33,19 @@ public class SecurityQuestion {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SecurityQuestion that = (SecurityQuestion) o;
+        return question.equals(that.question) &&
+                answer.equals(that.answer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(question, answer);
     }
 }
