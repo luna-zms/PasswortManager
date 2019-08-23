@@ -73,9 +73,14 @@ public class GeneratePasswordViewController extends GridPane {
 
             @Override
             public Double fromString(String s) {
-                if( s.equals("kurz") ) return 1.0;
-                else if( s.equals("normal") ) return 2.0;
-                else if( s.equals("lang") ) return 3.0;
+                switch (s) {
+                    case "kurz":
+                        return 1.0;
+                    case "normal":
+                        return 2.0;
+                    case "lang":
+                        return 3.0;
+                }
                 return 0.0;
             }
         });
