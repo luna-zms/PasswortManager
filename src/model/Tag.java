@@ -31,7 +31,7 @@ public class Tag {
     public List<Tag> getSubTags() {
         return subTags;
     }
-
+   
     public boolean hasSubTag(String name) {
         return subTags.stream().anyMatch(subtag -> subtag.name.equals(name));
     }
@@ -48,4 +48,5 @@ public class Tag {
 
         return children;
     }
+   
 }
