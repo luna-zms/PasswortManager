@@ -1,9 +1,6 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("PMD.ShortClassName")
@@ -32,8 +29,21 @@ public class Tag {
         return subTags;
     }
 
+    public void mergeWith(Tag tag) {
+        tag.subTags.forEach(subtag -> {
+            Tag existing = getSubTagByName(subtag.getName());
+
+            if (existing != null) existing.mergeWith(subtag);
+            else subTags.add(subtag);
+        });
+    }
+
+    public Tag getSubTagByName(String name) {
+        return subTags.stream().filter(subtag -> name.equals(subtag.name)).findFirst().orElse(null);
+    }
+
     public boolean hasSubTag(String name) {
-        return subTags.stream().anyMatch(subtag -> subtag.name.equals(name));
+        return getSubTagByName(name) != null;
     }
 
     public Map<Tag, String> createPathMap() {
@@ -42,10 +52,24 @@ public class Tag {
         Map<Tag, String> children = subTags
                 .stream()
                 .flatMap(subtag -> subtag.createPathMap().entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> name + "\\" + e.getValue()));
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> name + "\\" + entry.getValue()));
 
         children.put(this, name);
 
         return children;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Tag tag = (Tag) obj;
+        return name.equals(tag.name) &&
+                subTags.equals(tag.subTags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, subTags);
     }
 }
