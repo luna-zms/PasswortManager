@@ -88,7 +88,7 @@ public class PasswordQualityUtil {
             for (char c : charGroup.getChars()) {
                 if (pwd.indexOf(c) != -1) {
                     if (charGroup == CharGroup.SPECIAL_CHARS) score += 2;
-                    else score += 1;
+                    else if (charGroup != CharGroup.OTHER) score += 1;
 
                     break;
                 }
