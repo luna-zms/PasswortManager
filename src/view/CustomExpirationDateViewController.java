@@ -49,6 +49,8 @@ public class CustomExpirationDateViewController extends GridPane {
     	}else{
     		checkBoxExpirationDate.setSelected(true);
     		datePickerExpirationDate.setValue(date);
+    		datePickerExpirationDate.setDisable(true);
+			daysUntilExpiration.setDisable(true);
     	}
     	
     }
