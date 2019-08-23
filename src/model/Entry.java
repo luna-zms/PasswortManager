@@ -1,6 +1,7 @@
 package model;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -12,7 +13,8 @@ import java.util.Objects;
 public class Entry {
     private String title, username, password, note;
     private URL url;
-    private LocalDateTime createdAt, lastModified, validUntil;
+    private LocalDateTime createdAt, lastModified;
+    private LocalDate validUntil;
     private SecurityQuestion securityQuestion;
     private List<Tag> tags;
 
@@ -96,16 +98,16 @@ public class Entry {
         return stringFromDateTime(lastModified);
     }
 
-    public LocalDateTime getValidUntil() {
+    public LocalDate getValidUntil() {
         return validUntil;
     }
 
-    public void setValidUntil(LocalDateTime validUntil) {
+    public void setValidUntil(LocalDate validUntil) {
         this.validUntil = validUntil;
     }
 
     public String getValidUntilString() {
-        return stringFromDateTime(validUntil);
+        return validUntil != null ? validUntil.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : "";
     }
 
     public SecurityQuestion getSecurityQuestion() {
