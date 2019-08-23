@@ -3,9 +3,6 @@ package controller;
 import util.PasswordQualityUtil;
 
 public class PasswordController {
-
-    private PMController pmController;
-
     /**
      * Generate a password from a given set of generator settings,
      * using a total of {@code pgs.getLength() * pgs.getCharGroups().size()} random numbers
