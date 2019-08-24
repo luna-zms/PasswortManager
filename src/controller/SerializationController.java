@@ -6,6 +6,7 @@ import model.Tag;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import util.CsvException;
 import util.Tuple;
 
 import java.io.IOException;
@@ -107,7 +108,7 @@ public abstract class SerializationController {
      * @param csvEntries CSV records to parse.
      * @return Tuple of entry list and tag tree
      */
-    protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws RuntimeException, DateTimeParseException {
+    protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws CsvException, DateTimeParseException {
         assert (csvEntries != null);
 
         List<Entry> entries = new ArrayList<>();
@@ -118,7 +119,7 @@ public abstract class SerializationController {
         for (CSVRecord record : csvEntries) {
 
             if (!record.isConsistent()) {
-                throw new RuntimeException("Malformed CSV: Inconsistent number of records in row");
+                throw new CsvException("Malformed CSV: Inconsistent number of records in row");
             }
 
             // null values are written and read as empty Strings
@@ -144,7 +145,7 @@ public abstract class SerializationController {
                 try {
                     entry.setCreatedAt(LocalDateTime.parse(createdAt, DATE_FORMAT));
                 } catch (DateTimeParseException exc) {
-                    throw new RuntimeException("Malformed CSV: Invalid Date format");
+                    throw new CsvException("Malformed CSV: Invalid Date format");
                 }
             }
 
@@ -153,7 +154,7 @@ public abstract class SerializationController {
                 try {
                     entry.setLastModified(LocalDateTime.parse(lastModified, DATE_FORMAT));
                 } catch (DateTimeParseException exc) {
-                    throw new RuntimeException("Malformed CSV: Invalid Date format");
+                    throw new CsvException("Malformed CSV: Invalid Date format");
                 }
             }
 
@@ -162,7 +163,7 @@ public abstract class SerializationController {
                 try {
                     entry.setValidUntil(LocalDate.parse(validUntil, DATE_FORMAT));
                 } catch (DateTimeParseException exc) {
-                    throw new RuntimeException("Malformed CSV: Invalid Date format");
+                    throw new CsvException("Malformed CSV: Invalid Date format");
                 }
             }
 
@@ -171,7 +172,7 @@ public abstract class SerializationController {
                 try {
                     entry.setUrl(new URL(url));
                 } catch (MalformedURLException exc) {
-                    throw new RuntimeException("Malformed CSV: Malformed URL");
+                    throw new CsvException("Malformed CSV: Malformed URL");
                 }
             }
 
@@ -184,12 +185,12 @@ public abstract class SerializationController {
                             .map(path -> path.split("\\\\"))
                             .peek(path -> {
                                 if (path.length < 2) {
-                                    throw new RuntimeException("Malformed CSV: Path of length 0");
+                                    throw new CsvException("Malformed CSV: Path of length 0");
                                 }
                             })
                             .peek(path -> {
                                 if (seenRoots.size() > 1) {
-                                    throw new RuntimeException("Malformed CSV: Multiple roots in CSV");
+                                    throw new CsvException("Malformed CSV: Multiple roots in CSV");
                                 } else {
                                     seenRoots.add(path[0]);
                                 }
