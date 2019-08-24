@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public abstract class SerializationController {
 
-    protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     protected PMController pmController;
 
     protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withHeader(EntryTableHeader.class);
