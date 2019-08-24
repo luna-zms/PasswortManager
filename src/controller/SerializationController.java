@@ -45,8 +45,8 @@ public abstract class SerializationController {
      * @return Tag pointed to by path
      */
     protected Tag createTagFromPath(Tag root, String[] path) {
-        if (path == null) return null;
-        if (root == null) return null;
+        assert (root != null);
+        assert (path != null);
 
         Tag currentTag = root;
 
@@ -66,13 +66,13 @@ public abstract class SerializationController {
      * Writes all given entries into the given OutputStream
      *
      * @param outputStream The OutputStream to write into
-     * @param entries List of entries to write
-     * @param root    Root the tag tree
+     * @param entries      List of entries to write
+     * @param root         Root the tag tree
      */
     protected void writeEntriesToStream(OutputStream outputStream, List<Entry> entries, Tag root) throws IOException {
-        if (outputStream == null) return;
-        if (entries == null) return;
-        if (root == null) return;
+        assert (outputStream != null);
+        assert (entries != null);
+        assert (root != null);
 
         Map<Tag, String> pathMap = root.createPathMap();
 
@@ -106,6 +106,8 @@ public abstract class SerializationController {
      * @return Tuple of entry list and tag tree
      */
     protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws RuntimeException, DateTimeParseException {
+        assert (csvEntries != null);
+
         List<Entry> entries = new ArrayList<>();
         Tag build_root = new Tag("build_root");
 
