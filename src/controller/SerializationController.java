@@ -174,5 +174,8 @@ public abstract class SerializationController {
     protected enum EntryTableHeader {
         title, username, password, url, createdAt, lastModified, validUntil, note, securityQuestion, securityQuestionAnswer, tagPaths;
     }
+
+    protected enum TagTableHeader {
+        name, path;
     }
 }
