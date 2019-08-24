@@ -24,6 +24,12 @@ public abstract class SerializationController {
     protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
     protected PMController pmController;
 
+    protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withHeader(EntryTableHeader.class);
+    protected CSVFormat entryParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
+
+    protected CSVFormat tagWriteFormat = CSVFormat.DEFAULT.withHeader(TagTableHeader.class);
+    protected CSVFormat tagParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
+
     public abstract void load(String path);
 
     /**
