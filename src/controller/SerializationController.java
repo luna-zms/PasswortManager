@@ -3,11 +3,10 @@ package controller;
 import model.Entry;
 import model.SecurityQuestion;
 import model.Tag;
-import util.Tuple;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import util.Tuple;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,12 +16,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class SerializationController {
@@ -47,9 +41,9 @@ public abstract class SerializationController {
     protected Tag createTagFromPath(Tag root, String[] path) {
         if (path == null) return null;
         if (root == null) return null;
-        
+
         Tag currentTag = root;
-        
+
         for (String part : Arrays.copyOfRange(path, 1, path.length)) {
             if (currentTag.hasSubTag(part)) {
                 currentTag = currentTag.getSubTags().stream().filter(tag -> tag.getName().equals(part)).findFirst().get();
@@ -65,16 +59,15 @@ public abstract class SerializationController {
     /**
      * Writes all given entries into the given OutputStream
      *
-     * @param os The OutputStream to write into
+     * @param os      The OutputStream to write into
      * @param entries List of entries to write
-     * @param root Root the tag tree 
-
+     * @param root    Root the tag tree
      */
     protected void writeEntriesToStream(OutputStream outputStream, List<Entry> entries, Tag root) throws IOException {
         if (outputStream == null) return;
         if (entries == null) return;
         if (root == null) return;
-        
+
         Map<Tag, String> pathMap = root.createPathMap();
 
         CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), CSVFormat.DEFAULT);
@@ -111,11 +104,11 @@ public abstract class SerializationController {
     protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws RuntimeException, DateTimeParseException {
         List<Entry> entries = new ArrayList<>();
         Tag build_root = new Tag("build_root");
-        
+
         HashSet<String> seenRoots = new HashSet<>();
-        
+
         for (CSVRecord record : csvEntries) {
-            
+
             if (!record.isConsistent()) {
                 throw new RuntimeException("Malformed CSV: Inconsistent number of records in row");
             }
@@ -130,29 +123,27 @@ public abstract class SerializationController {
             String answer = record.get(EntryTableHeader.SECURITY_QUESTION_ANSWER);
             SecurityQuestion securityQuestion = new SecurityQuestion(question, answer);
             entry.setSecurityQuestion(securityQuestion);
-            
+
             // NOTE: validUntil and Url can both be null.
             // All other entry properties are always initialized.
             String validUntil = record.get(EntryTableHeader.VALID_UNTIL);
             if (validUntil != null) {
                 entry.setValidUntil(LocalDateTime.parse(validUntil, DATE_FORMAT));
             }
-            
+
             String url = record.get(EntryTableHeader.URL);
             if (validUntil != null) {
                 try {
                     entry.setUrl(new URL(url));
-                }
-                catch (MalformedURLException e) {
+                } catch (MalformedURLException e) {
                     throw new RuntimeException("Malformed CSV: Malformed URL");
                 }
             }
-            
 
 
             String tagPaths = "build_root\\".concat(record.get(EntryTableHeader.TAG_PATHS));
             String[] paths = tagPaths.split(";");
-            
+
             entry.getTags().addAll(
                     Arrays.stream(paths)
                             .map(path -> path.split("\\\\"))
@@ -174,12 +165,12 @@ public abstract class SerializationController {
 
             entries.add(entry);
         }
-        
+
         Tag root = build_root.getSubTags().get(0);
-        
+
         return new Tuple<List<Entry>, Tag>(entries, root);
     }
-    
+
     protected enum EntryTableHeader {
         TITLE, USERNAME, PASSWORD, URL, CREATED_AT, LAST_MODIFIED, VALID_UNTIL, NOTE, SECURITY_QUESTION, SECURITY_QUESTION_ANSWER, TAG_PATHS;
 
