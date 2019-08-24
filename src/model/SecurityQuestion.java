@@ -48,4 +48,12 @@ public class SecurityQuestion {
     public int hashCode() {
         return Objects.hash(question, answer);
     }
+
+    @Override
+    public String toString() {
+        return "SecurityQuestion{" +
+                "question='" + question + '\'' +
+                ", answer='" + answer + '\'' +
+                '}';
+    }
 }
