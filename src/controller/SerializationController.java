@@ -113,25 +113,25 @@ public abstract class SerializationController {
                 throw new RuntimeException("Malformed CSV: Inconsistent number of records in row");
             }
 
-            Entry entry = new Entry(record.get(EntryTableHeader.TITLE), record.get(EntryTableHeader.PASSWORD));
+            Entry entry = new Entry(record.get(EntryTableHeader.title), record.get(EntryTableHeader.password));
 
-            entry.setUsername(record.get(EntryTableHeader.USERNAME));
-            entry.setCreatedAt(LocalDateTime.parse(record.get(EntryTableHeader.CREATED_AT), DATE_FORMAT));
-            entry.setLastModified(LocalDateTime.parse(record.get(EntryTableHeader.LAST_MODIFIED), DATE_FORMAT));
-            entry.setNote(record.get(EntryTableHeader.NOTE));
-            String question = record.get(EntryTableHeader.SECURITY_QUESTION);
-            String answer = record.get(EntryTableHeader.SECURITY_QUESTION_ANSWER);
+            entry.setUsername(record.get(EntryTableHeader.username));
+            entry.setCreatedAt(LocalDateTime.parse(record.get(EntryTableHeader.createdAt), DATE_FORMAT));
+            entry.setLastModified(LocalDateTime.parse(record.get(EntryTableHeader.lastModified), DATE_FORMAT));
+            entry.setNote(record.get(EntryTableHeader.note));
+            String question = record.get(EntryTableHeader.securityQuestion);
+            String answer = record.get(EntryTableHeader.securityQuestionAnswer);
             SecurityQuestion securityQuestion = new SecurityQuestion(question, answer);
             entry.setSecurityQuestion(securityQuestion);
 
             // NOTE: validUntil and Url can both be null.
             // All other entry properties are always initialized.
-            String validUntil = record.get(EntryTableHeader.VALID_UNTIL);
+            String validUntil = record.get(EntryTableHeader.validUntil);
             if (validUntil != null) {
                 entry.setValidUntil(LocalDateTime.parse(validUntil, DATE_FORMAT));
             }
 
-            String url = record.get(EntryTableHeader.URL);
+            String url = record.get(EntryTableHeader.url);
             if (validUntil != null) {
                 try {
                     entry.setUrl(new URL(url));
@@ -141,7 +141,7 @@ public abstract class SerializationController {
             }
 
 
-            String tagPaths = "build_root\\".concat(record.get(EntryTableHeader.TAG_PATHS));
+            String tagPaths = "build_root\\".concat(record.get(EntryTableHeader.tagPaths));
             String[] paths = tagPaths.split(";");
 
             entry.getTags().addAll(
@@ -172,37 +172,7 @@ public abstract class SerializationController {
     }
 
     protected enum EntryTableHeader {
-        TITLE, USERNAME, PASSWORD, URL, CREATED_AT, LAST_MODIFIED, VALID_UNTIL, NOTE, SECURITY_QUESTION, SECURITY_QUESTION_ANSWER, TAG_PATHS;
-
-        @Override
-        @SuppressWarnings("PMD.CyclomaticComplexity")
-        public String toString() {
-            switch (this) {
-                case TITLE:
-                    return "Title";
-                case USERNAME:
-                    return "Username";
-                case PASSWORD:
-                    return "Password";
-                case CREATED_AT:
-                    return "CreatedAt";
-                case URL:
-                    return "Url";
-                case LAST_MODIFIED:
-                    return "LastModified";
-                case VALID_UNTIL:
-                    return "ValidUntil";
-                case NOTE:
-                    return "Note";
-                case SECURITY_QUESTION:
-                    return "SecurityQuestion";
-                case SECURITY_QUESTION_ANSWER:
-                    return "SecurityQuestionAnswer";
-                case TAG_PATHS:
-                    return "TagPaths";
-                default:
-                    return ""; // Note: Never used. This switch is exhaustive
-            }
-        }
+        title, username, password, url, createdAt, lastModified, validUntil, note, securityQuestion, securityQuestionAnswer, tagPaths;
+    }
     }
 }
