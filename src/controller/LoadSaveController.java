@@ -65,7 +65,7 @@ public class LoadSaveController extends SerializationController {
                 List<Entry> entries = null;
                 Tag rootTag = null;
 
-                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "0_MAGIC");
+                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "MAGIC");
                      InputStreamReader isr = new InputStreamReader(cis);
                      BufferedReader bur = new BufferedReader(isr)) {
 
@@ -77,20 +77,22 @@ public class LoadSaveController extends SerializationController {
                     lastModified = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_FORMAT);
                     validUntil = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_FORMAT);
                 } catch (IOException e) {
-                    System.exit(-1);
+                    e.printStackTrace();
+                    return;
                 }
 
-                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "1_ENTRIES");
+                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "ENTRIES");
                      InputStreamReader isr = new InputStreamReader(cis)) {
                     Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(isr, CSVFormat.DEFAULT.withHeader(EntryTableHeader.class)));
 
                     entries = tup.first();
                     rootTag = tup.second();
                 } catch (IOException e) {
-                    System.exit(-1);
+                    e.printStackTrace();
+                    return;
                 }
 
-                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "2_TAGS");
+                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "TAGS");
                      InputStreamReader isr = new InputStreamReader(cis);
                      BufferedReader bur = new BufferedReader(isr)) {
                     // what the fuck java
@@ -100,7 +102,8 @@ public class LoadSaveController extends SerializationController {
                     wtf.setEntries(entries);
 
                 } catch (IOException e) {
-                    System.exit(-1);
+                    e.printStackTrace();
+                    return;
                 }
 
                 wtf.setLastModified(lastModified);
