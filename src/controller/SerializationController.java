@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,12 +32,12 @@ public abstract class SerializationController {
     protected CSVFormat tagWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(TagTableHeader.class);
     protected CSVFormat tagParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 
-    public abstract void load(String path);
+    public abstract void load(Path path) throws IOException;
 
     /**
      *
      */
-    public abstract void save(String path);
+    public abstract void save(Path path) throws IOException;
 
     /**
      * Creates the tag pointed to by path, constructing parent tags if needed
