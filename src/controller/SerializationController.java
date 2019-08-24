@@ -65,7 +65,7 @@ public abstract class SerializationController {
     /**
      * Writes all given entries into the given OutputStream
      *
-     * @param os      The OutputStream to write into
+     * @param outputStream The OutputStream to write into
      * @param entries List of entries to write
      * @param root    Root the tag tree
      */
@@ -78,8 +78,6 @@ public abstract class SerializationController {
 
         CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), CSVFormat.DEFAULT);
 
-        // Print Header
-        printer.printRecord(EntryTableHeader.values());
         // Print Entries
         for (Entry entry : entries) {
             String paths = entry.getTags().stream().map(pathMap::get).collect(Collectors.joining(";"));
@@ -200,14 +198,14 @@ public abstract class SerializationController {
 
         Tag root = build_root.getSubTags().get(0);
 
-        return new Tuple<List<Entry>, Tag>(entries, root);
+        return new Tuple<>(entries, root);
     }
 
     protected enum EntryTableHeader {
-        title, username, password, url, createdAt, lastModified, validUntil, note, securityQuestion, securityQuestionAnswer, tagPaths;
+        title, username, password, url, createdAt, lastModified, validUntil, note, securityQuestion, securityQuestionAnswer, tagPaths
     }
 
     protected enum TagTableHeader {
-        name, path;
+        name, path
     }
 }
