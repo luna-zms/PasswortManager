@@ -180,7 +180,7 @@ public abstract class SerializationController {
         return new Tuple<List<Entry>, Tag>(entries, root);
     }
     
-    private enum EntryTableHeader {
+    protected enum EntryTableHeader {
         TITLE, USERNAME, PASSWORD, URL, CREATED_AT, LAST_MODIFIED, VALID_UNTIL, NOTE, SECURITY_QUESTION, SECURITY_QUESTION_ANSWER, TAG_PATHS;
 
         @Override
