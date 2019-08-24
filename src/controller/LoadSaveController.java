@@ -12,9 +12,12 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -45,20 +48,15 @@ public class LoadSaveController extends SerializationController {
      *
      * @param path The file to load from
      */
-    public void load(String path) {
-
+    public void load(Path path) throws IOException {
         PasswordManager wtf = pmController.getPasswordManager();
 
         try {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, wtf.getMasterPasswordKey());
 
-            try (FileInputStream fis = new FileInputStream(path);
-                 ZipInputStream zis = new ZipInputStream(fis);
-                 //CipherInputStream cis = new CipherInputStream(zis, cipher);
-                 //InputStreamReader isr = new InputStreamReader(cis);
-                 //BufferedReader bur = new BufferedReader(isr)
-            ) {
+            try (InputStream fis = Files.newInputStream(path);
+                 ZipInputStream zis = new ZipInputStream(fis)) {
                 LocalDateTime lastModified = null;
                 LocalDateTime validUntil = null;
 
@@ -78,7 +76,7 @@ public class LoadSaveController extends SerializationController {
                     validUntil = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_FORMAT);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return;
+                    throw e;
                 }
 
                 try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "ENTRIES");
@@ -89,7 +87,7 @@ public class LoadSaveController extends SerializationController {
                     rootTag = tup.second();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return;
+                    throw e;
                 }
 
                 try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "TAGS");
@@ -103,14 +101,15 @@ public class LoadSaveController extends SerializationController {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return;
+                    throw e;
                 }
 
                 wtf.setLastModified(lastModified);
                 wtf.setValidUntil(validUntil);
             }
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IOException e) {
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             e.printStackTrace();
+            System.exit(-1);
         }
     }
 
@@ -179,10 +178,10 @@ public class LoadSaveController extends SerializationController {
      *
      * @param path The file to save to
      */
-    public void save(String path) {
+    public void save(Path path) throws IOException{
         PasswordManager passwordManager = pmController.getPasswordManager();
 
-        try (FileOutputStream fos = new FileOutputStream(path); ZipOutputStream zos = new ZipOutputStream(fos)) {
+        try (OutputStream fos = Files.newOutputStream(path); ZipOutputStream zos = new ZipOutputStream(fos)) {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, passwordManager.getMasterPasswordKey());
 
@@ -193,7 +192,7 @@ public class LoadSaveController extends SerializationController {
             } catch (IOException e) {
                 // Error creating/writing new ZipEntry for metadata/magic header
                 e.printStackTrace();
-                return;
+                throw e;
             }
 
             Tag rootTag = passwordManager.getRootTag();
@@ -203,7 +202,7 @@ public class LoadSaveController extends SerializationController {
             } catch (IOException e) {
                 // Error creating/writing new ZipEntry for entries section
                 e.printStackTrace();
-                return;
+                throw e;
             }
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "TAGS"); PrintWriter writer = new PrintWriter(cos)) {
@@ -212,6 +211,7 @@ public class LoadSaveController extends SerializationController {
             } catch (IOException e) {
                 // Error creating/writing new ZipEntry for tags section
                 e.printStackTrace();
+                throw e;
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
             // The java installation does not support AES encryption for some reason
@@ -224,6 +224,7 @@ public class LoadSaveController extends SerializationController {
         } catch (IOException e) {
             // Error while accessing the file (path to file didn't exist, missing write permissions, etc)
             e.printStackTrace();
+            throw e;
         }
     }
 
