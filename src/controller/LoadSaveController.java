@@ -3,7 +3,6 @@ package controller;
 import model.Entry;
 import model.PasswordManager;
 import model.Tag;
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import util.Tuple;
 
@@ -17,7 +16,6 @@ import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -61,7 +59,7 @@ public class LoadSaveController extends SerializationController {
                 LocalDateTime validUntil = null;
 
                 List<Entry> entries = null;
-                Tag rootTag = null;
+                Tag rootTag;
 
                 try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "MAGIC");
                      InputStreamReader isr = new InputStreamReader(cis);
@@ -81,7 +79,7 @@ public class LoadSaveController extends SerializationController {
 
                 try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "ENTRIES");
                      InputStreamReader isr = new InputStreamReader(cis)) {
-                    Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(isr, CSVFormat.DEFAULT.withHeader(EntryTableHeader.class)));
+                    Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(isr, entryParseFormat));
 
                     entries = tup.first();
                     rootTag = tup.second();
@@ -93,10 +91,9 @@ public class LoadSaveController extends SerializationController {
                 try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "TAGS");
                      InputStreamReader isr = new InputStreamReader(cis);
                      BufferedReader bur = new BufferedReader(isr)) {
-                    // what the fuck java
-                    final Tag finalRootTag = rootTag;
 
-                    wtf.setRootTag(bur.lines().collect(() -> finalRootTag, (tag, line) -> createTagFromPath(tag, line.split("\\\\")), Tag::mergeWith));
+                    bur.lines().forEach(line -> createTagFromPath(rootTag, line.split("\\\\")));
+
                     wtf.setEntries(entries);
 
                 } catch (IOException e) {
@@ -104,6 +101,7 @@ public class LoadSaveController extends SerializationController {
                     throw e;
                 }
 
+                wtf.setRootTag(rootTag);
                 wtf.setLastModified(lastModified);
                 wtf.setValidUntil(validUntil);
             }
@@ -178,7 +176,7 @@ public class LoadSaveController extends SerializationController {
      *
      * @param path The file to save to
      */
-    public void save(Path path) throws IOException{
+    public void save(Path path) throws IOException {
         PasswordManager passwordManager = pmController.getPasswordManager();
 
         try (OutputStream fos = Files.newOutputStream(path); ZipOutputStream zos = new ZipOutputStream(fos)) {
