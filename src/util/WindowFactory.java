@@ -31,8 +31,13 @@ public class WindowFactory {
     }
 
     public static void showDialog(String title, Parent content) {
+        showDialog(title, content, true);
+    }
+
+    public static void showDialog(String title, Parent content, boolean resizable) {
         Stage stage = createStage(title);
         stage.setScene(createScene(content));
+        stage.setResizable(resizable);
         stage.showAndWait();
     }
 }
