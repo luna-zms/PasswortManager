@@ -143,4 +143,20 @@ public class Entry {
     public int hashCode() {
         return Objects.hash(title, username, password, note, url, createdAt, lastModified, validUntil, securityQuestion, tags);
     }
+
+    @Override
+    public String toString() {
+        return "Entry{" +
+                "title='" + title + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", note='" + note + '\'' +
+                ", url=" + url +
+                ", createdAt=" + createdAt +
+                ", lastModified=" + lastModified +
+                ", validUntil=" + validUntil +
+                ", securityQuestion=" + securityQuestion +
+                ", tags=" + tags +
+                '}';
+    }
 }

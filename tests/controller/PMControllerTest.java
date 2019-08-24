@@ -53,7 +53,7 @@ public class PMControllerTest {
      * Sets up the Test object before each test run. Therefore creates a new
      * PMController instance to be tested and a random preset password. The used
      * PasswordManager instance is saved in the attribute "mockPasswordManager".
-     * 
+     *
      * @throws Exception
      *             May throw a NoSuchAlgorithmException
      */
@@ -119,7 +119,7 @@ public class PMControllerTest {
      * Calls {@link controller.PMController#setMasterPassword(String)} with a
      * randomly generated key. Afterwards tests if the secret key set in the
      * PasswordManager was derived correctly.
-     * 
+     *
      * Fails if this is not the case, thus doesn't need to return anything.
      */
     public void testSetMasterPasswordRandom() {
@@ -176,7 +176,6 @@ public class PMControllerTest {
         try {
             pmController.validateMasterPassword("");
             fail("validateMasterPassword throws no exception despite being given an empty string!");
-            return;
         } catch (IllegalArgumentException emptyPasswordException) {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successful!");
@@ -186,18 +185,16 @@ public class PMControllerTest {
         try {
             pmController.validateMasterPassword(null);
             fail("validateMasterPassword throws no exception despite being given a null object!");
-            return;
         } catch (IllegalArgumentException noPasswordException) {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successful!");
         }
-        
+
         System.out.print("Run Test with no password set in mockPasswordManager: ");
         mockPasswordManager.setMasterPasswordKey(null);
         try {
             pmController.validateMasterPassword(usedPassword);
             fail("validateMasterPassword throws no exception despite the password manager contains no key!");
-            return;
         } catch( IllegalStateException unmetConditionsException ) {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successful!");

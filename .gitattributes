@@ -1,0 +1,14 @@
+# Defaults
+*                       text=auto eol=lf
+
+# File types
+*.java                  text
+*.fxml                  text
+*.css                   text
+*.md                    text
+*.xml                   text
+
+# Specific files
+/config                 text
+/build.fxbuild          text
+/src/view/resources/**  -text

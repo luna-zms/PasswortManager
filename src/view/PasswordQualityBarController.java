@@ -5,7 +5,13 @@ import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.effect.InnerShadow;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 
 public class PasswordQualityBarController extends HBox {
 
@@ -138,6 +144,12 @@ public class PasswordQualityBarController extends HBox {
         qualityBar.setProgress(value);
 
         int colorIndex = (int) (value * 100);
+
+        if( value == 0 ) {
+            qualityBar.setEffect(new InnerShadow(BlurType.TWO_PASS_BOX, Color.RED, 5, 0.2, 0.0, 0.0));
+        } else {
+            qualityBar.setEffect(null);
+        }
 
         qualityBar.setStyle("-fx-accent: " + PERCENTAGE_TO_COLOR[colorIndex]);
     }
