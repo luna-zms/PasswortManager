@@ -92,6 +92,25 @@ public class LoadSaveControllerTest {
         assertEquals(passwordManager.getRootTag(), new Tag("TestTag"));
     }
 
+    @Test
+    public void roundTripManyTagsAndOneEntry() throws IOException {
+        Tag testTag = new Tag("TestTag");
+        testTag.getSubTags().add(new Tag("Subtag1"));
+        testTag.getSubTags().add(new Tag("Subtag2"));
+        Entry entry = new Entry("Test", "Test");
+
+        entry.getTags().add(testTag);
+
+        passwordManager.setRootTag(testTag);
+        passwordManager.getEntries().add(entry);
+
+        roundTrip(Paths.get(tempDir.toString(), "roundTripOnlyManyTagsAndOneEntry"));
+
+        assertEquals(passwordManager.getEntries().size(), 1);
+        assertEquals(passwordManager.getEntries().get(0), entry);
+        assertEquals(passwordManager.getRootTag(), testTag);
+    }
+
     private void roundTrip(Path testFile) throws IOException {
         toTest.save(testFile);
 

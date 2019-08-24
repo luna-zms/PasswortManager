@@ -92,7 +92,7 @@ public class LoadSaveController extends SerializationController {
                      InputStreamReader isr = new InputStreamReader(cis);
                      BufferedReader bur = new BufferedReader(isr)) {
 
-                    bur.lines().forEach(line -> createTagFromPath(rootTag, line.split("\\\\")));
+                    wtf.setRootTag(bur.lines().collect(() -> rootTag, (tag, line) -> createTagFromPath(tag, line.split("\\\\")), Tag::mergeWith));
 
                     wtf.setEntries(entries);
 
