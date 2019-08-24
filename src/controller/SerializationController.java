@@ -3,39 +3,42 @@ package controller;
 import model.Entry;
 import model.SecurityQuestion;
 import model.Tag;
-import util.Tuple;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import util.CsvException;
+import util.Tuple;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class SerializationController {
 
-    protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     protected PMController pmController;
 
-    public abstract void load(String path);
+    protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(EntryTableHeader.class);
+    protected CSVFormat entryParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
+
+    protected CSVFormat tagWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(TagTableHeader.class);
+    protected CSVFormat tagParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
+
+    public abstract void load(Path path) throws IOException;
 
     /**
      *
      */
-    public abstract void save(String path);
+    public abstract void save(Path path) throws IOException;
 
     /**
      * Creates the tag pointed to by path, constructing parent tags if needed
@@ -45,11 +48,11 @@ public abstract class SerializationController {
      * @return Tag pointed to by path
      */
     protected Tag createTagFromPath(Tag root, String[] path) {
-        if (path == null) return null;
-        if (root == null) return null;
-        
+        assert (root != null);
+        assert (path != null);
+
         Tag currentTag = root;
-        
+
         for (String part : Arrays.copyOfRange(path, 1, path.length)) {
             if (currentTag.hasSubTag(part)) {
                 currentTag = currentTag.getSubTags().stream().filter(tag -> tag.getName().equals(part)).findFirst().get();
@@ -65,34 +68,31 @@ public abstract class SerializationController {
     /**
      * Writes all given entries into the given OutputStream
      *
-     * @param os The OutputStream to write into
-     * @param entries List of entries to write
-     * @param root Root the tag tree 
-
+     * @param outputStream The OutputStream to write into
+     * @param entries      List of entries to write
+     * @param root         Root the tag tree
      */
     protected void writeEntriesToStream(OutputStream outputStream, List<Entry> entries, Tag root) throws IOException {
-        if (outputStream == null) return;
-        if (entries == null) return;
-        if (root == null) return;
-        
+        assert (outputStream != null);
+        assert (entries != null);
+        assert (root != null);
+
         Map<Tag, String> pathMap = root.createPathMap();
 
-        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), CSVFormat.DEFAULT);
+        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), entryWriteFormat);
 
-        // Print Header
-        printer.printRecord(EntryTableHeader.values());
         // Print Entries
         for (Entry entry : entries) {
             String paths = entry.getTags().stream().map(pathMap::get).collect(Collectors.joining(";"));
-            // NOTE: Url and validUntil can be null in entries. All other fields are initialized.
+            // NOTE: null values are written as empty strings.
             printer.printRecord(
                     entry.getTitle(),
                     entry.getUsername(),
                     entry.getPassword(),
-                    entry.getUrl() == null ? "" : entry.getUrl(),
-                    entry.getCreatedAt().format(DATE_FORMAT),
-                    entry.getLastModified().format(DATE_FORMAT),
-                    entry.getValidUntil() == null ? "" : entry.getValidUntil().format(DATE_FORMAT),
+                    entry.getUrl(),
+                    (entry.getCreatedAt() != null) ? entry.getCreatedAt().format(DATE_FORMAT) : "",
+                    (entry.getCreatedAt() != null) ? entry.getLastModified().format(DATE_FORMAT) : "",
+                    entry.getValidUntil(),
                     entry.getNote(),
                     entry.getSecurityQuestion().getQuestion(),
                     entry.getSecurityQuestion().getAnswer(),
@@ -108,62 +108,89 @@ public abstract class SerializationController {
      * @param csvEntries CSV records to parse.
      * @return Tuple of entry list and tag tree
      */
-    protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws RuntimeException, DateTimeParseException {
+    protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws CsvException, DateTimeParseException {
+        assert (csvEntries != null);
+
         List<Entry> entries = new ArrayList<>();
         Tag build_root = new Tag("build_root");
-        
+
         HashSet<String> seenRoots = new HashSet<>();
-        
+
         for (CSVRecord record : csvEntries) {
-            
+
             if (!record.isConsistent()) {
-                throw new RuntimeException("Malformed CSV: Inconsistent number of records in row");
+                throw new CsvException("Malformed CSV: Inconsistent number of records in row");
             }
 
-            Entry entry = new Entry(record.get(EntryTableHeader.TITLE), record.get(EntryTableHeader.PASSWORD));
+            // null values are written and read as empty Strings
 
-            entry.setUsername(record.get(EntryTableHeader.USERNAME));
-            entry.setCreatedAt(LocalDateTime.parse(record.get(EntryTableHeader.CREATED_AT), DATE_FORMAT));
-            entry.setLastModified(LocalDateTime.parse(record.get(EntryTableHeader.LAST_MODIFIED), DATE_FORMAT));
-            entry.setNote(record.get(EntryTableHeader.NOTE));
-            String question = record.get(EntryTableHeader.SECURITY_QUESTION);
-            String answer = record.get(EntryTableHeader.SECURITY_QUESTION_ANSWER);
+            // String attributes
+            // Since entries are initiated with empty strings, we can just write the read Strings back
+            Entry entry = new Entry(record.get(EntryTableHeader.title), record.get(EntryTableHeader.password));
+            entry.setUsername(record.get(EntryTableHeader.username));
+            entry.setNote(record.get(EntryTableHeader.note));
+
+            String question = record.get(EntryTableHeader.securityQuestion);
+            String answer = record.get(EntryTableHeader.securityQuestionAnswer);
             SecurityQuestion securityQuestion = new SecurityQuestion(question, answer);
             entry.setSecurityQuestion(securityQuestion);
-            
-            // NOTE: validUntil and Url can both be null.
-            // All other entry properties are always initialized.
-            String validUntil = record.get(EntryTableHeader.VALID_UNTIL);
-            if (validUntil != null) {
-                entry.setValidUntil(LocalDateTime.parse(validUntil, DATE_FORMAT));
+
+            // Non String attributes
+            // After initialization these attributes have a non empty string representation.
+            // Such, if we read an empty string we keep the default value, otherwise we parse the string into
+            // an object
+
+            String createdAt = record.get(EntryTableHeader.createdAt);
+            if (!createdAt.isEmpty()) {
+                try {
+                    entry.setCreatedAt(LocalDateTime.parse(createdAt, DATE_FORMAT));
+                } catch (DateTimeParseException exc) {
+                    throw new CsvException("Malformed CSV: Invalid Date format");
+                }
             }
-            
-            String url = record.get(EntryTableHeader.URL);
-            if (validUntil != null) {
+
+            String lastModified = record.get(EntryTableHeader.lastModified);
+            if (!createdAt.isEmpty()) {
+                try {
+                    entry.setLastModified(LocalDateTime.parse(lastModified, DATE_FORMAT));
+                } catch (DateTimeParseException exc) {
+                    throw new CsvException("Malformed CSV: Invalid Date format");
+                }
+            }
+
+            String validUntil = record.get(EntryTableHeader.validUntil);
+            if (!validUntil.isEmpty()) {
+                try {
+                    entry.setValidUntil(LocalDate.parse(validUntil, DATE_FORMAT));
+                } catch (DateTimeParseException exc) {
+                    throw new CsvException("Malformed CSV: Invalid Date format");
+                }
+            }
+
+            String url = record.get(EntryTableHeader.url);
+            if (!url.isEmpty()) {
                 try {
                     entry.setUrl(new URL(url));
-                }
-                catch (MalformedURLException e) {
-                    throw new RuntimeException("Malformed CSV: Malformed URL");
+                } catch (MalformedURLException exc) {
+                    throw new CsvException("Malformed CSV: Malformed URL");
                 }
             }
-            
 
-
-            String tagPaths = "build_root\\".concat(record.get(EntryTableHeader.TAG_PATHS));
+            String tagPaths = record.get(EntryTableHeader.tagPaths);
             String[] paths = tagPaths.split(";");
-            
+
             entry.getTags().addAll(
                     Arrays.stream(paths)
+                            .map(path -> "build_root\\".concat(path))
                             .map(path -> path.split("\\\\"))
                             .peek(path -> {
-                                if (path[0] == null) {
-                                    throw new RuntimeException("Malformed CSV: Path of length 0");
+                                if (path.length < 2) {
+                                    throw new CsvException("Malformed CSV: Path of length 0");
                                 }
                             })
                             .peek(path -> {
-                                if (seenRoots.contains(path[0])) {
-                                    throw new RuntimeException("Malformed CSV: Multiple roots in CSV");
+                                if (seenRoots.size() > 1) {
+                                    throw new CsvException("Malformed CSV: Multiple roots in CSV");
                                 } else {
                                     seenRoots.add(path[0]);
                                 }
@@ -174,44 +201,20 @@ public abstract class SerializationController {
 
             entries.add(entry);
         }
-        
-        Tag root = build_root.getSubTags().get(0);
-        
-        return new Tuple<List<Entry>, Tag>(entries, root);
-    }
-    
-    private enum EntryTableHeader {
-        TITLE, USERNAME, PASSWORD, URL, CREATED_AT, LAST_MODIFIED, VALID_UNTIL, NOTE, SECURITY_QUESTION, SECURITY_QUESTION_ANSWER, TAG_PATHS;
 
-        @Override
-        @SuppressWarnings("PMD.CyclomaticComplexity")
-        public String toString() {
-            switch (this) {
-                case TITLE:
-                    return "Title";
-                case USERNAME:
-                    return "Username";
-                case PASSWORD:
-                    return "Password";
-                case CREATED_AT:
-                    return "CreatedAt";
-                case URL:
-                    return "Url";
-                case LAST_MODIFIED:
-                    return "LastModified";
-                case VALID_UNTIL:
-                    return "ValidUntil";
-                case NOTE:
-                    return "Note";
-                case SECURITY_QUESTION:
-                    return "SecurityQuestion";
-                case SECURITY_QUESTION_ANSWER:
-                    return "SecurityQuestionAnswer";
-                case TAG_PATHS:
-                    return "TagPaths";
-                default:
-                    return ""; // Note: Never used. This switch is exhaustive
-            }
+        Tag root = null;
+        if (build_root.getSubTags().size() > 0) {
+            root = build_root.getSubTags().get(0);
         }
+
+        return new Tuple<>(entries, root);
+    }
+
+    protected enum EntryTableHeader {
+        title, username, password, url, createdAt, lastModified, validUntil, note, securityQuestion, securityQuestionAnswer, tagPaths
+    }
+
+    protected enum TagTableHeader {
+        name, path
     }
 }
