@@ -82,7 +82,7 @@ public class LoadSaveController extends SerializationController {
 
                 try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "1_ENTRIES");
                      InputStreamReader isr = new InputStreamReader(cis)) {
-                    Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(cis, CSVFormat.DEFAULT.withHeader(EntryTableHeader.class)));
+                    Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(isr, CSVFormat.DEFAULT.withHeader(EntryTableHeader.class)));
 
                     entries = tup.first();
                     rootTag = tup.second();
