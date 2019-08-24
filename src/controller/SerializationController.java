@@ -24,10 +24,10 @@ public abstract class SerializationController {
     protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     protected PMController pmController;
 
-    protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withHeader(EntryTableHeader.class);
+    protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(EntryTableHeader.class);
     protected CSVFormat entryParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 
-    protected CSVFormat tagWriteFormat = CSVFormat.DEFAULT.withHeader(TagTableHeader.class);
+    protected CSVFormat tagWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(TagTableHeader.class);
     protected CSVFormat tagParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 
     public abstract void load(String path);
@@ -76,7 +76,7 @@ public abstract class SerializationController {
 
         Map<Tag, String> pathMap = root.createPathMap();
 
-        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), CSVFormat.DEFAULT);
+        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), entryWriteFormat);
 
         // Print Entries
         for (Entry entry : entries) {
@@ -173,19 +173,20 @@ public abstract class SerializationController {
                 }
             }
 
-            String tagPaths = "build_root\\".concat(record.get(EntryTableHeader.tagPaths));
+            String tagPaths = record.get(EntryTableHeader.tagPaths);
             String[] paths = tagPaths.split(";");
 
             entry.getTags().addAll(
                     Arrays.stream(paths)
+                            .map(path -> "build_root\\".concat(path))
                             .map(path -> path.split("\\\\"))
                             .peek(path -> {
-                                if (path[0] == null) {
+                                if (path.length < 2) {
                                     throw new RuntimeException("Malformed CSV: Path of length 0");
                                 }
                             })
                             .peek(path -> {
-                                if (seenRoots.contains(path[0])) {
+                                if (seenRoots.size() > 1) {
                                     throw new RuntimeException("Malformed CSV: Multiple roots in CSV");
                                 } else {
                                     seenRoots.add(path[0]);
@@ -198,7 +199,10 @@ public abstract class SerializationController {
             entries.add(entry);
         }
 
-        Tag root = build_root.getSubTags().get(0);
+        Tag root = null;
+        if (build_root.getSubTags().size() > 0) {
+            root = build_root.getSubTags().get(0);
+        }
 
         return new Tuple<>(entries, root);
     }
