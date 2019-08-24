@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -158,7 +159,7 @@ public abstract class SerializationController {
             String validUntil = record.get(EntryTableHeader.validUntil);
             if (!validUntil.isEmpty()) {
                 try {
-                    entry.setValidUntil(LocalDateTime.parse(validUntil, DATE_FORMAT));
+                    entry.setValidUntil(LocalDate.parse(validUntil, DATE_FORMAT));
                 } catch (DateTimeParseException exc) {
                     throw new RuntimeException("Malformed CSV: Invalid Date format");
                 }
