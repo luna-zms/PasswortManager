@@ -1,15 +1,23 @@
 package controller;
 
+import model.Entry;
 import model.PasswordManager;
 import model.Tag;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import util.Tuple;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -26,6 +34,7 @@ import java.util.zip.ZipOutputStream;
  * De-/Encryption is done using standard AES. Each entry of the `.zip` file will be encrypted individually, the file as
  * a whole will not be encrypted
  */
+@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.CyclomaticComplexity"})
 public class LoadSaveController extends SerializationController {
 
     /**
@@ -38,6 +47,128 @@ public class LoadSaveController extends SerializationController {
      */
     public void load(String path) {
 
+        PasswordManager wtf = pmController.getPasswordManager();
+
+        try {
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, wtf.getMasterPasswordKey());
+
+            try (FileInputStream fis = new FileInputStream(path);
+                 ZipInputStream zis = new ZipInputStream(fis);
+                 //CipherInputStream cis = new CipherInputStream(zis, cipher);
+                 //InputStreamReader isr = new InputStreamReader(cis);
+                 //BufferedReader bur = new BufferedReader(isr)
+            ) {
+                LocalDateTime lastModified = null;
+                LocalDateTime validUntil = null;
+
+                List<Entry> entries = null;
+                Tag rootTag = null;
+
+                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "0_MAGIC");
+                     InputStreamReader isr = new InputStreamReader(cis);
+                     BufferedReader bur = new BufferedReader(isr)) {
+
+                    String magicLine = bur.readLine();
+
+                    if (!"siroD".equals(magicLine))
+                        throw new IOException("Mismatch in Magic Bytes, is the password correct? Read: " + magicLine);
+
+                    lastModified = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_FORMAT);
+                    validUntil = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_FORMAT);
+                } catch (IOException e) {
+                    System.exit(-1);
+                }
+
+                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "1_ENTRIES");
+                     InputStreamReader isr = new InputStreamReader(cis)) {
+                    Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(cis, CSVFormat.DEFAULT.withHeader(EntryTableHeader.class)));
+
+                    entries = tup.first();
+                    rootTag = tup.second();
+                } catch (IOException e) {
+                    System.exit(-1);
+                }
+
+                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "2_TAGS");
+                     InputStreamReader isr = new InputStreamReader(cis);
+                     BufferedReader bur = new BufferedReader(isr)) {
+                    // what the fuck java
+                    final Tag finalRootTag = rootTag;
+
+                    wtf.setRootTag(bur.lines().collect(() -> finalRootTag, (tag, line) -> createTagFromPath(tag, line.split("\\\\")), Tag::mergeWith));
+                    wtf.setEntries(entries);
+
+                } catch (IOException e) {
+                    System.exit(-1);
+                }
+
+                wtf.setLastModified(lastModified);
+                wtf.setValidUntil(validUntil);
+            }
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private CipherInputStream readEncryptedZipEntry(ZipInputStream zis, Cipher cipher, String expectedName) throws IOException {
+        ZipEntry entry = zis.getNextEntry();
+
+        if (entry == null)
+            throw new IOException("Unexpected end of zip file");
+
+        if (!expectedName.equals(entry.getName()))
+            throw new IOException("Unexpected zip entry. Expected '" + expectedName + "', got '" + entry.getName() + "'");
+
+        // CipherInputStream does the same bullshit CipherOutputStream does (see createEncryptedZipEntry())
+
+        InputStream unclosableStream = new InputStream() {
+            @Override
+            public int read(byte[] b) throws IOException {
+                return zis.read(b);
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                return zis.read(b, off, len);
+            }
+
+            @Override
+            public long skip(long n) throws IOException {
+                return zis.skip(n);
+            }
+
+            @Override
+            public int available() throws IOException {
+                return zis.available();
+            }
+
+            @Override
+            public void close() throws IOException {
+            }
+
+            @Override
+            public synchronized void mark(int readlimit) {
+                zis.mark(readlimit);
+            }
+
+            @Override
+            public synchronized void reset() throws IOException {
+                zis.reset();
+            }
+
+            @Override
+            public boolean markSupported() {
+                return zis.markSupported();
+            }
+
+            @Override
+            public int read() throws IOException {
+                return 0;
+            }
+        };
+
+        return new CipherInputStream(unclosableStream, cipher);
     }
 
     /**
@@ -45,7 +176,6 @@ public class LoadSaveController extends SerializationController {
      *
      * @param path The file to save to
      */
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void save(String path) {
         PasswordManager passwordManager = pmController.getPasswordManager();
 
@@ -124,7 +254,8 @@ public class LoadSaveController extends SerializationController {
             }
 
             @Override
-            public void close() throws IOException {}
+            public void close() throws IOException {
+            }
 
             @Override
             public void write(int i) throws IOException {
