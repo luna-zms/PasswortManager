@@ -3,7 +3,7 @@ package controller;
 import model.Entry;
 import model.Tag;
 import org.apache.commons.csv.CSVParser;
-import org.junit.*;
+import org.junit.Test;
 import util.Tuple;
 
 import java.io.ByteArrayInputStream;
@@ -21,23 +21,6 @@ public class SerializationControllerTest extends SerializationController {
     private static final String zeroEntries = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\n";
     private static final String oneEntry = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
     private static final String twoEntries = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo\ntwo,,two,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root\n";
-
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
 
     /**
      * Tests createTagFromPath with a path of length one.
@@ -107,10 +90,10 @@ public class SerializationControllerTest extends SerializationController {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Tag root = new Tag("root");
         try {
-            writeEntriesToStream(out, new ArrayList<Entry>(), root);
+            writeEntriesToStream(out, new ArrayList<>(), root);
             String result = out.toString();
             System.out.println(result);
-            assertTrue(result.equals(zeroEntries));
+            assertEquals("writeEntriesToStream creates phantom entries", result, zeroEntries);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -122,7 +105,7 @@ public class SerializationControllerTest extends SerializationController {
      * Expects entries to be printed into the OutputStream correctly.
      */
     @Test
-    public void testWriteEntitiesToStreamSingle() {
+    public void testWriteEntriesToStreamSingle() {
         Tag root = new Tag("root");
         Tag foo = new Tag("foo");
 
@@ -143,7 +126,7 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, entries, root);
             String result = out.toString();
-            assertTrue(result.equals(oneEntry));
+            assertEquals("writeEntriesToStream produces wrong output", result, oneEntry);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -181,7 +164,7 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, entries, root);
             String result = out.toString();
-            assertTrue(result.equals(twoEntries));
+            assertEquals("writeEntriesToStream produces wrong output", result, twoEntries);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -199,8 +182,8 @@ public class SerializationControllerTest extends SerializationController {
             CSVParser parser = new CSVParser(new InputStreamReader(in), entryParseFormat);
             Tuple<List<Entry>, Tag> result = parseEntries(parser.getRecords());
 
-            assertTrue(result.first().size() == 0);
-            assertNull(result.second());
+            assertEquals("parseEntries produces phantom entries", 0, result.first().size());
+            assertNull("parseEntries produces phantom tags", result.second());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -219,21 +202,21 @@ public class SerializationControllerTest extends SerializationController {
             CSVParser parser = new CSVParser(new InputStreamReader(in), entryParseFormat);
             Tuple<List<Entry>, Tag> result = parseEntries(parser.getRecords());
 
-            assertTrue(result.first().size() == 1);
+            assertEquals(1, result.first().size());
 
             Entry parsedEntry = result.first().get(0);
-            assertEquals("one", parsedEntry.getTitle());
-            assertEquals("one", parsedEntry.getPassword());
-            assertEquals(parsedEntry.getCreatedAt(), LocalDateTime.MIN);
-            assertEquals(parsedEntry.getCreatedAt(), LocalDateTime.MIN);
+            assertEquals("parseEntries reads wrong title", "one", parsedEntry.getTitle());
+            assertEquals("parseEntries reads wrong password", "one", parsedEntry.getPassword());
+            assertEquals("parseEntries parses dates incorrectly", parsedEntry.getCreatedAt(), LocalDateTime.MIN);
+            assertEquals("parseEntries parses dates incorrectly", parsedEntry.getCreatedAt(), LocalDateTime.MIN);
 
             Tag root = result.second();
-            assertNotNull(root);
-            assertEquals(1, root.getSubTags().size());
+            assertNotNull("parseEntries fails to create tag tree", root);
+            assertEquals("parseEntries produces phantom tags", 1, root.getSubTags().size());
             Tag foo = root.getSubTags().get(0);
-            assertTrue(parsedEntry.getTags().contains(root));
-            assertTrue(parsedEntry.getTags().contains(foo));
-            assertEquals(2, parsedEntry.getTags().size());
+            assertTrue("parseEntries constructs tag tree incorrectly", parsedEntry.getTags().contains(root));
+            assertTrue("parseEntries assigns tags to entries incorrectly", parsedEntry.getTags().contains(foo));
+            assertEquals("parseEntries assigns incorrect amount of tags to entry", 2, parsedEntry.getTags().size());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -251,29 +234,29 @@ public class SerializationControllerTest extends SerializationController {
             CSVParser parser = new CSVParser(new InputStreamReader(in), entryParseFormat);
             Tuple<List<Entry>, Tag> result = parseEntries(parser.getRecords());
 
-            assertTrue(result.first().size() == 2);
+            assertEquals(2, result.first().size());
 
             Entry parsedEntryOne = result.first().get(0);
-            assertEquals("one", parsedEntryOne.getTitle());
-            assertEquals("one", parsedEntryOne.getPassword());
-            assertEquals(parsedEntryOne.getCreatedAt(), LocalDateTime.MIN);
-            assertEquals(parsedEntryOne.getCreatedAt(), LocalDateTime.MIN);
+            assertEquals("parseEntries reads wrong title", "one", parsedEntryOne.getTitle());
+            assertEquals("parseEntries reads wrong password", "one", parsedEntryOne.getPassword());
+            assertEquals("parseEntries parses dates incorrectly", parsedEntryOne.getCreatedAt(), LocalDateTime.MIN);
+            assertEquals("parseEntries parses dates incorrectly", parsedEntryOne.getCreatedAt(), LocalDateTime.MIN);
 
             Entry parsedEntryTwo = result.first().get(1);
-            assertEquals("two", parsedEntryTwo.getTitle());
-            assertEquals("two", parsedEntryTwo.getPassword());
-            assertEquals(parsedEntryTwo.getCreatedAt(), LocalDateTime.MIN);
-            assertEquals(parsedEntryTwo.getCreatedAt(), LocalDateTime.MIN);
+            assertEquals("parseEntries reads wrong title", "two", parsedEntryTwo.getTitle());
+            assertEquals("parseEntries reads wrong password", "two", parsedEntryTwo.getPassword());
+            assertEquals("parseEntries parses dates incorrectly", parsedEntryTwo.getCreatedAt(), LocalDateTime.MIN);
+            assertEquals("parseEntries parses dates incorrectly", parsedEntryTwo.getCreatedAt(), LocalDateTime.MIN);
 
             Tag root = result.second();
-            assertNotNull(root);
-            assertEquals(1, root.getSubTags().size());
+            assertNotNull("parseEntries fails to construct tag tree", root);
+            assertEquals("parseEntries produces phantom tags", 1, root.getSubTags().size());
             Tag foo = root.getSubTags().get(0);
-            assertTrue(parsedEntryOne.getTags().contains(root));
-            assertTrue(parsedEntryOne.getTags().contains(foo));
-            assertEquals(2, parsedEntryOne.getTags().size());
-            assertTrue(parsedEntryTwo.getTags().contains(root));
-            assertEquals(1, parsedEntryTwo.getTags().size());
+            assertTrue("parseEntries assigns tags to entries incorrectly", parsedEntryOne.getTags().contains(root));
+            assertTrue("parseEntries assigns tags to entries incorrectly", parsedEntryOne.getTags().contains(foo));
+            assertEquals("parseEntries assigns incorrect amount of tags to entry", 2, parsedEntryOne.getTags().size());
+            assertTrue("parseEntries assigns tags to entries incorrectly", parsedEntryTwo.getTags().contains(root));
+            assertEquals("parseEntries assigns incorrect amount of tags to entry", 1, parsedEntryTwo.getTags().size());
         } catch (IOException e) {
             e.printStackTrace();
         }
