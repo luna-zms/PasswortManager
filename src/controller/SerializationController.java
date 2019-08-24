@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
 
 public abstract class SerializationController {
 
-    protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
+    protected static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
+    protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE;
     protected PMController pmController;
 
     protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(EntryTableHeader.class);
@@ -90,9 +91,9 @@ public abstract class SerializationController {
                     entry.getUsername(),
                     entry.getPassword(),
                     entry.getUrl(),
-                    (entry.getCreatedAt() != null) ? entry.getCreatedAt().format(DATE_FORMAT) : "",
-                    (entry.getCreatedAt() != null) ? entry.getLastModified().format(DATE_FORMAT) : "",
-                    entry.getValidUntil(),
+                    (entry.getCreatedAt() != null) ? entry.getCreatedAt().format(DATE_TIME_FORMAT) : "",
+                    (entry.getCreatedAt() != null) ? entry.getLastModified().format(DATE_TIME_FORMAT) : "",
+                    (entry.getValidUntil() != null) ? entry.getValidUntil().format(DATE_FORMAT) : "",
                     entry.getNote(),
                     entry.getSecurityQuestion().getQuestion(),
                     entry.getSecurityQuestion().getAnswer(),
@@ -114,7 +115,6 @@ public abstract class SerializationController {
         List<Entry> entries = new ArrayList<>();
         Tag build_root = new Tag("build_root");
 
-        HashSet<String> seenRoots = new HashSet<>();
 
         for (CSVRecord record : csvEntries) {
 
@@ -143,7 +143,7 @@ public abstract class SerializationController {
             String createdAt = record.get(EntryTableHeader.createdAt);
             if (!createdAt.isEmpty()) {
                 try {
-                    entry.setCreatedAt(LocalDateTime.parse(createdAt, DATE_FORMAT));
+                    entry.setCreatedAt(LocalDateTime.parse(createdAt, DATE_TIME_FORMAT));
                 } catch (DateTimeParseException exc) {
                     throw new CsvException("Malformed CSV: Invalid Date format");
                 }
@@ -152,7 +152,7 @@ public abstract class SerializationController {
             String lastModified = record.get(EntryTableHeader.lastModified);
             if (!createdAt.isEmpty()) {
                 try {
-                    entry.setLastModified(LocalDateTime.parse(lastModified, DATE_FORMAT));
+                    entry.setLastModified(LocalDateTime.parse(lastModified, DATE_TIME_FORMAT));
                 } catch (DateTimeParseException exc) {
                     throw new CsvException("Malformed CSV: Invalid Date format");
                 }
@@ -178,6 +178,7 @@ public abstract class SerializationController {
 
             String tagPaths = record.get(EntryTableHeader.tagPaths);
             String[] paths = tagPaths.split(";");
+            HashSet<String> seenRoots = new HashSet<>();
 
             entry.getTags().addAll(
                     Arrays.stream(paths)
@@ -188,16 +189,14 @@ public abstract class SerializationController {
                                     throw new CsvException("Malformed CSV: Path of length 0");
                                 }
                             })
-                            .peek(path -> {
-                                if (seenRoots.size() > 1) {
-                                    throw new CsvException("Malformed CSV: Multiple roots in CSV");
-                                } else {
-                                    seenRoots.add(path[0]);
-                                }
-                            })
+                            .peek(path -> seenRoots.add(path[1]))
                             .map(path -> createTagFromPath(build_root, path))
                             .collect(Collectors.toList())
             );
+
+            if (seenRoots.size() > 1) {
+                throw new CsvException("Malformed CSV: Multiple roots in tag tree");
+            }
 
             entries.add(entry);
         }

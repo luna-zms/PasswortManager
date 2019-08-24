@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -23,10 +24,10 @@ public class ImportExportController extends SerializationController {
      * @author sopr011
      */
     @Override
-    public void load(String path) {
+    public void load(Path path) {
         CSVParser csvParser = null;
 
-        try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(path))) {
+        try (BufferedReader bufferedReader = Files.newBufferedReader(path)) {
             csvParser = new CSVParser(bufferedReader, CSVFormat.DEFAULT);
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -45,8 +46,8 @@ public class ImportExportController extends SerializationController {
      * @author sopr011
      */
     @Override
-    public void save(String path) {
-        try (OutputStream outputStream = Files.newOutputStream(Paths.get(path))) {
+    public void save(Path path) {
+        try (OutputStream outputStream = Files.newOutputStream(path)) {
             PasswordManager passwordManager = pmController.getPasswordManager();
             writeEntriesToStream(outputStream, passwordManager.getEntries(), passwordManager.getRootTag());
         } catch (IOException ioe) {
