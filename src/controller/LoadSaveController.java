@@ -1,18 +1,20 @@
 package controller;
 
+import java.nio.file.Path;
+
 public class LoadSaveController extends SerializationController {
 
     /**
      *
      */
-    public void load(String path) {
+    public void load(Path path) {
 
     }
 
     /**
      *
      */
-    public void save(String path) {
+    public void save(Path path) {
 
     }
 
