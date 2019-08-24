@@ -100,7 +100,41 @@ public class LoadSaveController extends SerializationController {
         ZipEntry zipEntry = new ZipEntry(entryName);
         zos.putNextEntry(zipEntry);
 
-        return new CipherOutputStream(zos, cipher);
+        // Following problem: The CipherOutputStream only finalizes encryption in its .close() method.
+        // This means we need to close the CipherOutputStream every time we finish writing an ZipEntry before moving
+        // on to the next.
+        // HOWEVER, closing the CipherOutputStream also closes the underlying stream, which is the ZipOutputStream
+        // in our case. That means that we could only write a single encrypted ZipEntry. So we either have to
+        // re-open our ZipOutputStream for every item (which is a stupid solution)
+        // or we wrap out ZipOutputStream into a OutputStream that ignores the CipherOutputStream closing it.
+        // Which is what is done below
+
+        OutputStream unclosableStream = new OutputStream() {
+            @Override
+            public void write(byte[] b) throws IOException {
+                zos.write(b);
+            }
+
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException {
+                zos.write(b, off, len);
+            }
+
+            @Override
+            public void flush() throws IOException {
+                zos.flush();
+            }
+
+            @Override
+            public void close() throws IOException {}
+
+            @Override
+            public void write(int i) throws IOException {
+                zos.write(i);
+            }
+        };
+
+        return new CipherOutputStream(unclosableStream, cipher);
     }
 
 }
