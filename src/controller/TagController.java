@@ -1,30 +1,40 @@
 package controller;
 
 import model.Tag;
-
+/**
+ * @author sopr017
+ */
 public class TagController {
 
     protected PMController pmController;
 
     /**
-     *
+     * Adds the given child to the parent as a subTag.
+     * 
+     * @param parent The tag that child is supposed to be added to.
+     * @param child The tag that is supposed to be added.
      */
     public void addTag(Tag parent, Tag child) {
 
     }
 
     /**
-     *
+     * Removes the given child from subTagList in parent and from every Entry.
+     * 
+     * @param parent The tag where child is supposed to be removed from.
+     * @param child  The tag that is supposed to be removed.
      */
     public void removeTag(Tag parent, Tag child) {
 
     }
 
     /**
-     * @param t
-     * @param rename
+     * Changes the name of the given Tag.
+     * 
+     * @param tag The tag that is supposed to be renamed.
+     * @param rename The new name that is supposed to be set.
      */
-    public void renameTag(Tag t, String rename) {
+    public void renameTag(Tag tag, String rename) {
 
     }
 

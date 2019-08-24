@@ -28,6 +28,10 @@ public class TagTree extends TreeView<Tag> {
         return ((TagTreeItem) getRoot()).getSelectedSubTags();
     }
 
+    public void setCheckedTags(List<Tag> tags) {
+        ((TagTreeItem)getRoot()).setCheckedIfAny(tags);
+    }
+
     public Tag getSelectedTag() {
         return getSelectedItem() == null ? null : getSelectedItem().getValue();
     }
@@ -84,6 +88,10 @@ public class TagTree extends TreeView<Tag> {
         return menu;
     }
 
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
+    }
+
     private static class TagTreeItem extends TreeItem<Tag> {
         private boolean checked;
 
@@ -101,6 +109,13 @@ public class TagTree extends TreeView<Tag> {
 
         void setChecked(boolean checked) {
             this.checked = checked;
+        }
+
+        void setCheckedIfAny(List<Tag> tags) {
+            if (tags.contains(getValue()))
+                checked = true;
+
+            getChildren().forEach(treeItem -> ((TagTreeItem) treeItem).setCheckedIfAny(tags));
         }
 
         List<Tag> getSelectedSubTags() {
@@ -237,9 +252,5 @@ public class TagTree extends TreeView<Tag> {
             if (item != null)
                 item.setChecked(newValue);
         }
-    }
-
-    public void setPmController(PMController pmController) {
-        this.pmController = pmController;
     }
 }

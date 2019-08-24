@@ -10,12 +10,14 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import javafx.animation.PauseTransition;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
@@ -24,12 +26,6 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
 public class CustomPasswordFieldViewController extends HBox {
-
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
-
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
 
     @FXML // fx:id="textField"
     private TextField textField; // Value injected by FXMLLoader
@@ -42,6 +38,9 @@ public class CustomPasswordFieldViewController extends HBox {
 
     @FXML // fx:id="copyButton"
     private Button copyButton; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="toggleShowPassword"
+    private Tooltip toggleShowPassword;
 
     public CustomPasswordFieldViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CustomPasswordField.fxml"));
@@ -79,10 +78,10 @@ public class CustomPasswordFieldViewController extends HBox {
         textField.textProperty().bindBidirectional(passwordField.textProperty());
 
         eyeButton.setOnAction(event -> {
+            toggleShowPassword.setText(eyeButton.isSelected() ? "Passwort ausblenden" : "Passwort anzeigen");
             Image eyeButtonToggleImage = eyeButton.isSelected() ? eyeButtonImage : strokeEyeButtonImage;
             eyeButton.setGraphic(new ImageView(eyeButtonToggleImage));
         });
-
         copyButton.setOnAction(event -> {
             copyButton.setGraphic(new ImageView(copyButtonSelectedImage));
 
@@ -104,6 +103,34 @@ public class CustomPasswordFieldViewController extends HBox {
      */
     public void setPromptText(String prompt) {
         passwordField.setPromptText(prompt);
+        textField.setPromptText(prompt);
+    }
+    
+    /**
+     * Set content of the password field manually.
+     * 
+     * @param text Self-explaining
+     */
+    public void setText(String text) {
+        passwordField.setText(text);
+    }
+    
+    /**
+     * Get content of the password field manually.
+     * 
+     * @returns You may have a guess
+     */
+    public String getText() {
+        return passwordField.getText();
+    }
+    
+    /**
+     * Choose whether to hide the copy button
+     * 
+     * @param hide true if the copy button should not be shown else (default) false
+     */
+    public void hideCopyButton(boolean hide) {
+        copyButton.setManaged(!hide);
+        copyButton.setVisible(!hide);
     }
 }
-
