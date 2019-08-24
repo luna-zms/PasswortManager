@@ -81,14 +81,14 @@ public abstract class SerializationController {
         // Print Entries
         for (Entry entry : entries) {
             String paths = entry.getTags().stream().map(pathMap::get).collect(Collectors.joining(";"));
-            // NOTE: null values are written as empty strings. We do not need to special case null values here
+            // NOTE: null values are written as empty strings.
             printer.printRecord(
                     entry.getTitle(),
                     entry.getUsername(),
                     entry.getPassword(),
                     entry.getUrl(),
-                    entry.getCreatedAt().format(DATE_FORMAT),
-                    entry.getLastModified().format(DATE_FORMAT),
+                    (entry.getCreatedAt() != null) ? entry.getCreatedAt().format(DATE_FORMAT) : "",
+                    (entry.getCreatedAt() != null) ? entry.getLastModified().format(DATE_FORMAT) : "",
                     entry.getValidUntil(),
                     entry.getNote(),
                     entry.getSecurityQuestion().getQuestion(),
