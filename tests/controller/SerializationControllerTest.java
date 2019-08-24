@@ -5,6 +5,7 @@ import model.SecurityQuestion;
 import model.Tag;
 import org.apache.commons.csv.CSVParser;
 import org.junit.Test;
+import util.CsvException;
 import util.Tuple;
 
 import java.io.ByteArrayInputStream;
@@ -320,6 +321,22 @@ public class SerializationControllerTest extends SerializationController {
         assertEquals("answer", entry.getSecurityQuestion().getAnswer());
         assertEquals(1, entry.getTags().size());
     }
+
+    /**
+     * Tries parsing a cvs recording containing a entry, whose tag paths contain multiple tree roots
+     * Parsing should fail with a CvsException
+     */
+    @Test
+    public void testParseEntriesWithMultipleRoots() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(multipleRoots);
+            fail("parseEntries accepts csv file with multiple roots in tag tree");
+        }
+        catch (CsvException exc) {
+
+        }
+    }
+
 
 
     @Override

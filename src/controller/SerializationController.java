@@ -115,7 +115,6 @@ public abstract class SerializationController {
         List<Entry> entries = new ArrayList<>();
         Tag build_root = new Tag("build_root");
 
-        HashSet<String> seenRoots = new HashSet<>();
 
         for (CSVRecord record : csvEntries) {
 
@@ -179,6 +178,7 @@ public abstract class SerializationController {
 
             String tagPaths = record.get(EntryTableHeader.tagPaths);
             String[] paths = tagPaths.split(";");
+            HashSet<String> seenRoots = new HashSet<>();
 
             entry.getTags().addAll(
                     Arrays.stream(paths)
@@ -189,16 +189,14 @@ public abstract class SerializationController {
                                     throw new CsvException("Malformed CSV: Path of length 0");
                                 }
                             })
-                            .peek(path -> {
-                                if (seenRoots.size() > 1) {
-                                    throw new CsvException("Malformed CSV: Multiple roots in CSV");
-                                } else {
-                                    seenRoots.add(path[0]);
-                                }
-                            })
+                            .peek(path -> seenRoots.add(path[1]))
                             .map(path -> createTagFromPath(build_root, path))
                             .collect(Collectors.toList())
             );
+
+            if (seenRoots.size() > 1) {
+                throw new CsvException("Malformed CSV: Multiple roots in tag tree");
+            }
 
             entries.add(entry);
         }
