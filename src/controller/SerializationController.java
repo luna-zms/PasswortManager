@@ -31,9 +31,6 @@ public abstract class SerializationController {
     protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(EntryTableHeader.class);
     protected CSVFormat entryParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 
-    protected CSVFormat tagWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(TagTableHeader.class);
-    protected CSVFormat tagParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
-
     public abstract void load(Path path) throws IOException;
 
     /**
@@ -56,7 +53,7 @@ public abstract class SerializationController {
 
         for (String part : Arrays.copyOfRange(path, 1, path.length)) {
             if (currentTag.hasSubTag(part)) {
-                currentTag = currentTag.getSubTags().stream().filter(tag -> tag.getName().equals(part)).findFirst().get();
+                currentTag = currentTag.getSubTagByName(part);
             } else {
                 Tag tag = new Tag(part);
                 currentTag.getSubTags().add(tag);
@@ -95,8 +92,8 @@ public abstract class SerializationController {
                     (entry.getCreatedAt() != null) ? entry.getLastModified().format(DATE_TIME_FORMAT) : "",
                     (entry.getValidUntil() != null) ? entry.getValidUntil().format(DATE_FORMAT) : "",
                     entry.getNote(),
-                    entry.getSecurityQuestion().getQuestion(),
-                    entry.getSecurityQuestion().getAnswer(),
+                    (entry.getSecurityQuestion() != null) ? entry.getSecurityQuestion().getQuestion() : "",
+                    (entry.getSecurityQuestion() != null) ? entry.getSecurityQuestion().getAnswer() : "",
                     paths
             );
         }
@@ -211,9 +208,5 @@ public abstract class SerializationController {
 
     protected enum EntryTableHeader {
         title, username, password, url, createdAt, lastModified, validUntil, note, securityQuestion, securityQuestionAnswer, tagPaths
-    }
-
-    protected enum TagTableHeader {
-        name, path
     }
 }

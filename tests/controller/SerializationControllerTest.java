@@ -29,6 +29,15 @@ public class SerializationControllerTest extends SerializationController {
     private static final String twoEntries = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo\ntwo,,two,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root\n";
     private static final String fullyInitialized = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\ntitle,username,password,https://localhost,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,-999999999-01-01,note,question,answer,root\n";
     private static final String multipleRoots = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo;bar\\foo\n";
+    private static final String emptyPath = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,";
+    private static final String twoEmptyPaths = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,;";
+    private static final String inconsistentRecord = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,root;root\\foo\n";
+    private static final String invalidCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,blub,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
+    private static final String invalidLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,blub,,,,,root;root\\foo\n";
+    private static final String invalidValidUntil = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,blub,,,,root;root\\foo\n";
+    private static final String invalidURL = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,blub,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
+    private static final String emptyCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
+    private static final String emptyLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,,,,,,root;root\\foo\n";
 
     private Tuple<List<Entry>, Tag> parseCSVString(String str) {
         ByteArrayInputStream in = new ByteArrayInputStream(str.getBytes());
@@ -224,7 +233,34 @@ public class SerializationControllerTest extends SerializationController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    /**
+     * Tests writeEntriesToStream with an entry initialized to null in every field.
+     * Parsing should succeed.
+     */
+    @Test
+    public void testWriteEntriesToStreamNullEntry() {
+        Entry entry = new Entry(null, null);
+        entry.setUsername(null);
+        entry.setNote(null);
+        entry.setUrl(null);
+        entry.setCreatedAt(null);
+        entry.setLastModified(null);
+        entry.setValidUntil(null);
+        entry.setSecurityQuestion(null);
+
+        ArrayList<Entry> entries = new ArrayList<>();
+        entries.add(entry);
+
+        Tag root = new Tag("root");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            writeEntriesToStream(out, entries, root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -331,13 +367,136 @@ public class SerializationControllerTest extends SerializationController {
         try {
             Tuple<List<Entry>, Tag> result = parseCSVString(multipleRoots);
             fail("parseEntries accepts csv file with multiple roots in tag tree");
-        }
-        catch (CsvException exc) {
+        } catch (CsvException exc) {
 
         }
     }
 
+    /**
+     * Tries parsing a cvs recording containing no tag paths
+     * Parsing should fail with a CvsException
+     */
+    @Test
+    public void testParseEntriesWithEmptyTagPaths() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(emptyPath);
+            fail("parseEntries accepts cvs file with empty tag path in record");
+        } catch (CsvException exc) {
 
+        }
+    }
+
+    /**
+     * Tries parsing a cvs record containing a tag path with two empty paths
+     * Parsing should fail with a CvsException
+     */
+    @Test
+    public void testParseEntriesWithTwoEmptyPaths() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(twoEmptyPaths);
+            fail("parseEntries accepts cvs file with two empty paths in tagPaths");
+        } catch (CsvException exc) {
+
+        }
+    }
+
+    /**
+     * Tries parsing a cvs record with less fields than specified in the header
+     * Parsing should fail with a CvsException
+     */
+    @Test
+    public void testParseEntriesWithInconsistentRecord() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(inconsistentRecord);
+            fail("parseEntries accepts cvs file with inconsistent number of fields");
+        } catch (CsvException exc) {
+
+        }
+    }
+
+    /**
+     * Tries parsing a cvs record with an invalid createdAt field
+     * Parsing should fail with a CvsException
+     */
+    @Test
+    public void testParseEntriesWithInvalidCreatedAt() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(invalidCreatedAt);
+            fail("parseEntries accepts cvs file with invalid createdAt field");
+        } catch (CsvException exc) {
+
+        }
+    }
+
+    /**
+     * Tries parsing a cvs record with an invalid lastModified field
+     * Parsing should fail with a CvsException
+     */
+    @Test
+    public void testParseEntriesWithInvalidLastModified() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(invalidLastModified);
+            fail("parseEntries accepts cvs file with invalid lastModified field");
+        } catch (CsvException exc) {
+
+        }
+    }
+
+    /**
+     * Tries parsing a cvs record with an invalid validUntil field
+     * Parsing should fail with a CvsException
+     */
+    @Test
+    public void testParseEntriesWithInvalidValidUntil() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(invalidValidUntil);
+            fail("parseEntries accepts cvs file with invalid validUntil field");
+        } catch (CsvException exc) {
+
+        }
+    }
+
+    /**
+     * Tries parsing a cvs record with an invalid url field
+     * Parsing should fail with a CvsException
+     */
+    @Test
+    public void testParseEntriesWithInvalidUrl() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(invalidURL);
+            fail("parseEntries accepts cvs file with invalid url field");
+        } catch (CsvException exc) {
+
+        }
+    }
+
+    /**
+     * Tries parsing a cvs record with an empty createdAt field
+     * Parsing should succeed, with a default value in createdAt
+     */
+    @Test
+    public void testParseEntriesWithEmptyCreatedAt() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(emptyCreatedAt);
+            assertNotNull(result.first().get(0).getCreatedAt());
+        } catch (CsvException exc) {
+
+        }
+    }
+
+    /**
+     * Tries parsing a cvs record with an empty lastModified field
+     * Parsing should succeed, with a default value in lastModified
+     */
+    @Test
+    public void testParseEntriesWithEmptyLastModified() {
+        try {
+            Tuple<List<Entry>, Tag> result = parseCSVString(emptyLastModified);
+            assertNotNull(result.first().get(0).getCreatedAt());
+        } catch (CsvException exc) {
+
+        }
+    }
 
     @Override
     public void load(Path path) {
