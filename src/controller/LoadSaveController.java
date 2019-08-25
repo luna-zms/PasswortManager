@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -95,6 +96,12 @@ public class LoadSaveController extends SerializationController {
                     String nextLine;
 
                     while((nextLine = bur.readLine()) != null) {
+                        if(nextLine.isEmpty())
+                            throw new IOException("Invalid Tag read from save file.");
+
+                        if(readRootTag == null)
+                            readRootTag = new Tag(nextLine.split("\\\\")[0]);
+
                         createTagFromPath(readRootTag, nextLine.split("\\\\"));
                     }
                 } catch (IOException e) {

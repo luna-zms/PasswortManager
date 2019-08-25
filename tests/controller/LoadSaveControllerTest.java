@@ -70,8 +70,6 @@ public class LoadSaveControllerTest {
 
         roundTrip("roundTripEmptyTest");
 
-        System.out.println(passwordManager.getEntries().get(0));
-
         assertTrue(passwordManager.getEntries().isEmpty());
         assertEquals(passwordManager.getRootTag(), new Tag("TestTag"));
     }
