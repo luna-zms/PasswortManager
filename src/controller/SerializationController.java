@@ -56,7 +56,7 @@ public abstract class SerializationController {
 
         for (String part : Arrays.copyOfRange(path, 1, path.length)) {
             if (currentTag.hasSubTag(part)) {
-                currentTag = currentTag.getSubTags().stream().filter(tag -> tag.getName().equals(part)).findFirst().get();
+                currentTag = currentTag.getSubTagByName(part);
             } else {
                 Tag tag = new Tag(part);
                 currentTag.getSubTags().add(tag);
