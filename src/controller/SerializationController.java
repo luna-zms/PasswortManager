@@ -95,8 +95,8 @@ public abstract class SerializationController {
                     (entry.getCreatedAt() != null) ? entry.getLastModified().format(DATE_TIME_FORMAT) : "",
                     (entry.getValidUntil() != null) ? entry.getValidUntil().format(DATE_FORMAT) : "",
                     entry.getNote(),
-                    entry.getSecurityQuestion().getQuestion(),
-                    entry.getSecurityQuestion().getAnswer(),
+                    (entry.getSecurityQuestion() != null) ? entry.getSecurityQuestion().getQuestion() : "",
+                    (entry.getSecurityQuestion() != null) ? entry.getSecurityQuestion().getAnswer() : "",
                     paths
             );
         }
