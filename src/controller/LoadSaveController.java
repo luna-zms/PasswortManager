@@ -59,7 +59,7 @@ public class LoadSaveController extends SerializationController {
                 LocalDateTime validUntil;
 
                 List<Entry> entries;
-                Tag rootTag;
+                Tag readRootTag;
 
                 try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "MAGIC");
                      InputStreamReader isr = new InputStreamReader(cis);
@@ -82,7 +82,7 @@ public class LoadSaveController extends SerializationController {
                     Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(isr, entryParseFormat));
 
                     entries = tup.first();
-                    rootTag = tup.second();
+                    readRootTag = tup.second();
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw e;
@@ -92,16 +92,18 @@ public class LoadSaveController extends SerializationController {
                      InputStreamReader isr = new InputStreamReader(cis);
                      BufferedReader bur = new BufferedReader(isr)) {
 
-                    wtf.setRootTag(bur.lines().collect(() -> rootTag, (tag, line) -> createTagFromPath(tag, line.split("\\\\")), Tag::mergeWith));
+                    String nextLine;
 
-                    wtf.setEntries(entries);
-
+                    while((nextLine = bur.readLine()) != null) {
+                        createTagFromPath(readRootTag, nextLine.split("\\\\"));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw e;
                 }
 
-                wtf.setRootTag(rootTag);
+                wtf.setRootTag(readRootTag);
+                wtf.setEntries(entries);
                 wtf.setLastModified(lastModified);
                 wtf.setValidUntil(validUntil);
             }

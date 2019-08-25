@@ -10,16 +10,17 @@ import org.junit.Test;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 import static junit.framework.TestCase.*;
 
 public class LoadSaveControllerTest {
     private LoadSaveController toTest;
-    private PMController pmController;
     private PasswordManager passwordManager;
 
     private Path tempDir;
@@ -30,7 +31,7 @@ public class LoadSaveControllerTest {
         SecretKey key = keyGen.generateKey();
 
         passwordManager = new PasswordManager(key);
-        pmController = new PMController();
+        PMController pmController = new PMController();
 
         passwordManager.setLastModified(LocalDateTime.now());
         passwordManager.setValidUntil(LocalDateTime.now());
@@ -67,7 +68,7 @@ public class LoadSaveControllerTest {
     public void roundTripEmptyTest() throws IOException {
         passwordManager.setRootTag(new Tag("TestTag"));
 
-        roundTrip(Paths.get(tempDir.toString(), "roundTripEmptyTest"));
+        roundTrip("roundTripEmptyTest");
 
         System.out.println(passwordManager.getEntries().get(0));
 
@@ -75,6 +76,9 @@ public class LoadSaveControllerTest {
         assertEquals(passwordManager.getRootTag(), new Tag("TestTag"));
     }
 
+    /**
+     * Tests saving and then loading an instance of the password manager with only the root tag set and only one entry
+     */
     @Test
     public void roundTripOnlyRootTagAndOneEntry() throws IOException {
         Tag testTag = new Tag("TestTag");
@@ -85,13 +89,16 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        roundTrip(Paths.get(tempDir.toString(), "roundTripOnlyRootTagAndOneEntry"));
+        roundTrip("roundTripOnlyRootTagAndOneEntry");
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertEquals(passwordManager.getEntries().get(0), entry);
         assertEquals(passwordManager.getRootTag(), new Tag("TestTag"));
     }
 
+    /**
+     * Tests saving and then loading an instance of the password manager with multiple tags and one entry (which has a tag)
+     */
     @Test
     public void roundTripManyTagsAndOneEntry() throws IOException {
         Tag testTag = new Tag("TestTag");
@@ -104,19 +111,79 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        roundTrip(Paths.get(tempDir.toString(), "roundTripOnlyManyTagsAndOneEntry"));
+        roundTrip("roundTripOnlyManyTagsAndOneEntry");
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertEquals(passwordManager.getEntries().get(0), entry);
         assertEquals(passwordManager.getRootTag(), testTag);
     }
 
-    private void roundTrip(Path testFile) throws IOException {
+    /**
+     * Tests loading some data into the password manager while it already contains some of the data
+     */
+    @Test
+    public void testLoadWithExisting() throws IOException {
+        Tag existing = new Tag("TestTag");
+
+        Tag testTag = new Tag("TestTag");
+        testTag.getSubTags().add(new Tag("Subtag1"));
+        testTag.getSubTags().add(new Tag("Subtag2"));
+        Entry entry = new Entry("Test", "Test");
+
+        entry.getTags().add(testTag);
+
+        passwordManager.setRootTag(testTag);
+        passwordManager.getEntries().add(entry);
+
+        Path testFile = Paths.get(tempDir.toString(), "testLoadWithExisting");
+
         toTest.save(testFile);
 
-        passwordManager.setRootTag(null);
+        passwordManager.setRootTag(existing);
         passwordManager.getEntries().clear();
 
+        toTest.load(testFile);
+
+        assertEquals(passwordManager.getEntries().size(), 1);
+        assertEquals(passwordManager.getEntries().get(0), entry);
+        assertEquals(passwordManager.getRootTag(), testTag);
+    }
+
+    /**
+     * Tests loading some data into the password manager while it already contains some other data, which should be overridden
+     */
+    @Test
+    public void testLoadOverride() throws IOException {
+        Tag existing = new Tag("TestTag");
+        existing.getSubTags().add(new Tag("Subtag3"));
+
+        Tag testTag = new Tag("TestTag");
+        testTag.getSubTags().add(new Tag("Subtag1"));
+        testTag.getSubTags().add(new Tag("Subtag2"));
+        Entry entry = new Entry("Test", "Test");
+
+        entry.getTags().add(testTag);
+
+        passwordManager.setRootTag(testTag);
+        passwordManager.getEntries().add(entry);
+
+        Path testFile = Paths.get(tempDir.toString(), "testLoadOverride");
+
+        toTest.save(testFile);
+
+        passwordManager.setRootTag(existing);
+        passwordManager.getEntries().clear();
+
+        toTest.load(testFile);
+
+        assertEquals(1, passwordManager.getEntries().size());
+        assertEquals(entry, passwordManager.getEntries().get(0));
+        assertEquals(testTag, passwordManager.getRootTag());
+    }
+
+    private void roundTrip(String test) throws IOException {
+        Path testFile = Paths.get(tempDir.toString(), test);
+        toTest.save(testFile);
         toTest.load(testFile);
     }
 }
