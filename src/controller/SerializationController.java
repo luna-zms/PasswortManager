@@ -31,9 +31,6 @@ public abstract class SerializationController {
     protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(EntryTableHeader.class);
     protected CSVFormat entryParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 
-    protected CSVFormat tagWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(TagTableHeader.class);
-    protected CSVFormat tagParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
-
     public abstract void load(Path path) throws IOException;
 
     /**
@@ -211,9 +208,5 @@ public abstract class SerializationController {
 
     protected enum EntryTableHeader {
         title, username, password, url, createdAt, lastModified, validUntil, note, securityQuestion, securityQuestionAnswer, tagPaths
-    }
-
-    protected enum TagTableHeader {
-        name, path
     }
 }
