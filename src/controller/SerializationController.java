@@ -22,6 +22,10 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Abstract base class for serialization controllers. Provides constants, enums, and utility
+ * functions for reading password databases from CSV and writing password databases to CSV.
+ */
 public abstract class SerializationController {
 
     protected static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
@@ -43,7 +47,7 @@ public abstract class SerializationController {
      *
      * @param path Path in the Tag tree, as an array of tag names
      * @param root Root of tree to operate on
-     * @return Tag pointed to by path
+     * @return Tag Tag pointed to by path
      */
     protected Tag createTagFromPath(Tag root, String[] path) {
         assert (root != null);
@@ -64,11 +68,12 @@ public abstract class SerializationController {
     }
 
     /**
-     * Writes all given entries into the given OutputStream
+     * Writes all given entries into the given OutputStream.
      *
      * @param outputStream The OutputStream to write into
      * @param entries      List of entries to write
-     * @param root         Root the tag tree
+     * @param root         Root of the tag tree, used to map entry tags to paths in the csv records
+     * @throws IOException if an I/O Exception occurs
      */
     protected void writeEntriesToStream(OutputStream outputStream, List<Entry> entries, Tag root) throws IOException {
         assert (outputStream != null);
@@ -101,10 +106,11 @@ public abstract class SerializationController {
     }
 
     /**
-     * Parses CSVRecords into Entries.
+     * Parses CSVRecords into a list of Entries and a tag tree.
      *
      * @param csvEntries CSV records to parse.
      * @return Tuple of entry list and tag tree
+     * @throws CsvException Throws a CsvException if a csv record is malformed or contains invalid data
      */
     protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws CsvException, DateTimeParseException {
         assert (csvEntries != null);
