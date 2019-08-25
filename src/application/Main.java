@@ -1,6 +1,6 @@
 package application;
 
-import controller.PMController;
+import controller.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import util.WindowFactory;
@@ -17,6 +17,7 @@ public class Main extends Application {
     @Override
     public void init() {
         pmController = new PMController();
+        pmController.setPasswordController(new PasswordController());
     }
 
     @Override

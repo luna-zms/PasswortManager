@@ -1,16 +1,11 @@
 package view;
 
-/**
- * Sample Skeleton for 'CustomPasswordField.fxml' Controller Class
- */
-
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.ResourceBundle;
 
 import javafx.animation.PauseTransition;
-import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -22,6 +17,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+import javafx.scene.input.InputMethodEvent;
+
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
@@ -38,7 +35,7 @@ public class CustomPasswordFieldViewController extends HBox {
 
     @FXML // fx:id="copyButton"
     private Button copyButton; // Value injected by FXMLLoader
-    
+
     @FXML // fx:id="toggleShowPassword"
     private Tooltip toggleShowPassword;
 
@@ -105,32 +102,40 @@ public class CustomPasswordFieldViewController extends HBox {
         passwordField.setPromptText(prompt);
         textField.setPromptText(prompt);
     }
-    
+
     /**
      * Set content of the password field manually.
-     * 
+     *
      * @param text Self-explaining
      */
     public void setText(String text) {
         passwordField.setText(text);
     }
-    
+
     /**
      * Get content of the password field manually.
-     * 
+     *
      * @returns You may have a guess
      */
     public String getText() {
         return passwordField.getText();
     }
-    
+
     /**
      * Choose whether to hide the copy button
-     * 
+     *
      * @param hide true if the copy button should not be shown else (default) false
      */
     public void hideCopyButton(boolean hide) {
         copyButton.setManaged(!hide);
         copyButton.setVisible(!hide);
+    }
+
+    /**
+     * Register an event handler to be called as the password field's value changes.
+     * @param handler
+     */
+    public void onPasswordChanged(ChangeListener<? super String> handler) {
+        textField.textProperty().addListener(handler);
     }
 }
