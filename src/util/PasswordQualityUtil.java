@@ -20,14 +20,19 @@ public class PasswordQualityUtil {
      * @return The internal score (0-20)
      */
     public static int getScore(String pwd) {
+        if (pwd.length() == 0) return 0;
+
         int score = 0;
 
         score += lengthScore(pwd.length());
-        score += partitionScore(pwd);
         score += charGroupsExistScore(pwd);
-        // score -= dictionaryMalusScore(pwd);
+        score += repeatSameCharScore(pwd);
+        score += consecutiveCharGroupScore(pwd);
+        score += sequentialCharsScore(pwd);
+        //score += nearOnKeyboardScore(pwd);
+        //score += dictionaryExistenceScore(pwd);
 
-        return score;
+        return score <= 200 ? score : 200;
     }
 
     /**
@@ -37,7 +42,7 @@ public class PasswordQualityUtil {
      * @return The normalized score (0-1)
      */
     public static double getNormalizedScore(String pwd) {
-        return (double)getScore(pwd) / 20.0;
+        return (double)getScore(pwd) / 200.0;
     }
 
     /**
@@ -47,32 +52,7 @@ public class PasswordQualityUtil {
      * @return The internal score (0-5)
      */
     private static int lengthScore(int pwdLength) {
-        pwdLength = Math.min(25, pwdLength);
-
-        return pwdLength/5;
-    }
-
-    /**
-     * Returns the internal score for the partitioning of a password into character groups (0-10)
-     *
-     * @param pwd The password to get the partitioning score for
-     * @return The internal score (0-10)
-     */
-    private static int partitionScore(String pwd) {
-        int partitions = 1;
-        char[] pwdCharArray = pwd.toCharArray();
-        char lastChar = pwdCharArray[0];
-
-        for (int i = 1; i < pwdCharArray.length; i++) {
-            char currentChar = pwdCharArray[i];
-
-            if (CharGroup.getCharGroupOf(currentChar) != CharGroup.getCharGroupOf(lastChar)) {
-                partitions += 1;
-                lastChar = currentChar;
-            }
-        }
-
-        return (int) (((double)partitions / (double)pwd.length()) * 10.0); // Normalize partition count
+        return pwdLength*4;
     }
 
     /**
@@ -84,17 +64,74 @@ public class PasswordQualityUtil {
     private static int charGroupsExistScore(String pwd) {
         int score = 0;
 
-        for (CharGroup charGroup : CharGroup.values()) {
-            for (char c : charGroup.getChars()) {
-                if (pwd.indexOf(c) != -1) {
-                    if (charGroup == CharGroup.SPECIAL_CHARS) score += 2;
-                    else if (charGroup != CharGroup.OTHER) score += 1;
-
-                    break;
-                }
-            }
+        for (char c : pwd.toCharArray()) {
+            score += CharGroup.getCharGroupOf(c).getBonusFactor();
         }
 
         return score;
+    }
+
+    private static int repeatSameCharScore(String pwd) {
+        double score = 0.0;
+        Character lastChar = null;
+        int repeatCounter = 1;
+
+        for (char c : pwd.toCharArray()) {
+            if (lastChar != null && c == lastChar) {
+                repeatCounter += 1;
+            } else {
+                if (repeatCounter >= 2) {
+                    score += Math.pow((double)repeatCounter, 1.2);
+                }
+                repeatCounter = 1;
+            }
+
+            lastChar = c;
+        }
+
+        if (repeatCounter >= 2) {
+            score += Math.pow((double)repeatCounter, 1.2);
+        }
+
+        return -(int)score;
+    }
+
+    private static int consecutiveCharGroupScore(String pwd) {
+        int score = 0;
+        CharGroup lastCharGroup = null;
+        int sameCharGroupCounter = 1;
+
+        for (char c : pwd.toCharArray()) {
+            if (CharGroup.getCharGroupOf(c) == lastCharGroup) {
+                sameCharGroupCounter += 1;
+            } else {
+                if (sameCharGroupCounter >= 2) score += sameCharGroupCounter*2;
+                lastCharGroup = CharGroup.getCharGroupOf(c);
+                sameCharGroupCounter = 1;
+            }
+        }
+
+        return -score;
+    }
+
+    private static int sequentialCharsScore(String pwd) {
+        int score = 0;
+        Character lastChar = null;
+        int sequenceCounter = 1;
+
+        for (char c : pwd.toCharArray()) {
+            if (lastChar != null &&
+                    CharGroup.getCharGroupOf(c) == CharGroup.getCharGroupOf(lastChar) &&
+                    CharGroup.getIndexOfCharInGroup(c) == CharGroup.getIndexOfCharInGroup(lastChar)-1) {
+                sequenceCounter += 1;
+            } else {
+                if (sequenceCounter >= 3) score += sequenceCounter*3;
+                sequenceCounter = 1;
+            }
+
+            lastChar = c;
+        }
+
+        return -score;
     }
 }
