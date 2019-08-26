@@ -51,7 +51,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
     @FXML
     private TextField url;
-    
+
     @FXML
     private CustomExpirationDateViewController validDatePicker;
 
@@ -72,11 +72,11 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
     @FXML
     private Button cancelButton;
-    
+
     private Entry oldEntry = null;
-    
+
     private PMController pmController = null;
-    
+
     public CreateModifyEntryViewController() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
 		loader.setRoot(this);
@@ -84,13 +84,13 @@ public class CreateModifyEntryViewController extends AnchorPane {
 		try {
 			loader.load();
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
-		
+
 		repeatPassword.setPromptText("Passwort wiederholen");
 		String errorTitle = "Fehler: Eintrag erstellen";
-		
+
 		cancelButton.setOnAction(event -> {
 			if(isModified()){
 				//TODO: open dialog
@@ -99,17 +99,17 @@ public class CreateModifyEntryViewController extends AnchorPane {
 				stage.close();
 			}
 		});
-		
+
 		okButton.setOnAction(event -> {
 			String entryNameString = entryName.getText();
 			String passwordString = password.getText();		//TODO: Implement getText in CutomPasswordField
 			String repeatPasswordString = repeatPassword.getText();
-			
+
 			if(entryNameString.isEmpty()) {
 				errorMessage(errorTitle, "Eintragsname ist leer" ,"Das Feld Eintragsname darf nicht leer sein.");
 				return;
 			}
-			
+
 			if(!passwordString.equals(repeatPasswordString)) {
 				errorMessage(errorTitle, "Passwörter sind nicht gleich", "Bitte geben sie zweimal das gleiche Passwort ein.");
 				return;
@@ -117,7 +117,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
 			Stage stage = (Stage) getScene().getWindow();
 			stage.close();
 		});
-		
+
 		generatePasswordButton.setOnAction(event -> {
             Stage dialog = new Stage();
             dialog.setTitle("Passwort generieren");
@@ -129,7 +129,13 @@ public class CreateModifyEntryViewController extends AnchorPane {
             dialog.showAndWait();
         });
 	}
-    
+
+    /**
+     * Helper method to show an Alert dialog.
+     * @param title Title of the Alert dialog.
+     * @param header Header of the Alert dialog.
+     * @param content Content of the Alert dialog.
+     */
     private void errorMessage(String title, String header, String content) {
     	Alert errorAlert = new Alert(AlertType.ERROR);
     	errorAlert.setTitle(title);
@@ -137,7 +143,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
     	errorAlert.setContentText(content);
     	errorAlert.showAndWait();
     }
-    
+
     private boolean isModified() {
     	if(oldEntry == null) {
     		if(!entryName.getText().isEmpty()) return true;
@@ -148,7 +154,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
     		if(!securityQuestion.getText().isEmpty()) return true;
     		if(!answer.getText().isEmpty()) return true;
     		if(!notes.getText().isEmpty()) return true;
-    		
+
     		return false;
     	} else {
     		if(entryName.equals(oldEntry.getTitle())) return true;
@@ -156,17 +162,17 @@ public class CreateModifyEntryViewController extends AnchorPane {
     		if(password.equals(oldEntry.getPassword())) return true;
     		if(repeatPassword.equals(oldEntry.getPassword())) return true;
     		if(url.equals(oldEntry.getUrlString())) return true;
-    		
+
     		SecurityQuestion question = oldEntry.getSecurityQuestion();
-    		
+
     		if(securityQuestion.equals(question.getQuestion())) return true;
     		if(answer.equals(question.getAnswer())) return true;
     		if(notes.equals(oldEntry.getNote())) return true;
-    		
+
     		return false;
     	} //TODO creationDate!!!
     }
-    
+
     @FXML
     void initialize() {
         assert entryName != null : "fx:id=\"entryName\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
@@ -180,7 +186,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         assert tagTree != null : "fx:id=\"tagTree\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
-        
+
         Image generatePasswordImage = new Image(getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon_small.png"));
         generatePasswordButton.setGraphic(new ImageView(generatePasswordImage));
         initializeActionsGeneratePassword();
@@ -199,16 +205,16 @@ public class CreateModifyEntryViewController extends AnchorPane {
     	notes.setText(entry.getNote());
     	//tagTree.setCheckedTags(entry.getTags());
     }
-    
+
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
         tagTree.setPmController(pmController);
     }
-    
+
     public void init() {
     	tagTree.init(true, pmController.getPasswordManager().getRootTag());
     }
-    
+
     private void initializeActionsGeneratePassword() {
     	generatePasswordButton.setOnAction(event -> {
         });

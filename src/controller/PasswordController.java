@@ -21,17 +21,19 @@ public class PasswordController {
      * @author sopr018
      */
     public String generatePassword(PasswordGeneratorSettings pgs) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         SecureRandom rng = new SecureRandom();
         List<CharGroup> charGroups = new ArrayList<>(pgs.getCharGroups());
         int countCharGroups = charGroups.size();
+
         for (int i = 0; i < pgs.getLength(); i++) {
-            int ixCharGroup = rng.nextInt(countCharGroups);
-            CharGroup group = charGroups.get(ixCharGroup);
-            int ixChar = rng.nextInt(group.getChars().length);
-            sb.append(group.getChars()[ixChar]);
+            int charGroupIndex = rng.nextInt(countCharGroups);
+            char[] chars = charGroups.get(charGroupIndex).getChars();
+            int charIndex = rng.nextInt(chars.length);
+            builder.append(chars[charIndex]);
         }
-        return sb.toString();
+
+        return builder.toString();
     }
 
     /**
