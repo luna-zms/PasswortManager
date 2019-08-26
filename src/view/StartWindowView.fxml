@@ -50,7 +50,7 @@
                         <Tooltip text="Pfad es Passwort-Archives wählen" />
                     </tooltip>
                 </TextField>
-                <Button mnemonicParsing="false" text="..." GridPane.columnIndex="4" GridPane.rowIndex="1">
+                <Button fx:id="fileButton" mnemonicParsing="false" text="..." GridPane.columnIndex="4" GridPane.rowIndex="1">
                     <tooltip>
                         <Tooltip text="Wähle ein Passwort-Archiv" />
                     </tooltip>
