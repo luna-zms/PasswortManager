@@ -20,7 +20,7 @@ public enum CharGroup {
 
     public static CharGroup getCharGroupOf(char c) {
         for (CharGroup charGroup : CharGroup.values()) {
-            if (charGroup.getChars().toString().indexOf(c) != -1) return charGroup;
+            if (ArrayUtil.contains(charGroup.getChars(), c)) return charGroup;
         }
 
         return OTHER;

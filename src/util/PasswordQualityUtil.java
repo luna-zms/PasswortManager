@@ -1,5 +1,7 @@
 package util;
 
+import javax.sound.midi.SysexMessage;
+
 /**
  * Utils for checking the quality of a password
  *
@@ -24,14 +26,17 @@ public class PasswordQualityUtil {
 
         int score = 0;
 
-        score += lengthScore(pwd.length());
-        score += charGroupsExistScore(pwd);
-        score += repeatSameCharScore(pwd);
-        score += consecutiveCharGroupScore(pwd);
-        score += sequentialCharsScore(pwd);
+        System.out.println("Password: " + pwd);
+        score += lengthScore(pwd.length());         System.out.println("LengthScore: " + lengthScore(pwd.length()));
+        score += charGroupsExistScore(pwd);         System.out.println("CharGroupsExistScore: " + charGroupsExistScore(pwd));
+        score += repeatSameCharScore(pwd);          System.out.println("RepeatSameCharScore: " + repeatSameCharScore(pwd));
+        score += consecutiveCharGroupScore(pwd);    System.out.println("ConsecutiveCharGroupScore: " + consecutiveCharGroupScore(pwd));
+        score += sequentialCharsScore(pwd);         System.out.println("SequentialCharsScore: " + sequentialCharsScore(pwd));
         //score += nearOnKeyboardScore(pwd);
         //score += dictionaryExistenceScore(pwd);
 
+        System.out.println("Score: " + (score <= 200 ? score : 200));
+        System.out.println("=====");
         return score <= 200 ? score : 200;
     }
 
@@ -42,7 +47,6 @@ public class PasswordQualityUtil {
      * @return The normalized score (0-1)
      */
     public static double getNormalizedScore(String pwd) {
-        System.out.println((double)getScore(pwd)/200.0);
         return (double)getScore(pwd) / 200.0;
     }
 
@@ -90,9 +94,7 @@ public class PasswordQualityUtil {
             lastChar = c;
         }
 
-        if (repeatCounter >= 2) {
-            score += Math.pow((double)repeatCounter, 1.2);
-        }
+        if (repeatCounter >= 2) score += Math.pow((double)repeatCounter, 1.2);
 
         return -(int)score;
     }
@@ -111,6 +113,8 @@ public class PasswordQualityUtil {
                 sameCharGroupCounter = 1;
             }
         }
+
+        if (sameCharGroupCounter >= 2) score += sameCharGroupCounter*2;
 
         return -score;
     }
@@ -132,6 +136,8 @@ public class PasswordQualityUtil {
 
             lastChar = c;
         }
+
+        if (sequenceCounter >= 3) score += sequenceCounter*3;
 
         return -score;
     }
