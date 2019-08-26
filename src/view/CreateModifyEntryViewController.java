@@ -194,17 +194,17 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
             return false;
         } else {
-            if (entryName.equals(oldEntry.getTitle())) return true;
-            if (userName.equals(oldEntry.getUsername())) return true;
-            if (password.equals(oldEntry.getPassword())) return true;
-            if (repeatPassword.equals(oldEntry.getPassword())) return true;
-            if (url.equals(oldEntry.getUrlString())) return true;
+            if (!entryName.equals(oldEntry.getTitle())) return true;
+            if (!userName.equals(oldEntry.getUsername())) return true;
+            if (!password.equals(oldEntry.getPassword())) return true;
+            if (!repeatPassword.equals(oldEntry.getPassword())) return true;
+            if (!url.equals(oldEntry.getUrlString())) return true;
 
             SecurityQuestion question = oldEntry.getSecurityQuestion();
 
-            if (securityQuestion.equals(question.getQuestion())) return true;
-            if (answer.equals(question.getAnswer())) return true;
-            if (notes.equals(oldEntry.getNote())) return true;
+            if (!securityQuestion.equals(question.getQuestion())) return true;
+            if (!answer.equals(question.getAnswer())) return true;
+            if (!notes.equals(oldEntry.getNote())) return true;
 
             return false;
         }
