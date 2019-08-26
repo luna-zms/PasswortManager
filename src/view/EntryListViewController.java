@@ -15,6 +15,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -25,14 +26,14 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import model.Entry;
+import model.Tag;
 import util.BindingUtils;
 import util.ClipboardUtils;
 import util.WindowFactory;
 
 public class EntryListViewController extends TableView<Entry> {
-    // TODO: Maybe replace this with ObjectProperty<Tag> since general filters are supposed to be handled by the controller
     private ObjectProperty<ObservableList<Entry>> entries = new SimpleObjectProperty<>();
-    private ObjectProperty<Predicate<Entry>> filter = new SimpleObjectProperty<>();
+    private ObjectProperty<Tag> tag = new SimpleObjectProperty<>();
     private PMController pmController;
 
     public EntryListViewController() {
@@ -84,7 +85,7 @@ public class EntryListViewController extends TableView<Entry> {
         // Entry setting and filtering
         setEntries(FXCollections.emptyObservableList());
         entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
-        filter.addListener((obs, oldPred, newPred) -> applyFilter());
+        tag.addListener((obs, oldTag, newTag) -> applyFilter());
     }
 
     private static MenuItem createMenuItem(
@@ -101,8 +102,8 @@ public class EntryListViewController extends TableView<Entry> {
         return menuItem;
     }
 
-    public ObjectProperty<Predicate<Entry>> filterProperty() {
-        return filter;
+    public void filterOnce(Predicate<Entry> predicate) {
+        setItems(entries.getValue().filtered(predicate));
     }
 
     public void setEntries(ObservableList<Entry> entries) {
@@ -114,13 +115,17 @@ public class EntryListViewController extends TableView<Entry> {
         this.pmController = pmController;
     }
 
+    public ObjectProperty<Tag> tagProperty() {
+        return tag;
+    }
+
     private void applyFilter() {
         // Always non-null as it's initialized to an empty list
         ObservableList<Entry> newEntries = entries.getValue();
-        // Always non-null as there is a selected tag at all times
-        Predicate<Entry> newFilter = filter.getValue();
+        // Always non-null as it's initialized to the root tag
+        Tag newTag = tag.getValue();
 
-        setItems(newEntries.filtered(newFilter));
+        setItems(newEntries.filtered(entry -> entry.getTags().contains(newTag)));
     }
 
     private ContextMenu buildContextMenu() {

@@ -5,7 +5,9 @@ import java.io.IOException;
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
+import model.Tag;
 import util.BindingUtils;
 
 public class MainWindowViewController extends BorderPane {
@@ -32,20 +34,26 @@ public class MainWindowViewController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        // Bind preview to update when table selection changes
-        entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
-
-        // Filter entries by selected tag
-        entryList.filterProperty().bind(BindingUtils.makeBinding(
-                tagTree.getSelectionModel().selectedItemProperty(),
-                item -> (entry -> entry.getTags().contains(item.getValue())),
-                entry -> true  // Accept all by default
-        ));
+    private Tag getRootTag() {
+        return pmController.getPasswordManager().getRootTag();
     }
 
     public void init() {
-        tagTree.init(false, pmController.getPasswordManager().getRootTag());
+        // Bind preview to update when table selection changes
+        entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
+        entryList.tagProperty()
+                 .bind(BindingUtils.makeBinding(tagTree.getSelectionModel().selectedItemProperty(),
+                                                TreeItem::getValue, getRootTag()));
+        mainWindowToolbar.setOnSearchRefreshAction((filter, searchEverywhere) -> {
+            if (!searchEverywhere) {
+                filter = filter.and(entry -> entry.getTags().contains(getRootTag()));
+            }
+            entryList.filterOnce(filter);
+        });
+
+        tagTree.init(false, getRootTag());
         // Prevent limbo state of no tag being selected
         tagTree.getSelectionModel().selectFirst();
 
