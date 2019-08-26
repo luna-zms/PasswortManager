@@ -53,20 +53,22 @@ public class Main extends Application {
 
         passwordManager.setRootTag(rootTag);
 
-        Entry entry = new Entry("Hello there", "asdf");
-        entry.getTags().add(rootTag);
-        entry.getTags().add(subSubTag);
-        entry.setUsername("userSample");
+        for (int i = 0; i < 100; i++) {
+            Entry entry = new Entry("Hello there" + i, "asdf");
+            entry.getTags().add(rootTag);
+            entry.getTags().add(subSubTag);
+            entry.setUsername("userSample");
 
-        URL url = null;
-        try {
-            url = new URL("http://example.com");
-        } catch (MalformedURLException e) {
+            URL url = null;
+            try {
+                url = new URL("http://example.com/" + i);
+            } catch (MalformedURLException e) {
+            }
+
+            entry.setUrl(url);
+            entry.setValidUntil(LocalDate.MAX);
+
+            passwordManager.getEntries().add(entry);
         }
-
-        entry.setUrl(url);
-        entry.setValidUntil(LocalDate.MAX);
-
-        passwordManager.getEntries().add(entry);
     }
 }
