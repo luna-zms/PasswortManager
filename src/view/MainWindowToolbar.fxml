@@ -56,6 +56,13 @@
 						<Tooltip text="Speichern" />
 					</tooltip>
 				</Button>
+				<Button fx:id="saveAsDatabaseToolbar" contentDisplay="GRAPHIC_ONLY"
+						maxHeight="50.0" maxWidth="50.0" mnemonicParsing="false"
+						prefHeight="50.0" prefWidth="50.0">
+					<tooltip>
+						<Tooltip text="Speichern als" />
+					</tooltip>
+				</Button>
 				<Button fx:id="openDatabaseToolbar" contentDisplay="GRAPHIC_ONLY"
 					maxHeight="50.0" maxWidth="50.0" mnemonicParsing="false"
 					prefHeight="50.0" prefWidth="50.0">
