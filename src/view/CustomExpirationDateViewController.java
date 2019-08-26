@@ -99,14 +99,14 @@ public class CustomExpirationDateViewController extends GridPane {
 
 
         datePickerExpirationDate.setOnAction(event -> {
-        	LocalDate date = datePickerExpirationDate.getValue();
-        	if (LocalDate.now().isBefore(date)) {
-        		int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
-        		SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
-        		temp.setValue(noOfDaysBetween);
-        	} else {
-        		datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
-        	}
+            LocalDate date = datePickerExpirationDate.getValue();
+            if (LocalDate.now().isBefore(date)) {
+                int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
+                SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
+                temp.setValue(noOfDaysBetween);
+            } else {
+                datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
+            }
         });
 
         daysUntilExpiration.valueProperty().addListener((obs, oldValue, newValue) -> {
