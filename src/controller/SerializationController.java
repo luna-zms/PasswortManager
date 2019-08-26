@@ -1,6 +1,7 @@
 package controller;
 
 import model.Entry;
+import model.PasswordManager;
 import model.SecurityQuestion;
 import model.Tag;
 import org.apache.commons.csv.CSVFormat;
@@ -30,10 +31,15 @@ public abstract class SerializationController {
 
     protected static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE;
-    protected PMController pmController;
 
     protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(EntryTableHeader.class);
     protected CSVFormat entryParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
+
+    protected PasswordManager passwordManager;
+
+    protected SerializationController(PasswordManager passwordManager) {
+        this.passwordManager = passwordManager;
+    }
 
     public abstract void load(Path path) throws IOException;
 
