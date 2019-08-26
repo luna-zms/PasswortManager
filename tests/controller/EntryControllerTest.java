@@ -50,7 +50,7 @@ public class EntryControllerTest {
 	 * tests addEntry() with null as parameter
 	 * 
 	 */
-	public void testAddNullPointerException() {
+	public void testAddIllegalArgumentException() {
 		try{
 			entryController.addEntry(null);
 			fail("testAddNullPointerException failed");
@@ -64,7 +64,7 @@ public class EntryControllerTest {
 	 * tests removeEntry() with null as parameter
 	 * 
 	 */
-	public void testRemoveNullPointerException() {
+	public void testRemoveIllegalArgumentException() {
 		try{
 			entryController.removeEntry(null);
 			fail("testRemoveNullPointerException failed");
@@ -78,10 +78,10 @@ public class EntryControllerTest {
 	 * tests editEntry() with null as parameter
 	 * 
 	 */
-	public void testEditNullPointerException() {
+	public void testEditIllegalArgumentException() {
 		try{
 			entryController.editEntry(null, null);
-			fail("testEditNullPointerException failed");
+			fail("IllegalArgumentException() failed");
 		}catch(Exception e){
 			
 		}
