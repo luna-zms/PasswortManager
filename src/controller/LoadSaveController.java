@@ -173,7 +173,7 @@ public class LoadSaveController extends SerializationController {
 
             @Override
             public int read() throws IOException {
-                return 0;
+                return zis.read();
             }
         };
 
