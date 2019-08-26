@@ -42,7 +42,6 @@ public class EntryControllerTest {
 		pmController = new PMController();
 		pmController.setPasswordManager(pm);
 		entryController = new EntryController(pmController);
-		System.gc();
 	}
 	
 	/**
