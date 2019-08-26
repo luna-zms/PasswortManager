@@ -114,7 +114,6 @@ public class TagControllerTest {
 	@Test
 	public void testRemoveTag() {
 		passwordManager.getRootTag().getSubTags().add(exampleTagOne);
-		entryWithTags.getTags().add(exampleTagTwo);
 		
 		tagController.removeTag(passwordManager.getRootTag(), exampleTagOne);
 		
