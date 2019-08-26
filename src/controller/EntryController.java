@@ -27,13 +27,12 @@ public class EntryController {
      *
      *@param entry Entry e will be added
      */
-    public void addEntry(Entry entry) {
+    public void addEntry(Entry entry) throws NullPointerException {
     	try {
 			PasswordManager pm = pmController.getPasswordManager();
     	pm.getEntries().add(entry);
 		} catch (Exception e) {
-			System.err.println("Could not add entry");
-			e.printStackTrace();
+			throw new NullPointerException();
 		}
     	
     }
@@ -54,13 +53,12 @@ public class EntryController {
      *
      *@param entry
      */
-    public void removeEntry(Entry entry){
+    public void removeEntry(Entry entry) throws NullPointerException {
     	try {
 			PasswordManager pm = pmController.getPasswordManager();
 			pm.getEntries().remove(entry);
 		} catch (Exception e) {
-			System.err.println("Could not remove entry");
-			e.printStackTrace();
+			throw new NullPointerException();
 		}
     }
 

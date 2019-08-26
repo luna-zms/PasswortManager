@@ -27,6 +27,11 @@ public class EntryControllerTest {
 	private List<Entry> entryListAfter;
 	private EntryController entryController;
 	
+	/**
+	 * 
+	 * Resets attributes
+	 * 
+	 */
 	@Before
 	public void setUp(){
 		pm = new PasswordManager(null);
@@ -40,21 +45,50 @@ public class EntryControllerTest {
 		System.gc();
 	}
 	
-	/*  *
-	 * Tests NullPointerException for :
-	 * 		addEntry
-	 * 		removeEntry
-	 * 		editEntry
+	/**
+	 * 
+	 * tests addEntry() with null as parameter
+	 * 
 	 */
-	/*
-	@Test(expected = Exception.class)
-	public void testNullPointerException() {
-	    entryController.addEntry(null);
-	    entryController.removeEntry(null);
-	    entryController.editEntry(null, null);
-	    entryController.removeEntry(one);
+	public void testAddNullPointerException() {
+		try{
+			entryController.addEntry(null);
+			fail("testAddNullPointerException failed");
+		}catch(Exception e){
+			
+		}
+		
 	}
-	*/
+	/**
+	 * 
+	 * tests removeEntry() with null as parameter
+	 * 
+	 */
+	public void testRemoveNullPointerException() {
+		try{
+			entryController.removeEntry(null);
+			fail("testRemoveNullPointerException failed");
+		}catch(Exception e){
+			
+		}
+		
+	}
+	/**
+	 * 
+	 * tests editEntry() with null as parameter
+	 * 
+	 */
+	public void testEditNullPointerException() {
+		try{
+			entryController.editEntry(null, null);
+			fail("testEditNullPointerException failed");
+		}catch(Exception e){
+			
+		}
+		
+	}
+	
+
 	
 	/**
 	 * Tests addEntry() 
