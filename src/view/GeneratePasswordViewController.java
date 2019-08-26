@@ -15,6 +15,7 @@ import javafx.util.StringConverter;
 import util.CharGroup;
 import static util.CharGroup.*;
 import util.PasswordGeneratorSettings;
+import util.WindowFactory;
 
 public class GeneratePasswordViewController extends GridPane {
 
@@ -135,10 +136,7 @@ public class GeneratePasswordViewController extends GridPane {
      * @param content Content of the Alert dialog.
      */
     void errorMessage(String title, String content) {
-        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-        errorAlert.setHeaderText(title);
-        errorAlert.setContentText(content);
-        errorAlert.showAndWait();
+        WindowFactory.showError(title, content);
     }
 
     public GeneratePasswordViewController() {

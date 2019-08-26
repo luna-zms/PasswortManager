@@ -14,6 +14,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import util.WindowFactory;
 
 public class CreateModifyEntryViewController extends AnchorPane {
 
@@ -92,10 +93,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
      * @param content Content of the Alert dialog.
      */
     void errorMessage(String title, String content) {
-        Alert errorAlert = new Alert(AlertType.ERROR);
-        errorAlert.setHeaderText(title);
-        errorAlert.setContentText(content);
-        errorAlert.showAndWait();
+        WindowFactory.showError(title, content);
     }
 
     @FXML

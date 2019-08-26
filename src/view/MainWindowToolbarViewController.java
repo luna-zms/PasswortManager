@@ -129,10 +129,7 @@ public class MainWindowToolbarViewController extends GridPane {
      * @param content Content of the Alert dialog.
      */
     void errorMessage(String title, String content) {
-        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-        errorAlert.setHeaderText(title);
-        errorAlert.setContentText(content);
-        errorAlert.showAndWait();
+        WindowFactory.showError(title, content);
     }
 
     private void initializeActionsAddEntry() {
@@ -279,11 +276,9 @@ public class MainWindowToolbarViewController extends GridPane {
                             .stream()
                             .noneMatch(menuButton -> ((CheckBox) ((CustomMenuItem) menuButton).getContent()).isSelected())
             ) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Suchen: Fehler");
-                alert.setHeaderText("Keine Spalten ausgewählt!");
-                alert.setContentText("Mindestens eine Spalte muss in die Suche\nmiteinbezogen werden, aber keine ist ausgewählt!");
-                alert.showAndWait();
+                WindowFactory.showError("Keine Spalten ausgewählt!",
+                                        "Mindestens eine Spalte muss in die Suche\nmiteinbezogen werden, aber keine ist ausgewählt!",
+                                        "Suchen: Fehler");
                 return;
             }
 
