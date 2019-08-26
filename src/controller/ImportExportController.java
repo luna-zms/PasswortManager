@@ -12,10 +12,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class ImportExportController extends SerializationController {
+    public ImportExportController(PasswordManager passwordManager) {
+        super(passwordManager);
+    }
 
     /**
      * Reads a file for importing and passes the data to parseEntries for further use.
@@ -35,8 +37,8 @@ public class ImportExportController extends SerializationController {
         }
 
         Tuple<List<Entry>, Tag> result = parseEntries(csvParser);
-        pmController.getPasswordManager().setEntries(result.first());
-        pmController.getPasswordManager().setRootTag(result.second());
+        passwordManager.setEntries(result.first());
+        passwordManager.setRootTag(result.second());
     }
 
     /**
@@ -48,7 +50,6 @@ public class ImportExportController extends SerializationController {
     @Override
     public void save(Path path) {
         try (OutputStream outputStream = Files.newOutputStream(path)) {
-            PasswordManager passwordManager = pmController.getPasswordManager();
             writeEntriesToStream(outputStream, passwordManager.getEntries(), passwordManager.getRootTag());
         } catch (IOException ioe) {
             ioe.printStackTrace();

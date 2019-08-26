@@ -10,14 +10,12 @@ import org.junit.Test;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Base64;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 public class LoadSaveControllerTest {
     private LoadSaveController toTest;
@@ -31,15 +29,11 @@ public class LoadSaveControllerTest {
         SecretKey key = keyGen.generateKey();
 
         passwordManager = new PasswordManager(key);
-        PMController pmController = new PMController();
 
         passwordManager.setLastModified(LocalDateTime.now());
         passwordManager.setValidUntil(LocalDateTime.now());
 
-        pmController.setPasswordManager(passwordManager);
-
-        toTest = new LoadSaveController();
-        toTest.pmController = pmController;
+        toTest = new LoadSaveController(passwordManager);
 
         tempDir = Files.createTempDirectory("PMLoadSaveControllerTest");
     }
