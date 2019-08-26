@@ -1,9 +1,9 @@
 package application;
 
-import controller.PMController;
+import controller.*;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import util.WindowFactory;
 import view.MainWindowViewController;
 
 
@@ -17,6 +17,7 @@ public class Main extends Application {
     @Override
     public void init() {
         pmController = new PMController();
+        pmController.setPasswordController(new PasswordController());
     }
 
     @Override
@@ -24,9 +25,7 @@ public class Main extends Application {
         try {
             MainWindowViewController mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
-            Scene scene = new Scene(mainWindowViewController);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            primaryStage.setScene(scene);
+            primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();

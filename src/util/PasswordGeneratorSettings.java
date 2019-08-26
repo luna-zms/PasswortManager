@@ -3,28 +3,22 @@ package util;
 import java.util.EnumSet;
 
 public class PasswordGeneratorSettings {
+    private int length = 1;
+    private EnumSet<CharGroup> charGroups = EnumSet.noneOf(CharGroup.class);
 
-    private int length;
-
-    private EnumSet<CharGroup> charGroups;
-
-    private CharGroup charGroup;
-
-    private PasswordGeneratorSettings passwordGeneratorSettings;
-
-    /**
-     *
-     */
-    public PasswordGeneratorSettings() {
-
+    public void selectCharGroup(CharGroup group) {
+        charGroups.add(group);
     }
 
-    public void selectCharGroup(int CharGroup) {
-
+    public int getLength() {
+        return length;
     }
 
     public void setLength(int length) {
-
+        this.length = length;
     }
 
+    public EnumSet<CharGroup> getCharGroups() {
+        return charGroups;
+    }
 }
