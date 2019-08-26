@@ -40,7 +40,7 @@ import java.util.zip.ZipOutputStream;
 public class LoadSaveController extends SerializationController {
 
     /**
-     * Loads the password/tag database stored at the given file into {@link SerializationController#pmController}
+     * Loads the password/tag database stored at the given file into {@link SerializationController#passwordManager}
      * <p>
      * If the current {@link PMController} already contains entries and tags, the loaded data will be merged with
      * the existing data
@@ -181,7 +181,7 @@ public class LoadSaveController extends SerializationController {
     }
 
     /**
-     * Saves the password/tag database from {@link SerializationController#pmController} to the given file
+     * Saves the password/tag database from {@link SerializationController#passwordManager} to the given file
      *
      * @param path The file to save to
      */
