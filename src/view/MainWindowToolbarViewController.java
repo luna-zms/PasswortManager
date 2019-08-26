@@ -161,7 +161,7 @@ public class MainWindowToolbarViewController extends GridPane {
             Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Speichere Kopie als");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", ".pwds");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog(dialog);
@@ -187,7 +187,7 @@ public class MainWindowToolbarViewController extends GridPane {
             Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Öffne Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", ".pwds");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog(dialog);
@@ -215,7 +215,7 @@ public class MainWindowToolbarViewController extends GridPane {
             Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Importiere Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", ".csv");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog(dialog);
@@ -241,7 +241,7 @@ public class MainWindowToolbarViewController extends GridPane {
             Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exportiere Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", ".csv");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog(dialog);
