@@ -52,8 +52,8 @@ public class EntryControllerTest {
 	public void testAddIllegalArgumentException() {
 		try{
 			entryController.addEntry(null);
-			fail("testAddNullPointerException failed");
-		}catch(Exception e){
+			fail("testAddIllegalArgumentException failed");
+		}catch(IllegalArgumentException e){
 			
 		}
 		
@@ -66,8 +66,8 @@ public class EntryControllerTest {
 	public void testRemoveIllegalArgumentException() {
 		try{
 			entryController.removeEntry(null);
-			fail("testRemoveNullPointerException failed");
-		}catch(Exception e){
+			fail("testRemoveIllegalArgumentException failed");
+		}catch(IllegalArgumentException e){
 			
 		}
 		
@@ -80,8 +80,8 @@ public class EntryControllerTest {
 	public void testEditIllegalArgumentException() {
 		try{
 			entryController.editEntry(null, null);
-			fail("IllegalArgumentException() failed");
-		}catch(Exception e){
+			fail("testEditIllegalArgumentException failed");
+		}catch(IllegalArgumentException e){
 			
 		}
 		
