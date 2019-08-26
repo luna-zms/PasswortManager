@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import application.Main;
 import controller.PMController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -18,14 +17,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCharacterCombination;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.scene.layout.Region;
 import model.Entry;
 import util.BindingUtils;
 import util.ClipboardUtils;
@@ -125,17 +123,20 @@ public class EntryListViewController extends TableView<Entry> {
 
     private ContextMenu buildContextMenu() {
         ObservableValue<Entry> entry = getSelectionModel().selectedItemProperty();
+        ObservableValue<Boolean> entryIsNull = BindingUtils.makeStaticBinding(entry, false, true);
 
         // Totally didn't steal the accelerators for these from KeePass
         // TODO: Maybe deduplicate the clipboard code a bit more
         List<MenuItem> items = new ArrayList<>();
         items.add(createCopyUsername(entry));
-        items.add(createCopyPassword(entry));
+        items.add(createCopyPassword(entry, entryIsNull));
         items.addAll(createUrlItems(entry));
-        items.add(new SeparatorMenuItem());
-        items.add(createAddEntry());
 
-        // TODO: Add buttons to edit and delete an entry
+        items.add(new SeparatorMenuItem());
+
+        items.add(createAddEntry());
+        items.add(createEditEntry(entry, entryIsNull));
+        items.add(createDeleteEntry(entry, entryIsNull));
 
         ContextMenu contextMenu = new ContextMenu(items.toArray(new MenuItem[]{}));
         contextMenu.setOnAction(event -> contextMenu.hide());  // Why in the name of fuck isn't this a default???
@@ -171,8 +172,9 @@ public class EntryListViewController extends TableView<Entry> {
         return menuItems;
     }
 
-    private MenuItem createCopyPassword(ObservableValue<Entry> entry) {
-        ObservableValue<Boolean> entryIsNull = BindingUtils.makeStaticBinding(entry, false, true);
+    private MenuItem createCopyPassword(
+            ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
+    ) {
 
         return createMenuItem("Passwort kopieren", event -> {
             ClipboardUtils.copyToClipboard(entry, Entry::getPassword);
@@ -191,17 +193,55 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     private MenuItem createAddEntry() {
-        // TODO: Generalize this for edit entry as well
-        return createMenuItem("Eintrag hinzufügen",
+        return createMenuItem("Eintrag erstellen",
                               event -> {
-                                  CreateModifyEntryViewController createModifyEntryViewController = new CreateModifyEntryViewController();
-                                  // TODO: Uncomment this once it's merged in
-                                  createModifyEntryViewController.setPmController(pmController);
-                                  // createModifyEntryViewController.init()
+                                  CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
 
-                                  WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
+                                  WindowFactory.showDialog("Eintrag erstellen",
+                                                           createModifyEntryViewController);
                               },
                               new ReadOnlyBooleanWrapper(false),
                               new KeyCharacterCombination("I", KeyCombination.CONTROL_DOWN));
+    }
+
+    private MenuItem createEditEntry(
+            ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
+    ) {
+        return createMenuItem("Eintrag bearbeiten", event -> {
+            CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
+            // TODO: Uncomment this once it's merged in
+            // createModifyEntryViewController.setOldEntry(entry.getValue());
+
+            WindowFactory.showDialog("Eintrag bearbeiten", createModifyEntryViewController);
+
+            // TODO: Maybe update displayed entry if necessary
+        }, entryIsNull, new KeyCodeCombination(KeyCode.ENTER));
+    }
+
+    private MenuItem createDeleteEntry(
+            ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
+    ) {
+        return createMenuItem("Eintrag löschen", event -> {
+            // Prompt before deleting
+            Entry entryValue = entry.getValue();
+            String prompt = "Möchten Sie den Eintrag \"" + entryValue.getTitle() + "\" wirklich löschen?";
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, prompt);
+
+            // Necessary because alerts just truncate their contents by default
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+
+            alert.showAndWait()
+                 .filter(type -> type == ButtonType.OK)
+                 .ifPresent(res -> pmController.getEntryController().removeEntry(entryValue));
+        }, entryIsNull, new KeyCodeCombination(KeyCode.DELETE));
+    }
+
+    private CreateModifyEntryViewController createCreateModifyEntryViewController() {
+        CreateModifyEntryViewController createModifyEntryViewController = new CreateModifyEntryViewController();
+        createModifyEntryViewController.setPmController(pmController);
+        // TODO: Uncomment this once it's merged in
+        // createModifyEntryViewController.init()
+
+        return createModifyEntryViewController;
     }
 }
