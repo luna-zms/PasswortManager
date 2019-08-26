@@ -1,4 +1,4 @@
-package  view;
+package view;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,12 +13,15 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import util.CharGroup;
+
 import static util.CharGroup.*;
+
 import util.PasswordGeneratorSettings;
 
 public class GeneratePasswordViewController extends GridPane {
 
     private static final HashMap<String, CharGroup> NAME_TO_CHAR_GROUP = new HashMap<>();
+
     static {
         NAME_TO_CHAR_GROUP.put("Kleinbuchstaben", LOWER_CASE_LETTER);
         NAME_TO_CHAR_GROUP.put("Großbuchstaben", UPPER_CASE_LETTER);
@@ -72,9 +75,9 @@ public class GeneratePasswordViewController extends GridPane {
         lengthSlider.setLabelFormatter(new StringConverter<Double>() {
             @Override
             public String toString(Double aDouble) {
-                if( aDouble == 1.0 ) return "kurz";
-                else if( aDouble == 2.0 ) return "normal";
-                else if( aDouble == 3.0 ) return "lang";
+                if (aDouble == 1.0) return "kurz";
+                else if (aDouble == 2.0) return "normal";
+                else if (aDouble == 3.0) return "lang";
                 return "-";
             }
 
@@ -97,8 +100,8 @@ public class GeneratePasswordViewController extends GridPane {
         });
 
         spinnerValueFactory.valueProperty().addListener((obs, oldVal, newVal) -> {
-                lengthSlider.setValue(Math.min(3, Math.max(1, (int) (newVal/8))));
-                spinnerValueFactory.setValue(newVal);
+            lengthSlider.setValue(Math.min(3, Math.max(1, (int) (newVal / 8))));
+            spinnerValueFactory.setValue(newVal);
         });
         spinnerValueFactory.setValue(12);
 
@@ -120,10 +123,10 @@ public class GeneratePasswordViewController extends GridPane {
 
         accButton.setOnAction(e -> {
             Stage stage = (Stage) getScene().getWindow();
-            if( getPassword().equals("") )
+            if (getPassword().equals(""))
                 errorMessage(
-                    "Kein Passwort generiert",
-                    "Sie haben kein Passwort eingegeben oder generieren lassen!"
+                        "Kein Passwort generiert",
+                        "Sie haben kein Passwort eingegeben oder generieren lassen!"
                 );
             else stage.close();
         });
@@ -131,7 +134,8 @@ public class GeneratePasswordViewController extends GridPane {
 
     /**
      * Helper method to show an Alert dialog.
-     * @param title Title of the Alert dialog.
+     *
+     * @param title   Title of the Alert dialog.
      * @param content Content of the Alert dialog.
      */
     void errorMessage(String title, String content) {
@@ -166,9 +170,9 @@ public class GeneratePasswordViewController extends GridPane {
 
         pwGenSettings.setLength(spinnerValueFactory.getValue());
 
-        for(Node node : ((GridPane) signList.getContent()).getChildren()) {
+        for (Node node : ((GridPane) signList.getContent()).getChildren()) {
             CheckBox actualNode = (CheckBox) node;
-            if( actualNode.isSelected() ) pwGenSettings.selectCharGroup(NAME_TO_CHAR_GROUP.get(actualNode.getText()));
+            if (actualNode.isSelected()) pwGenSettings.selectCharGroup(NAME_TO_CHAR_GROUP.get(actualNode.getText()));
         }
 
         pwField.setText(pwController.generatePassword(pwGenSettings));

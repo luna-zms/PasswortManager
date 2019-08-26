@@ -68,61 +68,61 @@ public class CreateModifyEntryViewController extends AnchorPane {
     private PMController pmController = null;
 
     public CreateModifyEntryViewController() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
-		loader.setRoot(this);
-		loader.setController(this);
-		try {
-			loader.load();
-		} catch (IOException e) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+        try {
+            loader.load();
+        } catch (IOException e) {
 
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
 
-		repeatPassword.setPromptText("Passwort wiederholen");
-		String errorTitle = "Fehler: Eintrag erstellen";
+        repeatPassword.setPromptText("Passwort wiederholen");
+        String errorTitle = "Fehler: Eintrag erstellen";
 
-		cancelButton.setOnAction(event -> {
-		    boolean cancel = !isModified();
-		    // Modified:
-			if( !cancel ){
-				Alert alert = new Alert(AlertType.CONFIRMATION);
-				alert.setTitle("Abbrechen bestätigen");
-				alert.setHeaderText("Wollen Sie wirklich abbrechen?");
-				alert.setContentText("Alle ihre Änderungen gehen verloren!");
+        cancelButton.setOnAction(event -> {
+            boolean cancel = !isModified();
+            // Modified:
+            if (!cancel) {
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Abbrechen bestätigen");
+                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
+                alert.setContentText("Alle ihre Änderungen gehen verloren!");
                 Optional<ButtonType> result = alert.showAndWait();
-                if( result.isPresent() && result.get() == ButtonType.OK ) cancel = true;
-			}
-			if( cancel ){
-				Stage stage = (Stage) getScene().getWindow();
-				stage.close();
-			}
-		});
+                if (result.isPresent() && result.get() == ButtonType.OK) cancel = true;
+            }
+            if (cancel) {
+                Stage stage = (Stage) getScene().getWindow();
+                stage.close();
+            }
+        });
 
-		okButton.setOnAction(event -> {
-			String entryNameString = entryName.getText();
-			String passwordString = password.getText();
-			String repeatPasswordString = repeatPassword.getText();
+        okButton.setOnAction(event -> {
+            String entryNameString = entryName.getText();
+            String passwordString = password.getText();
+            String repeatPasswordString = repeatPassword.getText();
 
-			if(entryNameString.isEmpty()) {
-				errorMessage(errorTitle, "Eintragsname ist leer" ,"Das Feld Eintragsname darf nicht leer sein.");
-				return;
-			}
-
-			if(passwordString.isEmpty()) {
-			    errorMessage(errorTitle, "Passwort ist leer", "Das Feld Passwort darf nicht leer sein.");
-			    return;
+            if (entryNameString.isEmpty()) {
+                errorMessage(errorTitle, "Eintragsname ist leer", "Das Feld Eintragsname darf nicht leer sein.");
+                return;
             }
 
-			if(!passwordString.equals(repeatPasswordString)) {
-				errorMessage(errorTitle, "Passwörter sind nicht gleich", "Bitte geben sie zweimal das gleiche Passwort ein.");
-				return;
-			}
+            if (passwordString.isEmpty()) {
+                errorMessage(errorTitle, "Passwort ist leer", "Das Feld Passwort darf nicht leer sein.");
+                return;
+            }
 
-			Entry newEntry = new Entry(entryNameString, passwordString);
+            if (!passwordString.equals(repeatPasswordString)) {
+                errorMessage(errorTitle, "Passwörter sind nicht gleich", "Bitte geben sie zweimal das gleiche Passwort ein.");
+                return;
+            }
+
+            Entry newEntry = new Entry(entryNameString, passwordString);
             newEntry.setUsername(userName.getText());
             try {
                 URL rUrl = null;
-                if( !url.getText().isEmpty() ) rUrl = new URL(url.getText());
+                if (!url.getText().isEmpty()) rUrl = new URL(url.getText());
                 newEntry.setUrl(rUrl);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -134,7 +134,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
             newEntry.setNote(notes.getText());
             newEntry.getTags().addAll(tagTree.getCheckedTags());
 
-            if( oldEntry == null ) {
+            if (oldEntry == null) {
                 newEntry.setCreatedAt(LocalDateTime.now());
                 pmController.getEntryController().addEntry(newEntry);
             } else {
@@ -144,17 +144,17 @@ public class CreateModifyEntryViewController extends AnchorPane {
                 pmController.getEntryController().editEntry(oldEntry, newEntry);
             }
 
-			Stage stage = (Stage) getScene().getWindow();
-			stage.close();
-		});
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
 
-		generatePasswordButton.setOnAction(event -> {
+        generatePasswordButton.setOnAction(event -> {
             GeneratePasswordViewController dialogController = new GeneratePasswordViewController();
             dialogController.setPmController(pmController);
             WindowFactory.showDialog("Passwort generieren", dialogController, false);
             password.setText(dialogController.getPassword());
             String genPassword = dialogController.getPassword();
-            if( !genPassword.equals("") ) repeatPassword.setText(genPassword);
+            if (!genPassword.equals("")) repeatPassword.setText(genPassword);
         });
 
         password.onPasswordChanged((observable, oldValue, newValue) -> {
@@ -164,49 +164,50 @@ public class CreateModifyEntryViewController extends AnchorPane {
                 passwordQualityBar.setQuality(pmController.getPasswordController().checkPasswordQuality(newValue));
             }
         });
-	}
+    }
 
     /**
      * Helper method to show an Alert dialog.
-     * @param title Title of the Alert dialog.
-     * @param header Header of the Alert dialog.
+     *
+     * @param title   Title of the Alert dialog.
+     * @param header  Header of the Alert dialog.
      * @param content Content of the Alert dialog.
      */
     private void errorMessage(String title, String header, String content) {
-    	Alert errorAlert = new Alert(AlertType.ERROR);
-    	errorAlert.setTitle(title);
-    	errorAlert.setHeaderText(header);
-    	errorAlert.setContentText(content);
-    	errorAlert.showAndWait();
+        Alert errorAlert = new Alert(AlertType.ERROR);
+        errorAlert.setTitle(title);
+        errorAlert.setHeaderText(header);
+        errorAlert.setContentText(content);
+        errorAlert.showAndWait();
     }
 
     private boolean isModified() {
-    	if(oldEntry == null) {
-    		if(!entryName.getText().isEmpty()) return true;
-    		if(!userName.getText().isEmpty()) return true;
-    		if(!password.getText().isEmpty()) return true;
-    		if(!repeatPassword.getText().isEmpty()) return true;
-    		if(!url.getText().isEmpty()) return true;
-    		if(!securityQuestion.getText().isEmpty()) return true;
-    		if(!answer.getText().isEmpty()) return true;
-    		if(!notes.getText().isEmpty()) return true;
+        if (oldEntry == null) {
+            if (!entryName.getText().isEmpty()) return true;
+            if (!userName.getText().isEmpty()) return true;
+            if (!password.getText().isEmpty()) return true;
+            if (!repeatPassword.getText().isEmpty()) return true;
+            if (!url.getText().isEmpty()) return true;
+            if (!securityQuestion.getText().isEmpty()) return true;
+            if (!answer.getText().isEmpty()) return true;
+            if (!notes.getText().isEmpty()) return true;
 
-    		return false;
-    	} else {
-    		if(entryName.equals(oldEntry.getTitle())) return true;
-    		if(userName.equals(oldEntry.getUsername())) return true;
-    		if(password.equals(oldEntry.getPassword())) return true;
-    		if(repeatPassword.equals(oldEntry.getPassword())) return true;
-    		if(url.equals(oldEntry.getUrlString())) return true;
+            return false;
+        } else {
+            if (entryName.equals(oldEntry.getTitle())) return true;
+            if (userName.equals(oldEntry.getUsername())) return true;
+            if (password.equals(oldEntry.getPassword())) return true;
+            if (repeatPassword.equals(oldEntry.getPassword())) return true;
+            if (url.equals(oldEntry.getUrlString())) return true;
 
-    		SecurityQuestion question = oldEntry.getSecurityQuestion();
+            SecurityQuestion question = oldEntry.getSecurityQuestion();
 
-    		if(securityQuestion.equals(question.getQuestion())) return true;
-    		if(answer.equals(question.getAnswer())) return true;
-    		if(notes.equals(oldEntry.getNote())) return true;
+            if (securityQuestion.equals(question.getQuestion())) return true;
+            if (answer.equals(question.getAnswer())) return true;
+            if (notes.equals(oldEntry.getNote())) return true;
 
-    		return false;
-    	}
+            return false;
+        }
     }
 
     @FXML
@@ -228,19 +229,19 @@ public class CreateModifyEntryViewController extends AnchorPane {
     }
 
     public void setOldEntry(Entry entry) {
-    	oldEntry = entry;
-    	entryName.setText(entry.getTitle());
-    	userName.setText(entry.getUsername());
-    	password.setText(entry.getPassword());
-    	repeatPassword.setText(entry.getPassword());
-    	url.setText(entry.getUrlString());
-    	validDatePicker.setExpirationDate(entry.getValidUntil());
-    	validDatePicker.checkExpirationDate();
-    	SecurityQuestion question = entry.getSecurityQuestion();
-    	securityQuestion.setText(question.getQuestion());
-    	answer.setText(question.getAnswer());
-    	notes.setText(entry.getNote());
-    	tagTree.setCheckedTags(entry.getTags());
+        oldEntry = entry;
+        entryName.setText(entry.getTitle());
+        userName.setText(entry.getUsername());
+        password.setText(entry.getPassword());
+        repeatPassword.setText(entry.getPassword());
+        url.setText(entry.getUrlString());
+        validDatePicker.setExpirationDate(entry.getValidUntil());
+        validDatePicker.checkExpirationDate();
+        SecurityQuestion question = entry.getSecurityQuestion();
+        securityQuestion.setText(question.getQuestion());
+        answer.setText(question.getAnswer());
+        notes.setText(entry.getNote());
+        tagTree.setCheckedTags(entry.getTags());
     }
 
     public void setPmController(PMController pmController) {
@@ -249,6 +250,6 @@ public class CreateModifyEntryViewController extends AnchorPane {
     }
 
     public void init() {
-    	tagTree.init(true, pmController.getPasswordManager().getRootTag());
+        tagTree.init(true, pmController.getPasswordManager().getRootTag());
     }
 }

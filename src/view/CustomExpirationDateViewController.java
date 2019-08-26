@@ -19,6 +19,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.GridPane;
+
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -40,39 +41,39 @@ public class CustomExpirationDateViewController extends GridPane {
     @FXML
     private Spinner<Integer> daysUntilExpiration;
 
-    public LocalDate getExpirationDate(){
-		if (!checkBoxExpirationDate.isSelected()) return null;
-		return datePickerExpirationDate.getValue();
+    public LocalDate getExpirationDate() {
+        if (!checkBoxExpirationDate.isSelected()) return null;
+        return datePickerExpirationDate.getValue();
     }
 
-    public void setExpirationDate(LocalDate date){
-    	if (date == null){
-    		checkBoxExpirationDate.setSelected(false);
-    	} else {
-    		checkBoxExpirationDate.setSelected(true);
-    		datePickerExpirationDate.setValue(date);
-    		datePickerExpirationDate.setDisable(false);
-			daysUntilExpiration.setDisable(false);
-			datePickerExpirationDate.fireEvent(new ActionEvent());
-    	}
+    public void setExpirationDate(LocalDate date) {
+        if (date == null) {
+            checkBoxExpirationDate.setSelected(false);
+        } else {
+            checkBoxExpirationDate.setSelected(true);
+            datePickerExpirationDate.setValue(date);
+            datePickerExpirationDate.setDisable(false);
+            daysUntilExpiration.setDisable(false);
+            datePickerExpirationDate.fireEvent(new ActionEvent());
+        }
     }
 
     public void checkExpirationDate() {
-    	if( checkBoxExpirationDate.isSelected() &&
-				datePickerExpirationDate.getValue().isBefore(LocalDate.now().plusDays(1)) ) {
-			Alert alert = new Alert(AlertType.CONFIRMATION);
-			alert.setTitle("Achtung: Neues Ablaufdatum");
-			alert.setHeaderText("Ihr aktuelles Ablaufdatum liegt in der Vergangenheit");
-			alert.setContentText("Wollen Sie Ihr Ablaufdatum auf den " + LocalDate.now().plusDays(30).toString() +" setzen?");
-			Optional<ButtonType> result = alert.showAndWait();
-			if (result.isPresent() && result.get() == ButtonType.OK) setExpirationDate(LocalDate.now().plusDays(30));
-			else {
-				checkBoxExpirationDate.setSelected(false);
-				datePickerExpirationDate.setDisable(true);
-				daysUntilExpiration.setDisable(true);
-			}
-		}
-	}
+        if (checkBoxExpirationDate.isSelected() &&
+                datePickerExpirationDate.getValue().isBefore(LocalDate.now().plusDays(1))) {
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Achtung: Neues Ablaufdatum");
+            alert.setHeaderText("Ihr aktuelles Ablaufdatum liegt in der Vergangenheit");
+            alert.setContentText("Wollen Sie Ihr Ablaufdatum auf den " + LocalDate.now().plusDays(30).toString() + " setzen?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) setExpirationDate(LocalDate.now().plusDays(30));
+            else {
+                checkBoxExpirationDate.setSelected(false);
+                datePickerExpirationDate.setDisable(true);
+                daysUntilExpiration.setDisable(true);
+            }
+        }
+    }
 
     public CustomExpirationDateViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CustomExpirationDate.fxml"));
@@ -97,14 +98,14 @@ public class CustomExpirationDateViewController extends GridPane {
 
 
         datePickerExpirationDate.setOnAction(event -> {
-        	LocalDate date = datePickerExpirationDate.getValue();
-        	if (!LocalDate.now().isAfter(date)) {
-        		int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
-        		SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
-        		temp.setValue(noOfDaysBetween);
-        	} else {
-        		datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
-        	}
+            LocalDate date = datePickerExpirationDate.getValue();
+            if (!LocalDate.now().isAfter(date)) {
+                int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
+                SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
+                temp.setValue(noOfDaysBetween);
+            } else {
+                datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
+            }
         });
 
         daysUntilExpiration.valueProperty().addListener((obs, oldValue, newValue) -> {
@@ -112,15 +113,15 @@ public class CustomExpirationDateViewController extends GridPane {
         });
 
         checkBoxExpirationDate.setOnAction(event -> {
-        	if (event.getSource() instanceof CheckBox) {
-        		if(checkBoxExpirationDate.isSelected()){
+            if (event.getSource() instanceof CheckBox) {
+                if (checkBoxExpirationDate.isSelected()) {
 
-        			datePickerExpirationDate.setDisable(false);
-        			daysUntilExpiration.setDisable(false);
-        		}else{
-        			datePickerExpirationDate.setDisable(true);
-        			daysUntilExpiration.setDisable(true);
-        		}
+                    datePickerExpirationDate.setDisable(false);
+                    daysUntilExpiration.setDisable(false);
+                } else {
+                    datePickerExpirationDate.setDisable(true);
+                    daysUntilExpiration.setDisable(true);
+                }
             }
         });
     }

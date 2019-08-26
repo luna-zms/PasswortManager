@@ -37,7 +37,7 @@ public class PasswordQualityUtil {
      * @return The normalized score (0-1)
      */
     public static double getNormalizedScore(String pwd) {
-        return (double)getScore(pwd) / 20.0;
+        return (double) getScore(pwd) / 20.0;
     }
 
     /**
@@ -49,7 +49,7 @@ public class PasswordQualityUtil {
     private static int lengthScore(int pwdLength) {
         pwdLength = Math.min(25, pwdLength);
 
-        return pwdLength/5;
+        return pwdLength / 5;
     }
 
     /**
@@ -72,7 +72,7 @@ public class PasswordQualityUtil {
             }
         }
 
-        return (int) (((double)partitions / (double)pwd.length()) * 10.0); // Normalize partition count
+        return (int) (((double) partitions / (double) pwd.length()) * 10.0); // Normalize partition count
     }
 
     /**
