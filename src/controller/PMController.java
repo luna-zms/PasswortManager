@@ -1,5 +1,6 @@
 package controller;
 
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -37,6 +38,8 @@ public class PMController {
     private ImportExportController importExportController;
 
     private EntryController entryController;
+
+    private Path savePath;
 
     /**
      * Set a new master password. The master password is encrypted via a KDF and
@@ -154,5 +157,13 @@ public class PMController {
 
     public void setEntryController(EntryController entryController) {
         this.entryController = entryController;
+    }
+
+    public Path getSavePath() {
+        return savePath;
+    }
+
+    public void setSavePath(Path savePath) {
+        this.savePath = savePath;
     }
 }
