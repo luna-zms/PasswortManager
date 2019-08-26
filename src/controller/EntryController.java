@@ -31,7 +31,6 @@ public class EntryController {
         if (entry == null) throw new IllegalArgumentException();
         PasswordManager passwordManager = pmController.getPasswordManager();
         passwordManager.getEntries().add(entry);
-
     }
 
     /**
@@ -55,7 +54,6 @@ public class EntryController {
         if (entry == null) throw new IllegalArgumentException();
         PasswordManager passwordManager = pmController.getPasswordManager();
         passwordManager.getEntries().remove(entry);
-
     }
 
     /**
@@ -66,7 +64,5 @@ public class EntryController {
      */
     public List<Entry> filter(Predicate<Entry> predicate) {
         return pmController.getPasswordManager().getEntries().stream().filter(predicate).collect(Collectors.toList());
-
     }
-
 }

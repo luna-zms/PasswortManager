@@ -44,32 +44,33 @@ public class SetMasterPasswordViewController extends GridPane {
     private CustomExpirationDateViewController customExpirationDateViewController;
 
     private PMController pmController;
-    
+
     private boolean mode;
-    
+
     private void errorMessage(String title, String content) {
         Alert errorAlert = new Alert(AlertType.ERROR);
         errorAlert.setHeaderText(title);
         errorAlert.setContentText(content);
         errorAlert.showAndWait();
-        
+
     }
-    
-    private boolean setNewPassword(String newpw , String wdh){
-    	if (newpw.equals("")) errorMessage("Passwort Fehler", "Bitte geben sie ein Passwort ein");
-    	else if (!newpw.equals(wdh)) errorMessage("Passwort Fehler", "Passwort stimmt nicht überein");
-    	else {
-    		pmController.setMasterPassword(newpw);
-    		return true;
-    	}
-    	return false;
+
+    private boolean setNewPassword(String newPassword, String repeatedPassword) {
+        if (newPassword.equals("")) errorMessage("Passwort-Fehler", "Bitte geben Sie ein Passwort ein.");
+        else if (!newPassword.equals(repeatedPassword)) errorMessage("Passwort-Fehler", "Passwörter stimmen nicht überein!");
+        else {
+            pmController.setMasterPassword(newPassword);
+            return true;
+        }
+        return false;
     }
-    
-    private boolean checkOldPassword(String pwd){
-    	if(pwd.isEmpty()) errorMessage("Password Fehler", "Bitte geben sie ihr Altes Passwort ein");
-    	else return pmController.validateMasterPassword(pwd);
-    	return false;
+
+    private boolean checkOldPassword(String pwd) {
+        if (pwd.isEmpty()) errorMessage("Password-Fehler", "Bitte geben Sie Ihr altes Passwort ein.");
+        else return pmController.validateMasterPassword(pwd);
+        return false;
     }
+
     public SetMasterPasswordViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SetMasterPasswordView.fxml"));
         loader.setRoot(this);
@@ -81,54 +82,54 @@ public class SetMasterPasswordViewController extends GridPane {
 
             e.printStackTrace();
         }
-        
+
     }
-    
-    public void setMode(boolean other){
-    	mode = other;
+
+    public void setMode(boolean other) {
+        mode = other;
     }
-    public boolean getMode(){
-    	return mode;
+
+    public boolean getMode() {
+        return mode;
     }
-    
+
     @FXML
     void initialize() {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
-        
+
         customPasswordFieldBase.onPasswordChanged((observable, oldValue, newValue) -> {
             if (newValue.equals("")) {
-            		masterPasswordQualityBar.setQuality(0);
+                masterPasswordQualityBar.setQuality(0);
             } else {
-            		masterPasswordQualityBar.setQuality(pmController.getPasswordController().checkPasswordQuality(newValue));
+                masterPasswordQualityBar.setQuality(pmController.getPasswordController().checkPasswordQuality(newValue));
             }
         });
-        
-       cancelButton.setOnAction(event ->{
-    	   Stage stage = (Stage) getScene().getWindow();
-           stage.close();
-       });
-       
-       okButton.setOnAction(event -> {
-    	   if (mode){ 
-    		   if (!checkOldPassword(customPasswordFieldOldPassword.getText())) {
-    			   errorMessage("Passwort Fehler", "Altes Passwort ist Falsch");
-    		   }
-    		   else if(setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())){
-    			   Stage stage = (Stage) getScene().getWindow();
-    			   stage.close();
-    		   }
-    	   }else{
-    		   if(setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())){
-    			   Stage stage = (Stage) getScene().getWindow();
-    			   stage.close();
-    		   }
-    	   }
-    	   
-       });
-       
+
+        cancelButton.setOnAction(event -> {
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
+
+        okButton.setOnAction(event -> {
+            if (mode) {
+                if (!checkOldPassword(customPasswordFieldOldPassword.getText())) {
+                    errorMessage("Passwort-Fehler", "Altes Passwort ist falsch!");
+                } else if (setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())) {
+                    Stage stage = (Stage) getScene().getWindow();
+                    stage.close();
+                }
+            } else {
+                if (setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())) {
+                    Stage stage = (Stage) getScene().getWindow();
+                    stage.close();
+                }
+            }
+
+        });
+
     }
-     
+
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
     }
