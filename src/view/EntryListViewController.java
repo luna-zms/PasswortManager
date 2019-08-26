@@ -216,8 +216,7 @@ public class EntryListViewController extends TableView<Entry> {
     ) {
         return createMenuItem("Eintrag bearbeiten", event -> {
             CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-            // TODO: Uncomment this once it's merged in
-            // createModifyEntryViewController.setOldEntry(entry.getValue());
+            createModifyEntryViewController.setOldEntry(entry.getValue());
 
             WindowFactory.showDialog("Eintrag bearbeiten", createModifyEntryViewController);
 
@@ -246,8 +245,7 @@ public class EntryListViewController extends TableView<Entry> {
     private CreateModifyEntryViewController createCreateModifyEntryViewController() {
         CreateModifyEntryViewController createModifyEntryViewController = new CreateModifyEntryViewController();
         createModifyEntryViewController.setPmController(pmController);
-        // TODO: Uncomment this once it's merged in
-        // createModifyEntryViewController.init()
+        createModifyEntryViewController.init();
 
         return createModifyEntryViewController;
     }
