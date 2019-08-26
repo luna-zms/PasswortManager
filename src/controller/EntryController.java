@@ -29,8 +29,8 @@ public class EntryController {
     public void addEntry(Entry entry) {
 
         if (entry == null) throw new IllegalArgumentException();
-        PasswordManager pm = pmController.getPasswordManager();
-        pm.getEntries().add(entry);
+        PasswordManager passwordManager = pmController.getPasswordManager();
+        passwordManager.getEntries().add(entry);
 
     }
 
