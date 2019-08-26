@@ -27,18 +27,16 @@ public class ImportExportController extends SerializationController {
      */
     @Override
     public void load(Path path) {
-        CSVParser csvParser = null;
-
         try (BufferedReader bufferedReader = Files.newBufferedReader(path)) {
-            csvParser = new CSVParser(bufferedReader, CSVFormat.DEFAULT);
+            CSVParser csvParser = csvParser = new CSVParser(bufferedReader, CSVFormat.DEFAULT);
+
+            Tuple<List<Entry>, Tag> result = parseEntries(csvParser);
+            passwordManager.setEntries(result.first());
+            passwordManager.setRootTag(result.second());
         } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(1);
         }
-
-        Tuple<List<Entry>, Tag> result = parseEntries(csvParser);
-        passwordManager.setEntries(result.first());
-        passwordManager.setRootTag(result.second());
     }
 
     /**
