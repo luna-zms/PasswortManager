@@ -116,7 +116,7 @@ public abstract class SerializationController {
         assert (csvEntries != null);
 
         List<Entry> entries = new ArrayList<>();
-        Tag build_root = new Tag("build_root");
+        Tag buildRoot = new Tag("build_root");
 
 
         for (CSVRecord record : csvEntries) {
@@ -193,7 +193,7 @@ public abstract class SerializationController {
                                 }
                             })
                             .peek(path -> seenRoots.add(path[1]))
-                            .map(path -> createTagFromPath(build_root, path))
+                            .map(path -> createTagFromPath(buildRoot, path))
                             .collect(Collectors.toList())
             );
 
@@ -205,8 +205,8 @@ public abstract class SerializationController {
         }
 
         Tag root = null;
-        if (build_root.getSubTags().size() > 0) {
-            root = build_root.getSubTags().get(0);
+        if (buildRoot.getSubTags().size() > 0) {
+            root = buildRoot.getSubTags().get(0);
         }
 
         return new Tuple<>(entries, root);
