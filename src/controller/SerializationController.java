@@ -112,6 +112,7 @@ public abstract class SerializationController {
      * @return Tuple of entry list and tag tree
      * @throws CsvException Throws a CsvException if a csv record is malformed or contains invalid data
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength", "PMD.CyclomaticComplexity")
     protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws CsvException, DateTimeParseException {
         assert (csvEntries != null);
 
@@ -182,13 +183,16 @@ public abstract class SerializationController {
             String tagPaths = record.get(EntryTableHeader.tagPaths);
             String[] paths = tagPaths.split(";", -42);
             HashSet<String> seenRoots = new HashSet<>();
+            
+            final int minimumPathLength = 2;
+            final int maximumRoots = 1;
 
             entry.getTags().addAll(
                     Arrays.stream(paths)
                             .map(path -> "build_root\\".concat(path))
                             .map(path -> path.split("\\\\"))
                             .peek(path -> {
-                                if (path.length < 2) {
+                                if (path.length < minimumPathLength) {
                                     throw new CsvException("Ungültiges CSV: Tag Pfad der Länge Null");
                                 }
                             })
@@ -197,7 +201,7 @@ public abstract class SerializationController {
                             .collect(Collectors.toList())
             );
 
-            if (seenRoots.size() > 1) {
+            if (seenRoots.size() > maximumRoots) {
                 throw new CsvException("Ungültiges CSV: Mehrere Wurzeln in Tag Baum");
             }
 
