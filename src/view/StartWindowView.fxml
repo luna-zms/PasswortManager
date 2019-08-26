@@ -68,7 +68,7 @@
                 <RowConstraints maxHeight="54.0" minHeight="8.0" prefHeight="27.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" text="Öffnen"
+                <Button fx:id="openButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" text="Öffnen"
                         GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 <Button mnemonicParsing="false" text="Neues Archiv ..." GridPane.rowIndex="1">
                     <tooltip>

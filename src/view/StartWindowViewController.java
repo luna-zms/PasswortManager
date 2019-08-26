@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -21,9 +22,14 @@ public class StartWindowViewController extends GridPane {
     
     @FXML
     private Button fileButton;
+    
+    @FXML
+    private Button openButton;
 
     @FXML
     private CustomPasswordFieldViewController customPasswordField;
+    
+    private PMController pmController = null;
 
     public StartWindowViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StartWindowView.fxml"));
@@ -37,6 +43,12 @@ public class StartWindowViewController extends GridPane {
         }
         
         initFileChooser();
+        
+        openButton.setOnAction(event -> {
+        	if(choosePasswordAchivePath.getText().isEmpty()){
+        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben sie das Paswort für das gewählte Archiv ein", "Fehler");
+        	}
+        });
     }
     
     private void initFileChooser() {
@@ -57,5 +69,9 @@ public class StartWindowViewController extends GridPane {
             if (file == null) return;
             choosePasswordAchivePath.setText(file.toString());
         });
+    }
+    
+    public void setPMController(PMController pmController) {
+    	this.pmController = pmController;
     }
 }
