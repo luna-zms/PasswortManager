@@ -2,20 +2,25 @@ package view;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.chrono.Chronology;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import model.Entry;
+import util.CsvException;
 import util.WindowFactory;
 
 public class MainWindowToolbarViewController extends GridPane {
@@ -28,6 +33,9 @@ public class MainWindowToolbarViewController extends GridPane {
 
     @FXML
     private Button openDatabaseToolbar;
+
+    @FXML
+    private Button saveAsDatabaseToolbar;
 
     @FXML
     private Button setMasterPasswordToolbar;
@@ -58,6 +66,10 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private PMController pmController;
 
+    private BiConsumer<Predicate<Entry>, Boolean> onSearchRefreshAction;
+
+    private Consumer<String> openDatabaseFileAction;
+
     public MainWindowToolbarViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
         loader.setRoot(this);
@@ -83,6 +95,10 @@ public class MainWindowToolbarViewController extends GridPane {
         openDatabaseToolbar.setGraphic(new ImageView(openDatabaseImage));
         initializeActionsOpenDatabase();
 
+        Image saveAsDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_as_toolbar_icon.png"));
+        saveAsDatabaseToolbar.setGraphic(new ImageView(saveAsDatabaseImage));
+        initializeActionsSaveAsDatabase();
+
         Image setMasterPwImage = new Image(getClass().getResourceAsStream("/view/resources/change_master_password_toolbar_icon.png"));
         setMasterPasswordToolbar.setGraphic(new ImageView(setMasterPwImage));
         initializeActionsSetMasterPassword();
@@ -107,6 +123,18 @@ public class MainWindowToolbarViewController extends GridPane {
         selectedColumnsSearchbar.setGraphic(new ImageView(filterButtonImage));
     }
 
+    /**
+     * Helper method to show an Alert dialog.
+     * @param title Title of the Alert dialog.
+     * @param content Content of the Alert dialog.
+     */
+    void errorMessage(String title, String content) {
+        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+        errorAlert.setHeaderText(title);
+        errorAlert.setContentText(content);
+        errorAlert.showAndWait();
+    }
+
     private void initializeActionsAddEntry() {
         addEntryToolbar.setOnAction(event -> {
             CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
@@ -117,7 +145,43 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsSaveDatabase() {
         saveDatabaseToolbar.setOnAction(event -> {
+            try {
+                pmController.getLoadSaveController().save(pmController.getSavePath());
+            } catch( CsvException exc ) {
+                errorMessage("Speichern fehlgeschlagen", "Aufgrund eines internen Fehler ist das Speichern " +
+                        "fehlgeschlagen. Versuchen Sie es später erneut und starten sie eventuell Ihren Computer neu. " +
+                        "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
+            } catch( IOException ioExc ) {
+                errorMessage("Speichern fehlgeschlagen", "Aufgrund eines Ausgabefehlers ist das Speichern " +
+                        "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
+                        "zu ihr existiert.");
+            }
+        });
+    }
 
+    private void initializeActionsSaveAsDatabase() {
+        saveAsDatabaseToolbar.setOnAction(event -> {
+            Stage dialog = WindowFactory.createStage();
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Speichere Kopie als");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", ".pwds");
+            fileChooser.getExtensionFilters().add(extFilter);
+            fileChooser.setSelectedExtensionFilter(extFilter);
+            File file = fileChooser.showSaveDialog(dialog);
+
+            if (file == null) return;
+
+            try {
+                pmController.getLoadSaveController().save(file.toPath());
+            } catch( CsvException exc) {
+                errorMessage("Speichern fehlgeschlagen", "Aufgrund eines internen Fehler ist das Speichern" +
+                        "fehlgeschlagen. Versuchen Sie es später erneut und starten sie eventuell Ihren Computer neu. " +
+                        "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
+            } catch( IOException ioExc ) {
+                errorMessage("Speichern fehlgeschlagen", "Aufgrund eines Ausgabefehlers ist das Speichern " +
+                        "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
+                        "zu ihr existiert.");
+            }
         });
     }
 
@@ -132,6 +196,12 @@ public class MainWindowToolbarViewController extends GridPane {
             File file = fileChooser.showOpenDialog(dialog);
 
             if (file == null) return;
+            if( !file.exists() ) {
+                errorMessage("Fehler beim Öffnen", "Die gewählte Datei existiert nicht!");
+                return;
+            }
+
+            openDatabaseFileAction.accept(file.getPath());
         });
     }
 
@@ -154,6 +224,18 @@ public class MainWindowToolbarViewController extends GridPane {
             File file = fileChooser.showOpenDialog(dialog);
 
             if (file == null) return;
+            if( !file.exists() ) {
+                errorMessage("Fehler beim Öffnen", "Die gewählte Datei existiert nicht!");
+                return;
+            }
+
+            try {
+                pmController.getImportExportController().load(file.toPath());
+            } catch( CsvException exc ) {
+                errorMessage("Fehler beim Import", "Beim Importieren der Datei ist ein Fehler aufgetreten. " +
+                        "Überprüfen Sie, ob die Datei das nötige Format erfüllt. " +
+                        "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
+            }
         });
     }
 
@@ -168,11 +250,22 @@ public class MainWindowToolbarViewController extends GridPane {
             File file = fileChooser.showSaveDialog(dialog);
 
             if (file == null) return;
+
+            try {
+                pmController.getImportExportController().save(file.toPath());
+            } catch( CsvException exc ) {
+                errorMessage("Fehler beim Export", "Beim Exportieren der Datenbank ist ein Fehler " +
+                        "aufgetreten. Starten Sie das Programm erneut, wenn weiterhin Fehler auftreten. " +
+                        "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
+            }
         });
     }
 
     private void initializeActionsGeneratePassword() {
         generatePasswordToolbar.setOnAction(event -> {
+            GeneratePasswordViewController dialogController = new GeneratePasswordViewController();
+            dialogController.setPmController(pmController);
+            WindowFactory.showDialog("Einstellungen: Master-Passwort setzen", dialogController, false);
         });
     }
 
@@ -193,18 +286,58 @@ public class MainWindowToolbarViewController extends GridPane {
                 alert.showAndWait();
                 return;
             }
-            ;
 
-            Chronology expiredUntil = filterExpiringSearchbar.getChronology();
+            LocalDate expiredUntil = filterExpiringSearchbar.getValue();
 
             boolean searchEverywhere = searchEverywhereSearchbar.isSelected();
 
-            // TODO: start search and filter (using EntryController.filter)
-        });
+            onSearchRefreshAction.accept((entry -> {
+                LocalDate validUntil = entry.getValidUntil();
+                if( expiredUntil != null && validUntil != null && (
+                        expiredUntil.isAfter( validUntil ) || expiredUntil.isEqual( validUntil )
+                ) )
+                    return false;
+                List<String> queryParts = Arrays.asList(searchQuery.split(" "));
+                List<String> notYetFound = new ArrayList<>(queryParts);
 
+                for (MenuItem menuItem : selectedColumnsSearchbar.getItems()) {
+                    CheckBox checkBox = ((CheckBox) ((CustomMenuItem) menuItem).getContent());
+                    if( !checkBox.isSelected() ) continue;
+
+                    String value = null;
+                    switch (checkBox.getText()) {
+                        case "Titel": value = entry.getTitle(); break;
+                        case "Nutzername": value = entry.getUsername(); break;
+                        case "URL": value = entry.getUrlString(); break;
+                        case "Notiz": value = entry.getNote(); break;
+                        case "Sicherheitsfrage": value = entry.getSecurityQuestion().getAnswer() + " " +
+                                entry.getSecurityQuestion().getQuestion(); break;
+                    }
+                    if( value == null ) continue;
+
+                    for( String queriedValue : queryParts ) {
+                        if( value.contains(queriedValue) ) {
+                            notYetFound.remove(queriedValue);
+                        }
+                    }
+
+                    if( notYetFound.isEmpty() ) break;
+                }
+
+                return notYetFound.isEmpty();
+            }), searchEverywhere);
+        });
     }
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
+    }
+
+    public void setOnSearchRefreshAction(BiConsumer<Predicate<Entry>, Boolean> onSearchRefreshAction) {
+        this.onSearchRefreshAction = onSearchRefreshAction;
+    }
+
+    public void setOpenDatabaseFileAction(Consumer<String> openDatabaseFileAction) {
+        this.openDatabaseFileAction = openDatabaseFileAction;
     }
 }
