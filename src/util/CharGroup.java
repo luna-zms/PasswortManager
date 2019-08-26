@@ -20,13 +20,13 @@ public enum CharGroup {
 
     public static CharGroup getCharGroupOf(char c) {
         for (CharGroup charGroup : CharGroup.values()) {
-            if (ArrayUtil.contains(charGroup.getChars(), c)) return charGroup;
+            if (new String(charGroup.getChars()).indexOf(c) != -1) return charGroup;
         }
 
         return OTHER;
     }
 
     public static int getIndexOfCharInGroup(char c) {
-        return getCharGroupOf(c).getChars().toString().indexOf(c);
+        return new String(getCharGroupOf(c).getChars()).indexOf(c);
     }
 }

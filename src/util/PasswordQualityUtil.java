@@ -35,9 +35,11 @@ public class PasswordQualityUtil {
         //score += nearOnKeyboardScore(pwd);
         //score += dictionaryExistenceScore(pwd);
 
-        System.out.println("Score: " + (score <= 200 ? score : 200));
+        System.out.println("Score: " + score);
         System.out.println("=====");
-        return score <= 200 ? score : 200;
+        if (score < 0) return 0;
+        if (score > 200) return 200;
+        else return score;
     }
 
     /**
@@ -127,7 +129,7 @@ public class PasswordQualityUtil {
         for (char c : pwd.toCharArray()) {
             if (lastChar != null &&
                     CharGroup.getCharGroupOf(c) == CharGroup.getCharGroupOf(lastChar) &&
-                    CharGroup.getIndexOfCharInGroup(c) == CharGroup.getIndexOfCharInGroup(lastChar)-1) {
+                    CharGroup.getIndexOfCharInGroup(c) == CharGroup.getIndexOfCharInGroup(lastChar)+1) {
                 sequenceCounter += 1;
             } else {
                 if (sequenceCounter >= 3) score += sequenceCounter*3;
