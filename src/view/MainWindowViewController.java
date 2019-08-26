@@ -1,14 +1,13 @@
 package view;
 
-import java.io.IOException;
-
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
-import model.Tag;
+
+import java.io.IOException;
 
 public class MainWindowViewController extends BorderPane {
     private PMController pmController;
@@ -43,15 +42,12 @@ public class MainWindowViewController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // TODO: Fetch from model
-        Tag rootTag = new Tag("Root Tag");
-
-        tagTree.init(true, rootTag);
     }
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
+
+        tagTree.init(false, pmController);
 
         mainWindowToolbar.setPmController(pmController);
     }

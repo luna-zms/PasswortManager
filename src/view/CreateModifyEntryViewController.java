@@ -1,9 +1,5 @@
 package view;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +10,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class CreateModifyEntryViewController extends AnchorPane {
 
@@ -88,7 +88,8 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
     /**
      * Helper method to show an Alert dialog.
-     * @param title Title of the Alert dialog.
+     *
+     * @param title   Title of the Alert dialog.
      * @param content Content of the Alert dialog.
      */
     void errorMessage(String title, String content) {
@@ -118,6 +119,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
-        tagTree.setPmController(pmController);
+        tagTree.init(false, pmController);
+        tagTree.setShowRoot(false);
     }
 }

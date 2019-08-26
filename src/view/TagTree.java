@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
 
-    public void init(final boolean hasCheckBoxes, Tag rootTag) {
+    public void init(final boolean hasCheckBoxes, PMController controller) {
+        pmController = controller;
+
         setCellFactory(treeView -> new TagTreeCell(hasCheckBoxes));
 
         setEditable(true);
-        setRoot(new TagTreeItem(rootTag));
+        setRoot(new TagTreeItem(controller.getPasswordManager().getRootTag()));
     }
 
     private TreeItem<Tag> getSelectedItem() {
@@ -86,10 +88,6 @@ public class TagTree extends TreeView<Tag> {
         menu.setOnShowing(event -> delete.setDisable(getSelectedItem() == getRoot()));
 
         return menu;
-    }
-
-    public void setPmController(PMController pmController) {
-        this.pmController = pmController;
     }
 
     private static class TagTreeItem extends TreeItem<Tag> {

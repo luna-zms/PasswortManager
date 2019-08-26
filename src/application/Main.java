@@ -3,6 +3,8 @@ package application;
 import controller.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import model.PasswordManager;
+import model.Tag;
 import util.WindowFactory;
 import view.MainWindowViewController;
 
