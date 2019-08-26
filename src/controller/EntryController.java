@@ -10,7 +10,7 @@ import model.PasswordManager;
 
 /**
  * This class is for managing the entries from PasswordManager
- * 
+ *
  * @author sopr015
  *
  */
@@ -29,7 +29,7 @@ public class EntryController {
 	 *            Entry e will be added
 	 */
 	public void addEntry(Entry entry) {
-		
+
 		if(entry == null) throw new IllegalArgumentException();
 		PasswordManager pm = pmController.getPasswordManager();
 		pm.getEntries().add(entry);
@@ -38,7 +38,7 @@ public class EntryController {
 
 	/**
 	 * Edits a Entry by removing the old one and adding the edited
-	 * 
+	 *
 	 * @param old
 	 * @param edited
 	 */
@@ -53,16 +53,16 @@ public class EntryController {
 	 * @param entry
 	 */
 	public void removeEntry(Entry entry) {
-		
+
 		if(entry == null) throw new IllegalArgumentException();
-		PasswordManager pm = pmController.getPasswordManager();
-		pm.getEntries().remove(entry);
+		PasswordManager passwordManager = pmController.getPasswordManager();
+		passwordManager.getEntries().remove(entry);
 
 	}
 
 	/**
 	 * Filters entries from PasswordManager via Predicate
-	 * 
+	 *
 	 * @param predicate
 	 * @return List<Entry> filtered version of entries from PasswordManager
 	 */
