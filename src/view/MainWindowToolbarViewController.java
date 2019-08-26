@@ -139,7 +139,10 @@ public class MainWindowToolbarViewController extends GridPane {
         addEntryToolbar.setOnAction(event -> {
             CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
             dialogController.setPmController(pmController);
-            WindowFactory.showDialog("Eintrag erstellen", dialogController);
+            Stage stage = WindowFactory.createStage("Eintrag erstellen");
+            stage.show();
+            stage.setScene(WindowFactory.createScene(dialogController));
+            dialogController.init();
         });
     }
 
@@ -265,7 +268,7 @@ public class MainWindowToolbarViewController extends GridPane {
         generatePasswordToolbar.setOnAction(event -> {
             GeneratePasswordViewController dialogController = new GeneratePasswordViewController();
             dialogController.setPmController(pmController);
-            WindowFactory.showDialog("Einstellungen: Master-Passwort setzen", dialogController, false);
+            WindowFactory.showDialog("Extra: Passwort generieren", dialogController, false);
         });
     }
 
