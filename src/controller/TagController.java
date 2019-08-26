@@ -1,5 +1,6 @@
 package controller;
 
+import model.Entry;
 import model.Tag;
 /**
  * @author sopr017
@@ -15,7 +16,10 @@ public class TagController {
      * @param child The tag that is supposed to be added.
      */
     public void addTag(Tag parent, Tag child) {
-
+    	if(child == null) {
+    		throw new NullPointerException();
+    	}
+    	parent.getSubTags().add(child);
     }
 
     /**
@@ -25,7 +29,13 @@ public class TagController {
      * @param child  The tag that is supposed to be removed.
      */
     public void removeTag(Tag parent, Tag child) {
-
+    	if(child == null) {
+    		throw new NullPointerException();
+    	}
+    	parent.getSubTags().remove(child);
+    	for (Entry entry : pmController.getPasswordManager().getEntries()) {
+    		entry.getTags().remove(child);
+    	}
     }
 
     /**
@@ -35,7 +45,14 @@ public class TagController {
      * @param rename The new name that is supposed to be set.
      */
     public void renameTag(Tag tag, String rename) {
-
+    	if(rename == null) {
+    		throw new NullPointerException();
+    	}
+    	tag.setName(rename);
+    }
+    
+    public void setPMController(PMController controller) {
+    	this.pmController = controller;
     }
 
 }
