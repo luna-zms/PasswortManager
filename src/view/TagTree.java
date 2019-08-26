@@ -31,7 +31,7 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public void setCheckedTags(List<Tag> tags) {
-        ((TagTreeItem)getRoot()).setCheckedIfAny(tags);
+        ((TagTreeItem) getRoot()).setCheckedIfAny(tags);
     }
 
     public Tag getSelectedTag() {

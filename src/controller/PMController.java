@@ -1,5 +1,6 @@
 package controller;
 
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -17,7 +18,7 @@ import model.PasswordManager;
  * The PMController class provides access to all the
  * different Controller classes needed by View classes
  * as well as the controllers itself.
- *
+ * <p>
  * It also takes care of calculating a KDF to the
  * given master password and validates the given
  * master password as long as it is set.
@@ -38,6 +39,8 @@ public class PMController {
 
     private EntryController entryController;
 
+    private Path savePath;
+
     /**
      * Set a new master password. The master password is encrypted via a KDF and
      * then this method will update the current PasswordManager instance.
@@ -46,9 +49,9 @@ public class PMController {
      * @throws IllegalArgumentException When the given string is null or empty.
      */
     public void setMasterPassword(String password) {
-        if( password == null ) {
+        if (password == null) {
             throw new IllegalArgumentException("Expected String as password but got null!");
-        } else if( password.equals("") ) {
+        } else if (password.equals("")) {
             throw new IllegalArgumentException("The master password may not be empty!");
         }
         String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
@@ -80,16 +83,17 @@ public class PMController {
      * @return true if the password is the current database's master password;
      * else false.
      * @throws IllegalArgumentException When the given string is null or empty.
-     * @throws IllegalStateException When the password manager is not properly initialized and no secret key is set.
+     * @throws IllegalStateException    When the password manager is not properly initialized and no secret key is set.
      */
     public boolean validateMasterPassword(String password) {
-        if( password == null ) {
+        if (password == null) {
             throw new IllegalArgumentException("Expected String as password but got null!");
-        } else if( password.equals("") ) {
+        } else if (password.equals("")) {
             throw new IllegalArgumentException("The master password may not be empty!");
         }
 
-        if( passwordManager.getMasterPasswordKey() == null ) throw new IllegalStateException("The master password of passwordManager is not initialized!");
+        if (passwordManager.getMasterPasswordKey() == null)
+            throw new IllegalStateException("The master password of passwordManager is not initialized!");
 
         String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
         SecretKeyFactory skFactory;
@@ -154,5 +158,13 @@ public class PMController {
 
     public void setEntryController(EntryController entryController) {
         this.entryController = entryController;
+    }
+
+    public Path getSavePath() {
+        return savePath;
+    }
+
+    public void setSavePath(Path savePath) {
+        this.savePath = savePath;
     }
 }
