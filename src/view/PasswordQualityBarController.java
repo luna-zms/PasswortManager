@@ -145,7 +145,7 @@ public class PasswordQualityBarController extends HBox {
 
         int colorIndex = (int) (value * 100);
 
-        if( value == 0 ) {
+        if (value == 0) {
             qualityBar.setEffect(new InnerShadow(BlurType.TWO_PASS_BOX, Color.RED, 5, 0.2, 0.0, 0.0));
         } else {
             qualityBar.setEffect(null);
