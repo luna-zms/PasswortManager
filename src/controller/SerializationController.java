@@ -112,7 +112,7 @@ public abstract class SerializationController {
      * @return Tuple of entry list and tag tree
      * @throws CsvException Throws a CsvException if a csv record is malformed or contains invalid data
      */
-    @SuppressWarnings("PMD.ExcessiveMethodLength", "PMD.CyclomaticComplexity")
+    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.CyclomaticComplexity"})
     protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws CsvException, DateTimeParseException {
         assert (csvEntries != null);
 
