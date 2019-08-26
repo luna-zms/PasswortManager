@@ -29,6 +29,7 @@ import javafx.stage.StageStyle;
 import model.Entry;
 import util.BindingUtils;
 import util.ClipboardUtils;
+import util.WindowFactory;
 
 public class EntryListViewController extends TableView<Entry> {
     // TODO: Maybe replace this with ObjectProperty<Tag> since general filters are supposed to be handled by the controller
@@ -193,24 +194,12 @@ public class EntryListViewController extends TableView<Entry> {
         // TODO: Generalize this for edit entry as well
         return createMenuItem("Eintrag hinzufügen",
                               event -> {
-                                  // TODO: Change once stage factory is done
-                                  Stage dialog = new Stage();
-                                  dialog.setTitle("Eintrag erstellen");
-                                  dialog.initModality(Modality.APPLICATION_MODAL);
-                                  dialog.initStyle(StageStyle.UTILITY);
-
                                   CreateModifyEntryViewController createModifyEntryViewController = new CreateModifyEntryViewController();
                                   // TODO: Uncomment this once it's merged in
-                                  // createModifyEntryViewController.setPmController(pmController);
+                                  createModifyEntryViewController.setPmController(pmController);
                                   // createModifyEntryViewController.init()
 
-                                  Scene scene = new Scene(createModifyEntryViewController);
-                                  scene.getStylesheets()
-                                       .add(Main.class.getResource("application.css")
-                                                      .toExternalForm());
-                                  dialog.setScene(scene);
-
-                                  dialog.showAndWait();
+                                  WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
                               },
                               new ReadOnlyBooleanWrapper(false),
                               new KeyCharacterCombination("I", KeyCombination.CONTROL_DOWN));
