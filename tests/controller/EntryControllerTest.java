@@ -127,7 +127,7 @@ public class EntryControllerTest {
 		entryController.editEntry(one, new Entry("three", "Kevin"));
 		assertFalse(pm.getEntries().contains(one));
 		assertTrue(pm.getEntries().stream().anyMatch(entry -> {
-			return (entry.getTitle() == "three");
+			return (entry.getTitle().equals("three"));
 		}));
 	}
 	
@@ -141,11 +141,11 @@ public class EntryControllerTest {
 		entryController.addEntry(one);
 		entryController.addEntry(two);
 		entryListAfter = entryController.filter( entry -> {
-			return (entry.getPassword() == "123Kevin");
+			return (entry.getPassword().equals("123Kevin"));
 		});
 		assertTrue(entryListAfter.equals(pm.getEntries()));
 		entryListAfter = entryController.filter( entry -> {
-			return (entry.getTitle() == "one");
+			return (entry.getTitle().equals("one"));
 		});
 		ArrayList<Entry> test = new ArrayList<Entry>();
 		test.add(one);
