@@ -1,5 +1,6 @@
 package view;
 
+import controller.PMController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TagTree extends TreeView<Tag> {
+    private PMController pmController;
+
     public void init(final boolean hasCheckBoxes, Tag rootTag) {
         setCellFactory(treeView -> new TagTreeCell(hasCheckBoxes));
 
@@ -23,6 +26,10 @@ public class TagTree extends TreeView<Tag> {
 
     public List<Tag> getCheckedTags() {
         return ((TagTreeItem) getRoot()).getSelectedSubTags();
+    }
+
+    public void setCheckedTags(List<Tag> tags) {
+        ((TagTreeItem)getRoot()).setCheckedIfAny(tags);
     }
 
     public Tag getSelectedTag() {
@@ -81,6 +88,10 @@ public class TagTree extends TreeView<Tag> {
         return menu;
     }
 
+    public void setPmController(PMController pmController) {
+        this.pmController = pmController;
+    }
+
     private static class TagTreeItem extends TreeItem<Tag> {
         private boolean checked;
 
@@ -98,6 +109,13 @@ public class TagTree extends TreeView<Tag> {
 
         void setChecked(boolean checked) {
             this.checked = checked;
+        }
+
+        void setCheckedIfAny(List<Tag> tags) {
+            if (tags.contains(getValue()))
+                checked = true;
+
+            getChildren().forEach(treeItem -> ((TagTreeItem) treeItem).setCheckedIfAny(tags));
         }
 
         List<Tag> getSelectedSubTags() {

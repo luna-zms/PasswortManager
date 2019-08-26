@@ -31,6 +31,9 @@ public class MainWindowViewController extends BorderPane {
     @FXML // fx:id="tagTree"
     private TagTree tagTree; // Value injected by FXMLLoader
 
+    @FXML // fx:id="mainWindowToolbar"
+    private MainWindowToolbarViewController mainWindowToolbar;
+
     public MainWindowViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowView.fxml"));
         loader.setRoot(this);
@@ -49,5 +52,7 @@ public class MainWindowViewController extends BorderPane {
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
+
+        mainWindowToolbar.setPmController(pmController);
     }
 }
