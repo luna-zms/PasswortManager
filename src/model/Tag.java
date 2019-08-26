@@ -28,7 +28,7 @@ public class Tag {
     public List<Tag> getSubTags() {
         return subTags;
     }
-
+ 
     public void mergeWith(Tag tag) {
         tag.subTags.forEach(subtag -> {
             Tag existing = getSubTagByName(subtag.getName());
@@ -41,7 +41,7 @@ public class Tag {
     public Tag getSubTagByName(String name) {
         return subTags.stream().filter(subtag -> name.equals(subtag.name)).findFirst().orElse(null);
     }
-
+ 
     public boolean hasSubTag(String name) {
         return getSubTagByName(name) != null;
     }
@@ -58,7 +58,7 @@ public class Tag {
 
         return children;
     }
-
+ 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -72,7 +72,7 @@ public class Tag {
     public int hashCode() {
         return Objects.hash(name, subTags);
     }
-
+ 
     @Override
     public String toString() {
         return "Tag{" +
