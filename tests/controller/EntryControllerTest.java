@@ -49,6 +49,7 @@ public class EntryControllerTest {
 	 * tests addEntry() with null as parameter
 	 * 
 	 */
+	@Test
 	public void testAddIllegalArgumentException() {
 		try{
 			entryController.addEntry(null);
@@ -63,6 +64,7 @@ public class EntryControllerTest {
 	 * tests removeEntry() with null as parameter
 	 * 
 	 */
+	@Test
 	public void testRemoveIllegalArgumentException() {
 		try{
 			entryController.removeEntry(null);
@@ -77,6 +79,7 @@ public class EntryControllerTest {
 	 * tests editEntry() with null as parameter
 	 * 
 	 */
+	@Test
 	public void testEditIllegalArgumentException() {
 		try{
 			entryController.editEntry(null, null);
