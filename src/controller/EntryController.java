@@ -27,7 +27,7 @@ public class EntryController {
      *
      *@param entry Entry e will be added
      */
-    public void addEntry(Entry entry) throws NullPointerException {
+    public void addEntry(Entry entry) {
     	try {
 			PasswordManager pm = pmController.getPasswordManager();
     	pm.getEntries().add(entry);
@@ -53,7 +53,7 @@ public class EntryController {
      *
      *@param entry
      */
-    public void removeEntry(Entry entry) throws NullPointerException {
+    public void removeEntry(Entry entry) {
     	try {
 			PasswordManager pm = pmController.getPasswordManager();
 			pm.getEntries().remove(entry);
