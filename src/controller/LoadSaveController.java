@@ -133,18 +133,18 @@ public class LoadSaveController extends SerializationController {
 
         InputStream unclosableStream = new InputStream() {
             @Override
-            public int read(byte[] b) throws IOException {
-                return zis.read(b);
+            public int read(byte[] bytes) throws IOException {
+                return zis.read(bytes);
             }
 
             @Override
-            public int read(byte[] b, int off, int len) throws IOException {
-                return zis.read(b, off, len);
+            public int read(byte[] bytes, int off, int len) throws IOException {
+                return zis.read(bytes, off, len);
             }
 
             @Override
-            public long skip(long n) throws IOException {
-                return zis.skip(n);
+            public long skip(long longInteger) throws IOException {
+                return zis.skip(longInteger);
             }
 
             @Override
@@ -250,13 +250,13 @@ public class LoadSaveController extends SerializationController {
 
         OutputStream unclosableStream = new OutputStream() {
             @Override
-            public void write(byte[] b) throws IOException {
-                zos.write(b);
+            public void write(byte[] bytes) throws IOException {
+                zos.write(bytes);
             }
 
             @Override
-            public void write(byte[] b, int off, int len) throws IOException {
-                zos.write(b, off, len);
+            public void write(byte[] bytes, int off, int len) throws IOException {
+                zos.write(bytes, off, len);
             }
 
             @Override
@@ -269,8 +269,8 @@ public class LoadSaveController extends SerializationController {
             }
 
             @Override
-            public void write(int i) throws IOException {
-                zos.write(i);
+            public void write(int integer) throws IOException {
+                zos.write(integer);
             }
         };
 
