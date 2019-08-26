@@ -16,6 +16,7 @@
 <?import view.PasswordQualityBarController?>
 <?import view.TagTree?>
 
+<?import javafx.scene.paint.Color?>
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <HBox layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
@@ -40,7 +41,17 @@
                         <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Label prefHeight="17.0" prefWidth="313.0" text="Eintragsname:" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="17.0" prefWidth="313.0"  GridPane.rowIndex="0" >
+                            <Label text="Eintragsname:" />
+                            <Label text=" *">
+                                <textFill>
+                                    <Color fx:value="red" />
+                                </textFill>
+                                <tooltip>
+                                    <Tooltip text="Dieses Feld muss ausgefüllt werden" />
+                                </tooltip>
+                            </Label>
+                        </HBox>
                         <TextField fx:id="entryName" GridPane.columnIndex="1">
                             <GridPane.margin>
                                 <Insets />
@@ -52,7 +63,17 @@
                                 <Insets />
                             </GridPane.margin>
                         </TextField>
-                        <Label text="Passwort:" GridPane.rowIndex="2" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="17.0" prefWidth="313.0" GridPane.rowIndex="2">
+                            <Label text="Passwort:" />
+                            <Label text=" *">
+                                <textFill>
+                                    <Color fx:value="red" />
+                                </textFill>
+                                <tooltip>
+                                    <Tooltip text="Diese Felder müssen ausgefüllt werden" />
+                                </tooltip>
+                            </Label>
+                        </HBox>
                         <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                             <children>
                                 <CustomPasswordFieldViewController fx:id="password" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" HBox.hgrow="ALWAYS">
@@ -60,7 +81,7 @@
                                         <Insets right="10.0" />
                                     </HBox.margin>
                                 </CustomPasswordFieldViewController>
-                                <Button fx:id="generatePasswordButton" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="40.0">
+                                <Button fx:id="generatePasswordButton" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="40.0" focusTraversable="false"  >
                                     <HBox.margin>
                                         <Insets top="3.0" />
                                     </HBox.margin>
@@ -96,6 +117,19 @@
                                 <Insets left="-5.0" right="-5.0" />
                             </GridPane.margin>
                         </CustomExpirationDateViewController>
+
+                        <Label text="Sicherheitsfrage:" GridPane.rowIndex="7" />
+                        <Label text="Antwort:" GridPane.rowIndex="8" />
+                        <TextField fx:id="securityQuestion" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                            <GridPane.margin>
+                                <Insets />
+                            </GridPane.margin>
+                        </TextField>
+                        <TextField fx:id="answer" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                            <GridPane.margin>
+                                <Insets />
+                            </GridPane.margin>
+                        </TextField>
                         <Label text="Notizen:" GridPane.rowIndex="9">
                      <GridPane.margin>
                         <Insets />
@@ -115,18 +149,6 @@
                                 <Button fx:id="cancelButton" mnemonicParsing="false" text="Abbrechen" />
                             </children>
                         </HBox>
-                        <Label text="Sicherheitsfrage:" GridPane.rowIndex="7" />
-                        <Label text="Antwort:" GridPane.rowIndex="8" />
-                        <TextField fx:id="securityQuestion" GridPane.columnIndex="1" GridPane.rowIndex="7">
-                            <GridPane.margin>
-                                <Insets />
-                            </GridPane.margin>
-                        </TextField>
-                        <TextField fx:id="answer" GridPane.columnIndex="1" GridPane.rowIndex="8">
-                            <GridPane.margin>
-                                <Insets />
-                            </GridPane.margin>
-                        </TextField>
                     </children>
                     <padding>
                         <Insets right="5.0" />
