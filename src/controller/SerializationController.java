@@ -180,7 +180,7 @@ public abstract class SerializationController {
             }
 
             String tagPaths = record.get(EntryTableHeader.tagPaths);
-            String[] paths = tagPaths.split(";");
+            String[] paths = tagPaths.split(";", -42);
             HashSet<String> seenRoots = new HashSet<>();
 
             entry.getTags().addAll(
