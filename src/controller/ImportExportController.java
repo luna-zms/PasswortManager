@@ -28,7 +28,7 @@ public class ImportExportController extends SerializationController {
     @Override
     public void load(Path path) {
         try (BufferedReader bufferedReader = Files.newBufferedReader(path)) {
-            CSVParser csvParser = csvParser = new CSVParser(bufferedReader, CSVFormat.DEFAULT);
+            CSVParser csvParser = csvParser = new CSVParser(bufferedReader, entryParseFormat);
 
             Tuple<List<Entry>, Tag> result = parseEntries(csvParser);
             passwordManager.setEntries(result.first());
