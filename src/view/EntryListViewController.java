@@ -69,11 +69,11 @@ public class EntryListViewController extends TableView<Entry> {
         columns.add(validUntilColumn);
         getColumns().setAll(columns);
 
-        // Set row factory to include context menu
-        ContextMenu contextMenu = buildContextMenu();
+        setContextMenu(buildContextMenu());
+
+        // Clear selection on background click
         setRowFactory(table -> {
             TableRow<Entry> row = new TableRow<>();
-            row.setContextMenu(contextMenu);
             row.setOnMouseClicked(event -> {
                 // User clicked background => item null => clear selection
                 if (row.getItem() == null) getSelectionModel().clearSelection();
