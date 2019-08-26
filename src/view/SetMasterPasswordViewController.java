@@ -41,9 +41,6 @@ public class SetMasterPasswordViewController extends GridPane {
     private PasswordQualityBarController masterPasswordQualityBar;
 
     @FXML
-    private GridPane gueltigBisWidget;
-
-    @FXML
     private CustomExpirationDateViewController customExpirationDateViewController;
 
     private PMController pmController;
@@ -98,6 +95,14 @@ public class SetMasterPasswordViewController extends GridPane {
     void initialize() {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
+        
+        customPasswordFieldBase.onPasswordChanged((observable, oldValue, newValue) -> {
+            if (newValue.equals("")) {
+            		masterPasswordQualityBar.setQuality(0);
+            } else {
+            		masterPasswordQualityBar.setQuality(pmController.getPasswordController().checkPasswordQuality(newValue));
+            }
+        });
         
        cancelButton.setOnAction(event ->{
     	   Stage stage = (Stage) getScene().getWindow();
