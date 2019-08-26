@@ -76,6 +76,8 @@ public class CreateModifyEntryViewController extends AnchorPane {
             e.printStackTrace();
         }
 
+        passwordQualityBar.setQuality(0);
+
         cancelButton.setOnAction(e -> {
             Stage stage = (Stage) getScene().getWindow();
             stage.close();

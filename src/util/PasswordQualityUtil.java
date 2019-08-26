@@ -42,6 +42,7 @@ public class PasswordQualityUtil {
      * @return The normalized score (0-1)
      */
     public static double getNormalizedScore(String pwd) {
+        System.out.println((double)getScore(pwd)/200.0);
         return (double)getScore(pwd) / 200.0;
     }
 
