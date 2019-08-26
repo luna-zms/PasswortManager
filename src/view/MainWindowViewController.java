@@ -46,6 +46,9 @@ public class MainWindowViewController extends BorderPane {
 
     public void init() {
         tagTree.init(false, pmController.getPasswordManager().getRootTag());
+        // Prevent limbo state of no tag being selected
+        tagTree.getSelectionModel().selectFirst();
+
         entryList.setEntries(pmController.getPasswordManager().entriesObservable());
     }
 

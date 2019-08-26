@@ -68,8 +68,5 @@ public class Main extends Application {
         entry.setValidUntil(LocalDate.MAX);
 
         passwordManager.getEntries().add(entry);
-
-        entry = new Entry("General Kenobi", "urabold1");
-        passwordManager.getEntries().add(entry);
     }
 }

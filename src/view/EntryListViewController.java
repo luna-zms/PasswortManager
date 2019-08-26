@@ -82,6 +82,7 @@ public class EntryListViewController extends TableView<Entry> {
         });
 
         // Entry setting and filtering
+        setEntries(FXCollections.emptyObservableList());
         entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
         filter.addListener((obs, oldPred, newPred) -> applyFilter());
     }
@@ -105,6 +106,7 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     public void setEntries(ObservableList<Entry> entries) {
+        assert entries != null;
         this.entries.set(entries);
     }
 
@@ -113,12 +115,12 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     private void applyFilter() {
+        // Always non-null as it's initialized to an empty list
         ObservableList<Entry> newEntries = entries.getValue();
+        // Always non-null as there is a selected tag at all times
         Predicate<Entry> newFilter = filter.getValue();
 
-        if (newFilter != null && newEntries != null) setItems(newEntries.filtered(newFilter));
-        else if (entries != null) setItems(newEntries);
-        else setEntries(FXCollections.emptyObservableList());
+        setItems(newEntries.filtered(newFilter));
     }
 
     private ContextMenu buildContextMenu() {
