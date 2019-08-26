@@ -22,7 +22,7 @@ public class EntryControllerTest {
     private Entry two;
     private PasswordManager passwordManager;
     private PMController pmController;
-	private EntryController entryController;
+    private EntryController entryController;
 
     /**
      * Resets attributes
@@ -130,9 +130,9 @@ public class EntryControllerTest {
     public void filterTest() {
         entryController.addEntry(one);
         entryController.addEntry(two);
-		List<Entry> entryListAfter = entryController.filter(entry -> {
-			return (entry.getPassword().equals("123Kevin"));
-		});
+        List<Entry> entryListAfter = entryController.filter(entry -> {
+            return (entry.getPassword().equals("123Kevin"));
+        });
         assertTrue(entryListAfter.equals(passwordManager.getEntries()));
         entryListAfter = entryController.filter(entry -> {
             return (entry.getTitle().equals("one"));
