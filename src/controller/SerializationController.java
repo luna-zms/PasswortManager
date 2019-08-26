@@ -122,7 +122,7 @@ public abstract class SerializationController {
         for (CSVRecord record : csvEntries) {
 
             if (!record.isConsistent()) {
-                throw new CsvException("Malformed CSV: Inconsistent number of records in row");
+                throw new CsvException("Ungültiges CSV: Inkonsistente Anzahl Felder in Zeile");
             }
 
             // null values are written and read as empty Strings
@@ -148,7 +148,7 @@ public abstract class SerializationController {
                 try {
                     entry.setCreatedAt(LocalDateTime.parse(createdAt, DATE_TIME_FORMAT));
                 } catch (DateTimeParseException exc) {
-                    throw new CsvException("Malformed CSV: Invalid Date format");
+                    throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
                 }
             }
 
@@ -157,7 +157,7 @@ public abstract class SerializationController {
                 try {
                     entry.setLastModified(LocalDateTime.parse(lastModified, DATE_TIME_FORMAT));
                 } catch (DateTimeParseException exc) {
-                    throw new CsvException("Malformed CSV: Invalid Date format");
+                    throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
                 }
             }
 
@@ -166,7 +166,7 @@ public abstract class SerializationController {
                 try {
                     entry.setValidUntil(LocalDate.parse(validUntil, DATE_FORMAT));
                 } catch (DateTimeParseException exc) {
-                    throw new CsvException("Malformed CSV: Invalid Date format");
+                    throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
                 }
             }
 
@@ -175,7 +175,7 @@ public abstract class SerializationController {
                 try {
                     entry.setUrl(new URL(url));
                 } catch (MalformedURLException exc) {
-                    throw new CsvException("Malformed CSV: Malformed URL");
+                    throw new CsvException("Ungültiges CSV: Ungültige URL");
                 }
             }
 
@@ -189,7 +189,7 @@ public abstract class SerializationController {
                             .map(path -> path.split("\\\\"))
                             .peek(path -> {
                                 if (path.length < 2) {
-                                    throw new CsvException("Malformed CSV: Path of length 0");
+                                    throw new CsvException("Ungültiges CSV: Tag Pfad der Länge Null");
                                 }
                             })
                             .peek(path -> seenRoots.add(path[1]))
@@ -198,7 +198,7 @@ public abstract class SerializationController {
             );
 
             if (seenRoots.size() > 1) {
-                throw new CsvException("Malformed CSV: Multiple roots in tag tree");
+                throw new CsvException("Ungültiges CSV: Mehrere Wurzeln in Tag Baum");
             }
 
             entries.add(entry);
