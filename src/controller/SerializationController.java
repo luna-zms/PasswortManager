@@ -183,7 +183,7 @@ public abstract class SerializationController {
             String tagPaths = record.get(EntryTableHeader.tagPaths);
             String[] paths = tagPaths.split(";", -42);
             HashSet<String> seenRoots = new HashSet<>();
-            
+
             final int minimumPathLength = 2;
             final int maximumRoots = 1;
 

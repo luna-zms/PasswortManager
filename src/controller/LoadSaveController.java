@@ -95,11 +95,11 @@ public class LoadSaveController extends SerializationController {
 
                     String nextLine;
 
-                    while((nextLine = bur.readLine()) != null) {
-                        if(nextLine.isEmpty())
+                    while ((nextLine = bur.readLine()) != null) {
+                        if (nextLine.isEmpty())
                             throw new IOException("Invalid Tag read from save file.");
 
-                        if(readRootTag == null)
+                        if (readRootTag == null)
                             readRootTag = new Tag(nextLine.split("\\\\")[0]);
 
                         createTagFromPath(readRootTag, nextLine.split("\\\\"));

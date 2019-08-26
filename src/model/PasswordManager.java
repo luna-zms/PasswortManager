@@ -30,7 +30,7 @@ public class PasswordManager {
         validUntil = null;
     }
 
-    public void mergeWith(List<Entry> newEntries, Tag newRootTag){
+    public void mergeWith(List<Entry> newEntries, Tag newRootTag) {
         entries.addAll(newEntries);
         rootTag.mergeWith(newRootTag);
     }
