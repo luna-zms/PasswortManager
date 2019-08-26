@@ -133,9 +133,21 @@ public class CustomPasswordFieldViewController extends HBox {
 
     /**
      * Register an event handler to be called as the password field's value changes.
+     *
      * @param handler
      */
     public void onPasswordChanged(ChangeListener<? super String> handler) {
         textField.textProperty().addListener(handler);
+    }
+
+    /**
+     * Enable (disabled) the password field and its buttons.
+     *
+     * @param enabled
+     */
+    public void setEnabled(boolean enabled) {
+        textField.setDisable(!enabled);
+        copyButton.setDisable(!enabled);
+        eyeButton.setDisable(!enabled);
     }
 }

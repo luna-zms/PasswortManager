@@ -13,7 +13,9 @@ public enum CharGroup {
         this.chars = chars;
     }
 
-    public char[] getChars() { return chars; }
+    public char[] getChars() {
+        return chars;
+    }
 
     public static CharGroup getCharGroupOf(char c) {
         for (CharGroup charGroup : CharGroup.values()) {
