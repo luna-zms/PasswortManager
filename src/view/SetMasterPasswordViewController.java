@@ -55,19 +55,19 @@ public class SetMasterPasswordViewController extends GridPane {
         
     }
     
-    private boolean setNewPassword(String neu , String wdh){
-    	if (neu.equals("")) errorMessage("Passwort Fehler", "Bitte geben sie ein Passwort ein");
-    	else if (!neu.equals(wdh)) errorMessage("Passwort Fehler", "Passwort stimmt nicht überein");
+    private boolean setNewPassword(String newpw , String wdh){
+    	if (newpw.equals("")) errorMessage("Passwort Fehler", "Bitte geben sie ein Passwort ein");
+    	else if (!newpw.equals(wdh)) errorMessage("Passwort Fehler", "Passwort stimmt nicht überein");
     	else {
-    		pmController.setMasterPassword(neu);
+    		pmController.setMasterPassword(newpw);
     		return true;
     	}
     	return false;
     }
     
-    private boolean checkOldPassword(String pw){
-    	if(pw.equals("")) errorMessage("Password Fehler", "Bitte geben sie ihr Altes Passwort ein");
-    	else return pmController.validateMasterPassword(pw);
+    private boolean checkOldPassword(String pwd){
+    	if(pwd.isEmpty()) errorMessage("Password Fehler", "Bitte geben sie ihr Altes Passwort ein");
+    	else return pmController.validateMasterPassword(pwd);
     	return false;
     }
     public SetMasterPasswordViewController() {
