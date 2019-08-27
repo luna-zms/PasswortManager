@@ -88,6 +88,7 @@ public class StartWindowViewController extends GridPane {
             	path = Paths.get(path.toString() + ".pwds");
             }
             Stage stage = (Stage) getScene().getWindow();
+            createNew = true;
             stage.close();
         });
         	
