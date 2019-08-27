@@ -83,11 +83,6 @@ public class Tag {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(name.getValue(), subTags);
-    }
-
-    @Override
     public String toString() {
         return "Tag{" +
                 "name='" + name.getValue() + '\'' +
