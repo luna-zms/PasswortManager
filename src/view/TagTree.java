@@ -63,12 +63,12 @@ public class TagTree extends TreeView<Tag> {
 
     public void createBelowSelected() {
         TreeItem<Tag> selected = getSelectedItem();
-        Tag newTag = new Tag("");
-        TagTreeItem newItem = new TagTreeItem(newTag);
+        //Tag newTag = new Tag("");
+        TagTreeItem newItem = new TagTreeItem(null);
 
         // TODO: delegate to controller
         selected.getChildren().add(newItem);
-        selected.getValue().getSubTags().add(newTag);
+        //selected.getValue().getSubTags().add(newTag);
     }
 
     private ContextMenu createContextMenu() {
@@ -106,7 +106,8 @@ public class TagTree extends TreeView<Tag> {
 
             setExpanded(true);
 
-            tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeItem(subtag)));
+            if (tag != null)
+                tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeItem(subtag)));
         }
 
         boolean isChecked() {
@@ -149,13 +150,23 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private TextField createEditTextField() {
-            TextField wtf = new TextField(getItem().getName());
+            TextField wtf = new TextField();
 
+            if (getItem() != null)
+                wtf.setText(getItem().getName());
+
+            final ChangeListener<? super Boolean> focusListener = (observable, oldValue, newValue) -> {
+                if (!newValue)
+                    finishEdit(wtf.getText());
+            };
+
+            wtf.focusedProperty().addListener(focusListener);
             wtf.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
                 switch (keyEvent.getCode()) {
                     case ENTER:
                         keyEvent.consume();
 
+                        wtf.focusedProperty().removeListener(focusListener);
                         finishEdit(wtf.getText());
                         break;
                     case ESCAPE:
@@ -168,28 +179,30 @@ public class TagTree extends TreeView<Tag> {
                 }
             });
 
-            wtf.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue)
-                    finishEdit(wtf.getText());
-            });
-
             return wtf;
         }
 
         private void finishEdit(String str) {
-            if (getItem() == null)
-                return;
+            TreeItem<Tag> parentTag = getTreeItem().getParent();
 
-            boolean isDuplicate = getTreeItem().getParent() != null && getTreeItem().getParent().getValue().hasSubTag(str);
+            if (parentTag == null)
+                return;
 
             // TODO: maybe show a warning/info message when isDuplicate is true
 
-            if (str.isEmpty() || isDuplicate) {
+            if (str.isEmpty() || parentTag.getValue().hasSubTag(str)) {
                 cancelEdit();
             } else {
-                Tag tag = getItem();
-                // TODO: delegate to controller
-                tag.setName(str);
+                Tag tag;
+
+                if (getItem() == null) { // newly created tags
+                    tag = new Tag(str);
+                    pmController.getTagController().addTag(parentTag.getValue(), tag);
+                    getTreeItem().setValue(tag);
+                } else { // Editing of existing tags
+                    tag = getItem();
+                    pmController.getTagController().renameTag(tag, str);
+                }
 
                 commitEdit(tag);
             }
@@ -211,7 +224,7 @@ public class TagTree extends TreeView<Tag> {
                 setText(null);
                 setGraphic(null);
             } else {
-                if (tag.getName().isEmpty()) {
+                if (tag == null || tag.getName().isEmpty()) {
                     setToTextField();
                 } else {
                     if (checkbox != null) checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
@@ -243,7 +256,7 @@ public class TagTree extends TreeView<Tag> {
 
             Tag tag = getItem();
 
-            if (tag.getName().isEmpty()) {
+            if (tag == null || tag.getName().isEmpty()) {
                 deleteItem(getTreeItem());
             } else {
                 setText(tag.getName());
