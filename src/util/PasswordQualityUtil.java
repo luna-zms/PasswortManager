@@ -68,7 +68,6 @@ public class PasswordQualityUtil {
 
         int score = 0;
 
-        System.out.println("Password: " + pwd);
         score += lengthScore(pwd.length());
         score += charGroupsExistScore(pwd);
         score += repeatSameCharScore(pwd);
