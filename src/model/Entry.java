@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import javafx.beans.Observable;
@@ -28,7 +29,7 @@ public class Entry {
             t -> new Observable[] { t.nameProperty(), t.subTagsObservable() }
     );
 
-    
+
     /**
      * Constructor sets the minimal required attributes title and password
      * and the cratedAt or lastModifiedAt
@@ -123,7 +124,9 @@ public class Entry {
     }
 
     public String getValidUntilString() {
-        return validUntil != null ? validUntil.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : "";
+        return validUntil != null ? validUntil.format(
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.GERMAN)
+        ) : "";
     }
 
     public SecurityQuestion getSecurityQuestion() {
