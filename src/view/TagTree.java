@@ -5,7 +5,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 import model.Tag;
+import util.WindowFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,11 +15,13 @@ import java.util.stream.Collectors;
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
 
-    public void init(final boolean hasCheckBoxes, Tag rootTag) {
+    public void init(final boolean hasCheckBoxes, PMController controller) {
+        pmController = controller;
+
         setCellFactory(treeView -> new TagTreeCell(hasCheckBoxes));
 
         setEditable(true);
-        setRoot(new TagTreeItem(rootTag));
+        setRoot(new TagTreeItem(controller.getPasswordManager().getRootTag()));
     }
 
     private TreeItem<Tag> getSelectedItem() {
@@ -47,10 +51,10 @@ public class TagTree extends TreeView<Tag> {
         TreeItem<Tag> parent = item.getParent();
 
         if (parent != null) {  // Cannot delete root node
-            // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
-            parent.getValue().getSubTags().remove(item.getValue());
+            if (item.getValue() != null)
+                pmController.getTagController().removeTag(parent.getValue(), item.getValue());
             parent.getChildren().remove(item);
-        } // TODO: maybe display some warning?
+        }
     }
 
     public void editSelected() {
@@ -59,12 +63,9 @@ public class TagTree extends TreeView<Tag> {
 
     public void createBelowSelected() {
         TreeItem<Tag> selected = getSelectedItem();
-        Tag newTag = new Tag();
-        TagTreeItem newItem = new TagTreeItem(newTag);
+        TagTreeItem newItem = new TagTreeItem(null);
 
-        // TODO: delegate to controller
         selected.getChildren().add(newItem);
-        selected.getValue().getSubTags().add(newTag);
     }
 
     private ContextMenu createContextMenu() {
@@ -77,7 +78,13 @@ public class TagTree extends TreeView<Tag> {
 
         createTag.setOnAction(event -> createBelowSelected());
         createEntry.setOnAction(event -> {
-        }); // TODO: open add entry dialog
+            CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
+            dialogController.setPmController(pmController);
+            Stage stage = WindowFactory.createStage("Eintrag erstellen");
+            stage.show();
+            stage.setScene(WindowFactory.createScene(dialogController));
+            dialogController.init();
+        });
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
 
@@ -88,10 +95,6 @@ public class TagTree extends TreeView<Tag> {
         return menu;
     }
 
-    public void setPmController(PMController pmController) {
-        this.pmController = pmController;
-    }
-
     private static class TagTreeItem extends TreeItem<Tag> {
         private boolean checked;
 
@@ -100,7 +103,8 @@ public class TagTree extends TreeView<Tag> {
 
             setExpanded(true);
 
-            tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeItem(subtag)));
+            if (tag != null)
+                tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeItem(subtag)));
         }
 
         boolean isChecked() {
@@ -143,13 +147,23 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private TextField createEditTextField() {
-            TextField wtf = new TextField(getItem().getName());
+            TextField wtf = new TextField();
 
+            if (getItem() != null)
+                wtf.setText(getItem().getName());
+
+            final ChangeListener<? super Boolean> focusListener = (observable, oldValue, newValue) -> {
+                if (!newValue)
+                    finishEdit(wtf.getText());
+            };
+
+            wtf.focusedProperty().addListener(focusListener);
             wtf.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
                 switch (keyEvent.getCode()) {
                     case ENTER:
                         keyEvent.consume();
 
+                        wtf.focusedProperty().removeListener(focusListener);
                         finishEdit(wtf.getText());
                         break;
                     case ESCAPE:
@@ -162,30 +176,44 @@ public class TagTree extends TreeView<Tag> {
                 }
             });
 
-            wtf.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue)
-                    finishEdit(wtf.getText());
-            });
-
             return wtf;
         }
 
         private void finishEdit(String str) {
-            if (getItem() == null)
+            if (getTreeItem() == null)
                 return;
 
-            boolean isDuplicate = getTreeItem().getParent() != null && getTreeItem().getParent().getValue().hasSubTag(str);
+            TreeItem<Tag> parentTag = getTreeItem().getParent();
 
-            // TODO: maybe show a warning/info message when isDuplicate is true
+            if (parentTag == null)
+                return;
 
-            if (str.isEmpty() || isDuplicate) {
+            if (str.isEmpty()) {
+                cancelEdit();
+            } else if (parentTag.getValue().hasSubTag(str)) {
+                if (getItem() == null || !getItem().getName().equals(str)) {
+                    Alert errorAlert = new Alert(Alert.AlertType.WARNING);
+                    errorAlert.setTitle("Dupliziertes Schlagwort");
+                    errorAlert.setHeaderText("Schlagwort existiert bereits");
+                    errorAlert.setContentText("Ein Schlagwort mit dem Namen '" + str + "' existiert bereits. \n Wähle einen anderen Namen");
+                    errorAlert.showAndWait();
+                }
+
                 cancelEdit();
             } else {
-                Tag tag = getItem();
-                // TODO: delegate to controller
-                tag.setName(str);
+                Tag tag;
+
+                if (getItem() == null) { // newly created tags
+                    tag = new Tag(str);
+                    pmController.getTagController().addTag(parentTag.getValue(), tag);
+                    getTreeItem().setValue(tag);
+                } else { // Editing of existing tags
+                    tag = getItem();
+                    pmController.getTagController().renameTag(tag, str);
+                }
 
                 commitEdit(tag);
+
             }
         }
 
@@ -205,7 +233,7 @@ public class TagTree extends TreeView<Tag> {
                 setText(null);
                 setGraphic(null);
             } else {
-                if (tag.getName().isEmpty()) {
+                if (tag == null || tag.getName().isEmpty()) {
                     setToTextField();
                 } else {
                     if (checkbox != null) checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
@@ -237,7 +265,7 @@ public class TagTree extends TreeView<Tag> {
 
             Tag tag = getItem();
 
-            if (tag.getName().isEmpty()) {
+            if (tag == null || tag.getName().isEmpty()) {
                 deleteItem(getTreeItem());
             } else {
                 setText(tag.getName());

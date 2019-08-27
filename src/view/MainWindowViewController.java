@@ -1,12 +1,13 @@
 package view;
 
-import java.io.IOException;
-
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
+
+import java.io.IOException;
+
 import model.Tag;
 import util.BindingUtils;
 
@@ -35,11 +36,9 @@ public class MainWindowViewController extends BorderPane {
             e.printStackTrace();
         }
     }
-
     private Tag getRootTag() {
         return pmController.getPasswordManager().getRootTag();
     }
-
     public void init() {
         // Bind preview to update when table selection changes
         entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
@@ -53,7 +52,7 @@ public class MainWindowViewController extends BorderPane {
             entryList.filterOnce(filter);
         });
 
-        tagTree.init(false, getRootTag());
+        tagTree.init(false, pmController);
         // Prevent limbo state of no tag being selected
         tagTree.getSelectionModel().selectFirst();
 
