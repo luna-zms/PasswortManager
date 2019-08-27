@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -24,11 +25,20 @@ public class Main extends Application {
     @Override
     public void init() {
         pmController = new PMController();
-        pmController.setPasswordController(new PasswordController());
+
         PasswordManager passwordManager = new PasswordManager(null);
-        // TODO: Replace with actually loading the data
-        initSampleData(passwordManager);
         pmController.setPasswordManager(passwordManager);
+
+        pmController.setPasswordController(new PasswordController());
+        pmController.setEntryController(new EntryController(pmController));
+        pmController.setTagController(new TagController());
+        pmController.setLoadSaveController(new LoadSaveController(passwordManager));
+        pmController.setImportExportController(new ImportExportController(passwordManager));
+
+        File file = new File("C:\\Users\\Sebastian Schmidt\\Universität\\SoPra\\Projekt 1 Tests\\test_entries.csv");
+        // TODO: Replace with actually loading the data
+        pmController.getImportExportController().load(file.toPath());
+        // initSampleData(passwordManager);
     }
 
     @Override
