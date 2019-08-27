@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -26,12 +25,12 @@ import model.PasswordManager;
  */
 public class PMControllerTest {
 
-    PMController pmController;
-    PasswordManager mockPasswordManager;
+    private PMController pmController;
+    private PasswordManager mockPasswordManager;
 
-    String usedPassword;
+    private String usedPassword;
 
-    static final int NUMBER_ITERATIONS = 20;
+    private static final int NUMBER_ITERATIONS = 20;
 
     /**
      * Auxiliary method to create a random password with fixed length.
@@ -108,7 +107,6 @@ public class PMControllerTest {
         try {
             pmController.setMasterPassword(null);
             fail("setMasterPassword throws no exception despite being given a null object!");
-            return;
         } catch (IllegalArgumentException noPasswordException) {
             // This exception should be thrown, so do nothing here
             System.out.println(" Successful!");
@@ -146,8 +144,8 @@ public class PMControllerTest {
         }
 
         pmController.setMasterPassword(testPassword);
-        assertTrue("setMasterPassword calculates a wrong key!", Arrays.equals(
-                pmController.getPasswordManager().getMasterPasswordKey().getEncoded(), expectedKey.getEncoded()));
+        assertArrayEquals("setMasterPassword calculates a wrong key!",
+                pmController.getPasswordManager().getMasterPasswordKey().getEncoded(), expectedKey.getEncoded());
     }
 
     /**
@@ -211,7 +209,7 @@ public class PMControllerTest {
         String testPassword = new String(randomBytes);
 
         boolean result = pmController.validateMasterPassword(testPassword);
-        assertTrue("validateMasterPassword accepts a wrong password or declines a correct one!",
-                testPassword.equals(usedPassword) ? result : !result);
+        assertEquals("validateMasterPassword accepts a wrong password or declines a correct one!",
+                testPassword.equals(usedPassword), result);
     }
 }

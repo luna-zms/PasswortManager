@@ -125,21 +125,22 @@ public class MainWindowToolbarViewController extends GridPane {
 
     /**
      * Helper method to show an Alert dialog.
-     * @param title Title of the Alert dialog.
+     *
+     * @param title   Title of the Alert dialog.
      * @param content Content of the Alert dialog.
      */
     void errorMessage(String title, String content) {
-        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-        errorAlert.setHeaderText(title);
-        errorAlert.setContentText(content);
-        errorAlert.showAndWait();
+        WindowFactory.showError(title, content);
     }
 
     private void initializeActionsAddEntry() {
         addEntryToolbar.setOnAction(event -> {
             CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
             dialogController.setPmController(pmController);
-            WindowFactory.showDialog("Eintrag erstellen", dialogController);
+            Stage stage = WindowFactory.createStage("Eintrag erstellen");
+            stage.show();
+            stage.setScene(WindowFactory.createScene(dialogController));
+            dialogController.init();
         });
     }
 
@@ -147,11 +148,11 @@ public class MainWindowToolbarViewController extends GridPane {
         saveDatabaseToolbar.setOnAction(event -> {
             try {
                 pmController.getLoadSaveController().save(pmController.getSavePath());
-            } catch( CsvException exc ) {
+            } catch (CsvException exc) {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines internen Fehler ist das Speichern " +
                         "fehlgeschlagen. Versuchen Sie es später erneut und starten sie eventuell Ihren Computer neu. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
-            } catch( IOException ioExc ) {
+            } catch (IOException ioExc) {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines Ausgabefehlers ist das Speichern " +
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
@@ -164,7 +165,7 @@ public class MainWindowToolbarViewController extends GridPane {
             Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Speichere Kopie als");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", ".pwds");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog(dialog);
@@ -173,11 +174,11 @@ public class MainWindowToolbarViewController extends GridPane {
 
             try {
                 pmController.getLoadSaveController().save(file.toPath());
-            } catch( CsvException exc) {
+            } catch (CsvException exc) {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines internen Fehler ist das Speichern" +
                         "fehlgeschlagen. Versuchen Sie es später erneut und starten sie eventuell Ihren Computer neu. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
-            } catch( IOException ioExc ) {
+            } catch (IOException ioExc) {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines Ausgabefehlers ist das Speichern " +
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
@@ -190,13 +191,13 @@ public class MainWindowToolbarViewController extends GridPane {
             Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Öffne Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", ".pwds");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog(dialog);
 
             if (file == null) return;
-            if( !file.exists() ) {
+            if (!file.exists()) {
                 errorMessage("Fehler beim Öffnen", "Die gewählte Datei existiert nicht!");
                 return;
             }
@@ -209,6 +210,7 @@ public class MainWindowToolbarViewController extends GridPane {
         setMasterPasswordToolbar.setOnAction(event -> {
             SetMasterPasswordViewController dialogController = new SetMasterPasswordViewController();
             dialogController.setPmController(pmController);
+            dialogController.setMode(true);
             WindowFactory.showDialog("Einstellungen: Master-Passwort setzen", dialogController);
         });
     }
@@ -218,20 +220,20 @@ public class MainWindowToolbarViewController extends GridPane {
             Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Importiere Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", ".csv");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog(dialog);
 
             if (file == null) return;
-            if( !file.exists() ) {
+            if (!file.exists()) {
                 errorMessage("Fehler beim Öffnen", "Die gewählte Datei existiert nicht!");
                 return;
             }
 
             try {
                 pmController.getImportExportController().load(file.toPath());
-            } catch( CsvException exc ) {
+            } catch (CsvException exc) {
                 errorMessage("Fehler beim Import", "Beim Importieren der Datei ist ein Fehler aufgetreten. " +
                         "Überprüfen Sie, ob die Datei das nötige Format erfüllt. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
@@ -244,7 +246,7 @@ public class MainWindowToolbarViewController extends GridPane {
             Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exportiere Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", ".csv");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog(dialog);
@@ -253,7 +255,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
             try {
                 pmController.getImportExportController().save(file.toPath());
-            } catch( CsvException exc ) {
+            } catch (CsvException exc) {
                 errorMessage("Fehler beim Export", "Beim Exportieren der Datenbank ist ein Fehler " +
                         "aufgetreten. Starten Sie das Programm erneut, wenn weiterhin Fehler auftreten. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
@@ -265,7 +267,7 @@ public class MainWindowToolbarViewController extends GridPane {
         generatePasswordToolbar.setOnAction(event -> {
             GeneratePasswordViewController dialogController = new GeneratePasswordViewController();
             dialogController.setPmController(pmController);
-            WindowFactory.showDialog("Einstellungen: Master-Passwort setzen", dialogController, false);
+            WindowFactory.showDialog("Extra: Passwort generieren", dialogController, false);
         });
     }
 
@@ -279,11 +281,9 @@ public class MainWindowToolbarViewController extends GridPane {
                             .stream()
                             .noneMatch(menuButton -> ((CheckBox) ((CustomMenuItem) menuButton).getContent()).isSelected())
             ) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Suchen: Fehler");
-                alert.setHeaderText("Keine Spalten ausgewählt!");
-                alert.setContentText("Mindestens eine Spalte muss in die Suche\nmiteinbezogen werden, aber keine ist ausgewählt!");
-                alert.showAndWait();
+                WindowFactory.showError("Keine Spalten ausgewählt!",
+                                        "Mindestens eine Spalte muss in die Suche\nmiteinbezogen werden, aber keine ist ausgewählt!",
+                                        "Suchen: Fehler");
                 return;
             }
 
@@ -293,35 +293,45 @@ public class MainWindowToolbarViewController extends GridPane {
 
             onSearchRefreshAction.accept((entry -> {
                 LocalDate validUntil = entry.getValidUntil();
-                if( expiredUntil != null && validUntil != null && (
-                        expiredUntil.isAfter( validUntil ) || expiredUntil.isEqual( validUntil )
-                ) )
+                if (expiredUntil != null && validUntil != null && (
+                        expiredUntil.isAfter(validUntil) || expiredUntil.isEqual(validUntil)
+                ))
                     return false;
                 List<String> queryParts = Arrays.asList(searchQuery.split(" "));
                 List<String> notYetFound = new ArrayList<>(queryParts);
 
                 for (MenuItem menuItem : selectedColumnsSearchbar.getItems()) {
                     CheckBox checkBox = ((CheckBox) ((CustomMenuItem) menuItem).getContent());
-                    if( !checkBox.isSelected() ) continue;
+                    if (!checkBox.isSelected()) continue;
 
                     String value = null;
                     switch (checkBox.getText()) {
-                        case "Titel": value = entry.getTitle(); break;
-                        case "Nutzername": value = entry.getUsername(); break;
-                        case "URL": value = entry.getUrlString(); break;
-                        case "Notiz": value = entry.getNote(); break;
-                        case "Sicherheitsfrage": value = entry.getSecurityQuestion().getAnswer() + " " +
-                                entry.getSecurityQuestion().getQuestion(); break;
+                        case "Titel":
+                            value = entry.getTitle();
+                            break;
+                        case "Nutzername":
+                            value = entry.getUsername();
+                            break;
+                        case "URL":
+                            value = entry.getUrlString();
+                            break;
+                        case "Notiz":
+                            value = entry.getNote();
+                            break;
+                        case "Sicherheitsfrage":
+                            value = entry.getSecurityQuestion().getAnswer() + " " +
+                                    entry.getSecurityQuestion().getQuestion();
+                            break;
                     }
-                    if( value == null ) continue;
+                    if (value == null) continue;
 
-                    for( String queriedValue : queryParts ) {
-                        if( value.contains(queriedValue) ) {
+                    for (String queriedValue : queryParts) {
+                        if (value.contains(queriedValue)) {
                             notYetFound.remove(queriedValue);
                         }
                     }
 
-                    if( notYetFound.isEmpty() ) break;
+                    if (notYetFound.isEmpty()) break;
                 }
 
                 return notYetFound.isEmpty();

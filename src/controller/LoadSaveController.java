@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -38,9 +37,12 @@ import java.util.zip.ZipOutputStream;
  */
 @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.CyclomaticComplexity"})
 public class LoadSaveController extends SerializationController {
+    public LoadSaveController(PasswordManager passwordManager) {
+        super(passwordManager);
+    }
 
     /**
-     * Loads the password/tag database stored at the given file into {@link SerializationController#pmController}
+     * Loads the password/tag database stored at the given file into {@link SerializationController#passwordManager}
      * <p>
      * If the current {@link PMController} already contains entries and tags, the loaded data will be merged with
      * the existing data
@@ -48,11 +50,9 @@ public class LoadSaveController extends SerializationController {
      * @param path The file to load from
      */
     public void load(Path path) throws IOException {
-        PasswordManager wtf = pmController.getPasswordManager();
-
         try {
             Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, wtf.getMasterPasswordKey());
+            cipher.init(Cipher.DECRYPT_MODE, passwordManager.getMasterPasswordKey());
 
             try (InputStream fis = Files.newInputStream(path);
                  ZipInputStream zis = new ZipInputStream(fis)) {
@@ -95,11 +95,11 @@ public class LoadSaveController extends SerializationController {
 
                     String nextLine;
 
-                    while((nextLine = bur.readLine()) != null) {
-                        if(nextLine.isEmpty())
+                    while ((nextLine = bur.readLine()) != null) {
+                        if (nextLine.isEmpty())
                             throw new IOException("Invalid Tag read from save file.");
 
-                        if(readRootTag == null)
+                        if (readRootTag == null)
                             readRootTag = new Tag(nextLine.split("\\\\")[0]);
 
                         createTagFromPath(readRootTag, nextLine.split("\\\\"));
@@ -109,10 +109,12 @@ public class LoadSaveController extends SerializationController {
                     throw e;
                 }
 
-                wtf.setRootTag(readRootTag);
-                wtf.setEntries(entries);
-                wtf.setLastModified(lastModified);
-                wtf.setValidUntil(validUntil);
+                readRootTag.setName(path.getFileName().toString());
+
+                passwordManager.setRootTag(readRootTag);
+                passwordManager.setEntries(entries);
+                passwordManager.setLastModified(lastModified);
+                passwordManager.setValidUntil(validUntil);
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             e.printStackTrace();
@@ -173,7 +175,7 @@ public class LoadSaveController extends SerializationController {
 
             @Override
             public int read() throws IOException {
-                return 0;
+                return zis.read();
             }
         };
 
@@ -181,13 +183,11 @@ public class LoadSaveController extends SerializationController {
     }
 
     /**
-     * Saves the password/tag database from {@link SerializationController#pmController} to the given file
+     * Saves the password/tag database from {@link SerializationController#passwordManager} to the given file
      *
      * @param path The file to save to
      */
     public void save(Path path) throws IOException {
-        PasswordManager passwordManager = pmController.getPasswordManager();
-
         try (OutputStream fos = Files.newOutputStream(path); ZipOutputStream zos = new ZipOutputStream(fos)) {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, passwordManager.getMasterPasswordKey());
@@ -213,8 +213,7 @@ public class LoadSaveController extends SerializationController {
             }
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "TAGS"); PrintWriter writer = new PrintWriter(cos)) {
-                if (rootTag != null)
-                    rootTag.createPathMap().values().forEach(writer::println);
+                rootTag.createPathMap().values().forEach(writer::println);
             } catch (IOException e) {
                 // Error creating/writing new ZipEntry for tags section
                 e.printStackTrace();

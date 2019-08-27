@@ -1,6 +1,7 @@
 package controller;
 
 import model.Entry;
+import model.PasswordManager;
 import model.SecurityQuestion;
 import model.Tag;
 import org.apache.commons.csv.CSVFormat;
@@ -30,10 +31,15 @@ public abstract class SerializationController {
 
     protected static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     protected static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE;
-    protected PMController pmController;
 
     protected CSVFormat entryWriteFormat = CSVFormat.DEFAULT.withRecordSeparator("\n").withHeader(EntryTableHeader.class);
     protected CSVFormat entryParseFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
+
+    protected PasswordManager passwordManager;
+
+    protected SerializationController(PasswordManager passwordManager) {
+        this.passwordManager = passwordManager;
+    }
 
     public abstract void load(Path path) throws IOException;
 
@@ -50,12 +56,14 @@ public abstract class SerializationController {
      * @return Tag Tag pointed to by path
      */
     protected Tag createTagFromPath(Tag root, String[] path) {
-        assert (root != null);
-        assert (path != null);
+        assert (root != null && path != null);
 
         Tag currentTag = root;
 
         for (String part : Arrays.copyOfRange(path, 1, path.length)) {
+            if( part.isEmpty() )
+                throw new CsvException("Ungültiger Pfad: Leerer Tagname gefunden!");
+
             if (currentTag.hasSubTag(part)) {
                 currentTag = currentTag.getSubTagByName(part);
             } else {
@@ -80,13 +88,17 @@ public abstract class SerializationController {
         assert (entries != null);
         assert (root != null);
 
-        Map<Tag, String> pathMap = root.createPathMap();
+        Map<Tag, String> pathMap = root.getSubTags().stream().map(Tag::createPathMap)
+                .flatMap(map -> map.entrySet().stream()).collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue
+                ));
 
         CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(outputStream), entryWriteFormat);
 
         // Print Entries
         for (Entry entry : entries) {
-            String paths = entry.getTags().stream().map(pathMap::get).collect(Collectors.joining(";"));
+            String paths = entry.getTags().stream().filter(pathMap::containsKey).map(pathMap::get).collect(Collectors.joining(";"));
             // NOTE: null values are written as empty strings.
             printer.printRecord(
                     entry.getTitle(),
@@ -117,7 +129,7 @@ public abstract class SerializationController {
         assert (csvEntries != null);
 
         List<Entry> entries = new ArrayList<>();
-        Tag buildRoot = new Tag("build_root");
+        Tag root = new Tag("root");
 
 
         for (CSVRecord record : csvEntries) {
@@ -180,37 +192,18 @@ public abstract class SerializationController {
                 }
             }
 
-            String tagPaths = record.get(EntryTableHeader.tagPaths);
+            String tagPaths = record.get(EntryTableHeader.tagPaths)+";";
             String[] paths = tagPaths.split(";", -42);
-            HashSet<String> seenRoots = new HashSet<>();
-            
-            final int minimumPathLength = 2;
-            final int maximumRoots = 1;
 
             entry.getTags().addAll(
                     Arrays.stream(paths)
-                            .map(path -> "build_root\\".concat(path))
+                            .map("root\\"::concat)
                             .map(path -> path.split("\\\\"))
-                            .peek(path -> {
-                                if (path.length < minimumPathLength) {
-                                    throw new CsvException("Ungültiges CSV: Tag Pfad der Länge Null");
-                                }
-                            })
-                            .peek(path -> seenRoots.add(path[1]))
-                            .map(path -> createTagFromPath(buildRoot, path))
-                            .collect(Collectors.toList())
+                            .map(path -> createTagFromPath(root, path))
+                            .collect(Collectors.toSet())
             );
 
-            if (seenRoots.size() > maximumRoots) {
-                throw new CsvException("Ungültiges CSV: Mehrere Wurzeln in Tag Baum");
-            }
-
             entries.add(entry);
-        }
-
-        Tag root = null;
-        if (buildRoot.getSubTags().size() > 0) {
-            root = buildRoot.getSubTags().get(0);
         }
 
         return new Tuple<>(entries, root);

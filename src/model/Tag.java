@@ -3,18 +3,24 @@ package model;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("PMD.ShortClassName")
+import javafx.beans.Observable;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+
 /**
  * this class is about the setting of the tag
  * @author sopr016
  */
+@SuppressWarnings("PMD.ShortClassName")
 public class Tag {
-    private String name;
-    private List<Tag> subTags;
-    /**
-     * default constructor
-     * set tagname=""
-     */
+    private StringProperty name = new SimpleStringProperty();
+    private ObservableList<Tag> subTags = FXCollections.observableArrayList(
+            t -> new Observable[] { t.nameProperty(), t.subTagsObservable() }
+    );
+
     public Tag() {
         this("");
     }
@@ -24,21 +30,32 @@ public class Tag {
      * @param name set tagname = "name"
      */
     public Tag(String name) {
-        this.subTags = new ArrayList<>();
-        this.name = name;
+        if(name == null || name.isEmpty())
+            throw new IllegalArgumentException("tag name is null or empty");
+        this.name.setValue(name);
+
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.setValue(name);
+    }
+
+    public StringProperty nameProperty() {
+        return name;
     }
 
     public List<Tag> getSubTags() {
         return subTags;
     }
+
+    public ObservableList<Tag> subTagsObservable() {
+        return subTags;
+    }
+
     /**
      * All subtags of the given tag will be check ,if it already exists in the current one.
      * if so,we merge recursively with the existing ones,otherwise we reinsert the Tag.
@@ -52,14 +69,16 @@ public class Tag {
             else subTags.add(subtag);
         });
     }
+
    /**
     * this method will return a tag,that has the correspond subtag's name
     * @param name 
     * @return Tag with Name name
     */
     public Tag getSubTagByName(String name) {
-        return subTags.stream().filter(subtag -> name.equals(subtag.name)).findFirst().orElse(null);
+        return subTags.stream().filter(subtag -> name.equals(subtag.getName())).findFirst().orElse(null);
     }
+
     /**
      * this method is to check,if the tag with the correspond name has subtag or not
      * @param name 
@@ -68,41 +87,28 @@ public class Tag {
     public boolean hasSubTag(String name) {
         return getSubTagByName(name) != null;
     }
+
     /**
      * this method will create a path
      * @return Map<Tag ,String> which by a given Tag returns its path
      */
     public Map<Tag, String> createPathMap() {
-        if (subTags.isEmpty()) return Collections.singletonMap(this, name);
+        if (subTags.isEmpty()) return Collections.singletonMap(this, getName());
 
         Map<Tag, String> children = subTags
                 .stream()
                 .flatMap(subtag -> subtag.createPathMap().entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> name + "\\" + entry.getValue()));
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> getName() + "\\" + entry.getValue()));
 
-        children.put(this, name);
+        children.put(this, getName());
 
         return children;
     }
- 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Tag tag = (Tag) obj;
-        return name.equals(tag.name) &&
-                subTags.equals(tag.subTags);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, subTags);
-    }
- 
     @Override
     public String toString() {
         return "Tag{" +
-                "name='" + name + '\'' +
+                "name='" + name.getValue() + '\'' +
                 ", subTags=" + subTags +
                 '}';
     }

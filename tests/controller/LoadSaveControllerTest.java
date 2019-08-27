@@ -10,14 +10,12 @@ import org.junit.Test;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Base64;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 public class LoadSaveControllerTest {
     private LoadSaveController toTest;
@@ -31,15 +29,11 @@ public class LoadSaveControllerTest {
         SecretKey key = keyGen.generateKey();
 
         passwordManager = new PasswordManager(key);
-        PMController pmController = new PMController();
 
         passwordManager.setLastModified(LocalDateTime.now());
         passwordManager.setValidUntil(LocalDateTime.now());
 
-        pmController.setPasswordManager(passwordManager);
-
-        toTest = new LoadSaveController();
-        toTest.pmController = pmController;
+        toTest = new LoadSaveController(passwordManager);
 
         tempDir = Files.createTempDirectory("PMLoadSaveControllerTest");
     }
@@ -66,12 +60,12 @@ public class LoadSaveControllerTest {
      */
     @Test
     public void roundTripEmptyTest() throws IOException {
-        passwordManager.setRootTag(new Tag("TestTag"));
+        passwordManager.setRootTag(new Tag("roundTripEmptyTest"));
 
         roundTrip("roundTripEmptyTest");
 
         assertTrue(passwordManager.getEntries().isEmpty());
-        assertEquals(passwordManager.getRootTag(), new Tag("TestTag"));
+        assertEquals(passwordManager.getRootTag(), new Tag("roundTripEmptyTest"));
     }
 
     /**
@@ -79,7 +73,7 @@ public class LoadSaveControllerTest {
      */
     @Test
     public void roundTripOnlyRootTagAndOneEntry() throws IOException {
-        Tag testTag = new Tag("TestTag");
+        Tag testTag = new Tag("roundTripOnlyRootTagAndOneEntry");
         Entry entry = new Entry("Test", "Test");
 
         entry.getTags().add(testTag);
@@ -91,7 +85,7 @@ public class LoadSaveControllerTest {
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertEquals(passwordManager.getEntries().get(0), entry);
-        assertEquals(passwordManager.getRootTag(), new Tag("TestTag"));
+        assertEquals(passwordManager.getRootTag(), new Tag("roundTripOnlyRootTagAndOneEntry"));
     }
 
     /**
@@ -99,7 +93,7 @@ public class LoadSaveControllerTest {
      */
     @Test
     public void roundTripManyTagsAndOneEntry() throws IOException {
-        Tag testTag = new Tag("TestTag");
+        Tag testTag = new Tag("roundTripOnlyManyTagsAndOneEntry");
         testTag.getSubTags().add(new Tag("Subtag1"));
         testTag.getSubTags().add(new Tag("Subtag2"));
         Entry entry = new Entry("Test", "Test");
@@ -121,9 +115,9 @@ public class LoadSaveControllerTest {
      */
     @Test
     public void testLoadWithExisting() throws IOException {
-        Tag existing = new Tag("TestTag");
+        Tag existing = new Tag("testLoadWithExisting");
 
-        Tag testTag = new Tag("TestTag");
+        Tag testTag = new Tag("testLoadWithExisting");
         testTag.getSubTags().add(new Tag("Subtag1"));
         testTag.getSubTags().add(new Tag("Subtag2"));
         Entry entry = new Entry("Test", "Test");
@@ -152,10 +146,10 @@ public class LoadSaveControllerTest {
      */
     @Test
     public void testLoadOverride() throws IOException {
-        Tag existing = new Tag("TestTag");
+        Tag existing = new Tag("testLoadOverride");
         existing.getSubTags().add(new Tag("Subtag3"));
 
-        Tag testTag = new Tag("TestTag");
+        Tag testTag = new Tag("testLoadOverride");
         testTag.getSubTags().add(new Tag("Subtag1"));
         testTag.getSubTags().add(new Tag("Subtag2"));
         Entry entry = new Entry("Test", "Test");

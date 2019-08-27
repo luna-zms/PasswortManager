@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import javax.crypto.SecretKey;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 /**
  * This class is used to save the database dependent application data, e.g. the hashed master password.
  *
@@ -19,17 +22,20 @@ public class PasswordManager {
 
     private Tag rootTag;
 
-    private List<Entry> entries;
+    private ObservableList<Entry> entries;
+
+    public PasswordManager() {
+        this(null);
+    }
+
     /**
      * constructor sets the minimal required attributes masterPasswordKey
      * and lastModified or validUntil
      * @param masterPasswordKey
      */
-
     public PasswordManager(SecretKey masterPasswordKey) {
         this.masterPasswordKey = masterPasswordKey;
-
-        entries = new ArrayList<>();
+        entries = FXCollections.observableArrayList();
 
         lastModified = null;
         validUntil = null;
@@ -39,7 +45,7 @@ public class PasswordManager {
      * @param newEntries
      * @param newRootTag
      */
-    public void mergeWith(List<Entry> newEntries, Tag newRootTag){
+    public void mergeWith(List<Entry> newEntries, Tag newRootTag) {
         entries.addAll(newEntries);
         rootTag.mergeWith(newRootTag);
     }
@@ -81,9 +87,13 @@ public class PasswordManager {
     }
 
     public void setEntries(List<Entry> entries) {
-        this.entries = entries;
+        this.entries = FXCollections.observableList(entries);
     }
-    
+
+    public ObservableList<Entry> entriesObservable() {
+        return entries;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
