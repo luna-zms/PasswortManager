@@ -250,7 +250,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
     }
 
     public void init() {
-        tagTree.init(false, pmController);
+        tagTree.init(true, pmController);
         tagTree.setShowRoot(false);
     }
 }
