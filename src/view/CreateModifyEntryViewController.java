@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import model.Entry;
 import model.SecurityQuestion;
 import util.WindowFactory;
+import util.PasswordQualityUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -81,6 +82,8 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
         repeatPassword.setPromptText("Passwort wiederholen");
         String errorTitle = "Fehler: Eintrag erstellen";
+
+        passwordQualityBar.setQuality(0);
 
         cancelButton.setOnAction(event -> {
             boolean cancel = !isModified();
@@ -162,7 +165,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
             if (newValue.equals("")) {
                 passwordQualityBar.setQuality(0);
             } else {
-                passwordQualityBar.setQuality(pmController.getPasswordController().checkPasswordQuality(newValue));
+            	passwordQualityBar.setQuality(PasswordQualityUtil.getNormalizedScore(newValue));
             }
         });
     }

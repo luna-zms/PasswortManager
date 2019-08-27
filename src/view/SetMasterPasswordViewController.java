@@ -13,6 +13,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import sun.security.util.Password;
+import util.PasswordQualityUtil;
 
 public class SetMasterPasswordViewController extends GridPane {
 
@@ -75,18 +77,20 @@ public class SetMasterPasswordViewController extends GridPane {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SetMasterPasswordView.fxml"));
         loader.setRoot(this);
         loader.setController(this);
-        mode = true;
+        mode = false;
+        
         try {
             loader.load();
         } catch (IOException e) {
 
             e.printStackTrace();
         }
-
+        customPasswordFieldOldPassword.setEnabled(mode);
     }
 
     public void setMode(boolean other) {
         mode = other;
+        customPasswordFieldOldPassword.setEnabled(mode);
     }
 
     public boolean getMode() {
@@ -97,12 +101,14 @@ public class SetMasterPasswordViewController extends GridPane {
     void initialize() {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
-
+        
+        customPasswordFieldRepeat.setPromptText("Password wiederholen");
+        
         customPasswordFieldBase.onPasswordChanged((observable, oldValue, newValue) -> {
             if (newValue.equals("")) {
                 masterPasswordQualityBar.setQuality(0);
             } else {
-                masterPasswordQualityBar.setQuality(pmController.getPasswordController().checkPasswordQuality(newValue));
+                masterPasswordQualityBar.setQuality(PasswordQualityUtil.getNormalizedScore(newValue));
             }
         });
 
