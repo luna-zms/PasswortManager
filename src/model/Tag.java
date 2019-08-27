@@ -78,19 +78,19 @@ public class Tag {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Tag tag = (Tag) obj;
-        return name.equals(tag.name) &&
+        return name.getValue().equals(tag.name.getValue()) &&
                 subTags.equals(tag.subTags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, subTags);
+        return Objects.hash(name.getValue(), subTags);
     }
 
     @Override
     public String toString() {
         return "Tag{" +
-                "name='" + name + '\'' +
+                "name='" + name.getValue() + '\'' +
                 ", subTags=" + subTags +
                 '}';
     }
