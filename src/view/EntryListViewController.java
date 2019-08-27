@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -20,10 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCharacterCombination;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import model.Entry;
 import model.Tag;
@@ -86,6 +84,21 @@ public class EntryListViewController extends TableView<Entry> {
         setEntries(FXCollections.emptyObservableList());
         entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
         tag.addListener((obs, oldTag, newTag) -> applyFilter());
+
+        this.setOnMouseClicked(event -> {
+            if( event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2 ) {
+                CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
+                Entry entry = getSelectionModel().getSelectedItem();
+                if( entry != null )
+                    createModifyEntryViewController.setOldEntry(entry);
+                else
+                    createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
+
+                WindowFactory.showDialog("Eintrag bearbeiten", createModifyEntryViewController);
+
+                // TODO: Maybe update displayed entry if necessary
+            }
+        });
     }
 
     private static MenuItem createMenuItem(
