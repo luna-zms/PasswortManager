@@ -2,7 +2,9 @@ package application;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 
 import controller.*;
@@ -35,10 +37,14 @@ public class Main extends Application {
         pmController.setLoadSaveController(new LoadSaveController(passwordManager));
         pmController.setImportExportController(new ImportExportController(passwordManager));
 
-        File file = new File("C:\\Users\\Sebastian Schmidt\\Universität\\SoPra\\Projekt 1 Tests\\test_entries.csv");
         // TODO: Replace with actually loading the data
-        pmController.getImportExportController().load(file.toPath());
-        // initSampleData(passwordManager);
+        try {
+            pmController.getImportExportController().load(
+                    Paths.get(getClass().getResource("/application/resources/test_entries.csv").toURI())
+            );
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -51,34 +57,6 @@ public class Main extends Application {
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void initSampleData(PasswordManager passwordManager) {
-        Tag rootTag = new Tag("Root Tag");
-        Tag subTag = new Tag("Subtag");
-        Tag subSubTag = new Tag("Subsubtag");
-        subTag.getSubTags().add(subSubTag);
-        rootTag.getSubTags().add(subTag);
-
-        passwordManager.setRootTag(rootTag);
-
-        for (int i = 0; i < 100; i++) {
-            Entry entry = new Entry("Hello there" + i, "asdf");
-            entry.getTags().add(rootTag);
-            entry.getTags().add(subSubTag);
-            entry.setUsername("userSample");
-
-            URL url = null;
-            try {
-                url = new URL("http://example.com/" + i);
-            } catch (MalformedURLException e) {
-            }
-
-            entry.setUrl(url);
-            entry.setValidUntil(LocalDate.MAX);
-
-            passwordManager.getEntries().add(entry);
         }
     }
 }
