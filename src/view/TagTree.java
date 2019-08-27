@@ -188,9 +188,15 @@ public class TagTree extends TreeView<Tag> {
             if (parentTag == null)
                 return;
 
-            // TODO: maybe show a warning/info message when isDuplicate is true
+            if (str.isEmpty()) {
+                cancelEdit();
+            } else if (parentTag.getValue().hasSubTag(str)) {
+                Alert errorAlert = new Alert(Alert.AlertType.WARNING);
+                errorAlert.setTitle("Dupliziertes Schlagwort");
+                errorAlert.setHeaderText("Schlagwort existiert bereits");
+                errorAlert.setContentText("Ein Schlagwort mit dem Namen '" + str + "' existiert bereits. \n Wähle einen anderen Namen");
+                errorAlert.showAndWait();
 
-            if (str.isEmpty() || parentTag.getValue().hasSubTag(str)) {
                 cancelEdit();
             } else {
                 Tag tag;
