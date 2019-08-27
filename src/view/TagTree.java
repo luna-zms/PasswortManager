@@ -51,10 +51,9 @@ public class TagTree extends TreeView<Tag> {
         TreeItem<Tag> parent = item.getParent();
 
         if (parent != null) {  // Cannot delete root node
-            // TODO: Once we do Controllers, this needs to be moved there (to some removeTag(Tag tag) method that also goes through all entries
-            parent.getValue().getSubTags().remove(item.getValue());
+            pmController.getTagController().removeTag(parent.getValue(), item.getValue());
             parent.getChildren().remove(item);
-        } // TODO: maybe display some warning?
+        }
     }
 
     public void editSelected() {
