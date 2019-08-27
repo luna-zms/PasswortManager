@@ -3,6 +3,7 @@ package view;
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 
@@ -57,6 +58,8 @@ public class MainWindowViewController extends BorderPane {
         tagTree.getSelectionModel().selectFirst();
 
         entryList.setEntries(pmController.getPasswordManager().entriesObservable());
+
+        widthProperty().addListener((observable, oldWidth, newWidth) -> tagTree.setMaxWidth(newWidth.doubleValue()/5));
     }
 
     public void setPmController(PMController pmController) {
