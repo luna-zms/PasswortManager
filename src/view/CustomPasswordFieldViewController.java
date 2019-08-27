@@ -147,6 +147,7 @@ public class CustomPasswordFieldViewController extends HBox {
      */
     public void setEnabled(boolean enabled) {
         textField.setDisable(!enabled);
+        passwordField.setDisable(!enabled);
         copyButton.setDisable(!enabled);
         eyeButton.setDisable(!enabled);
     }
