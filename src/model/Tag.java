@@ -74,15 +74,6 @@ public class Tag {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Tag tag = (Tag) obj;
-        return name.getValue().equals(tag.name.getValue()) &&
-                subTags.equals(tag.subTags);
-    }
-
-    @Override
     public String toString() {
         return "Tag{" +
                 "name='" + name.getValue() + '\'' +
