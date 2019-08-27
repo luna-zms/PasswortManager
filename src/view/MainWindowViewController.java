@@ -47,7 +47,7 @@ public class MainWindowViewController extends BorderPane {
                                                 TreeItem::getValue, getRootTag()));
         mainWindowToolbar.setOnSearchRefreshAction((filter, searchEverywhere) -> {
             if (!searchEverywhere) {
-                filter = filter.and(entry -> entry.getTags().contains(getRootTag()));
+                filter = filter.and(entry -> entry.getTags().contains(entryList.tagProperty().getValue()));
             }
             entryList.filterOnce(filter);
         });
