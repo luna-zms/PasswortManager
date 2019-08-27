@@ -213,8 +213,7 @@ public class LoadSaveController extends SerializationController {
             }
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "TAGS"); PrintWriter writer = new PrintWriter(cos)) {
-                if (rootTag != null)
-                    rootTag.createPathMap().values().forEach(writer::println);
+                rootTag.createPathMap().values().forEach(writer::println);
             } catch (IOException e) {
                 // Error creating/writing new ZipEntry for tags section
                 e.printStackTrace();
