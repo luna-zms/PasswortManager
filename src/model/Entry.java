@@ -5,9 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 
 public class Entry {
@@ -16,7 +19,9 @@ public class Entry {
     private LocalDateTime createdAt, lastModified;
     private LocalDate validUntil;
     private SecurityQuestion securityQuestion;
-    private List<Tag> tags;
+    private ObservableList<Tag> tags = FXCollections.observableArrayList(
+            t -> new Observable[] { t.nameProperty(), t.subTagsObservable() }
+    );
 
     public Entry(String title, String password) {
         this.title = title;
@@ -24,7 +29,6 @@ public class Entry {
 
         createdAt = LocalDateTime.now();
         lastModified = createdAt;
-        tags = new ArrayList<>();
 
         username = "";
         note = "";
@@ -119,6 +123,10 @@ public class Entry {
     }
 
     public List<Tag> getTags() {
+        return tags;
+    }
+
+    public ObservableList<Tag> tagsObservable() {
         return tags;
     }
 

@@ -175,11 +175,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
      * @param content Content of the Alert dialog.
      */
     private void errorMessage(String title, String header, String content) {
-        Alert errorAlert = new Alert(AlertType.ERROR);
-        errorAlert.setTitle(title);
-        errorAlert.setHeaderText(header);
-        errorAlert.setContentText(content);
-        errorAlert.showAndWait();
+        WindowFactory.showError(header, content, title);
     }
 
     private boolean isModified() {
