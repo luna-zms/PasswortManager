@@ -17,6 +17,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -48,6 +49,9 @@ public class EntryListViewController extends TableView<Entry> {
         urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
         // Use getter with specific string formatting
         validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntilString"));
+
+        // Make password column unsortable as it contains just static data anyway
+        passwordColumn.setSortable(false);
 
         // Right-align date column
         validUntilColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
@@ -138,7 +142,14 @@ public class EntryListViewController extends TableView<Entry> {
         // Always non-null as it's initialized to the root tag
         Tag newTag = tag.getValue();
 
-        setItems(newEntries.filtered(entry -> entry.getTags().contains(newTag)));
+        // De-inlined because it gets massacred by autoformat otherwise
+        Predicate<Entry> predicate = entry -> entry.getTags().contains(newTag);
+        // FilteredList cannot be sorted => wrap in SortedList
+        SortedList<Entry> sortedList = new SortedList<>(newEntries.filtered(predicate));
+        // Necessary if manually passing a SortedList to setItems
+        sortedList.comparatorProperty().bind(comparatorProperty());
+
+        setItems(sortedList);
     }
 
     private ContextMenu buildContextMenu() {
