@@ -1,21 +1,27 @@
 package view;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import controller.PMController;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import model.Entry;
+import model.Tag;
 
 import static util.BindingUtils.makeBinding;
 
 public class EntryPreviewViewController extends HBox {
     private ObjectProperty<Entry> entry = new SimpleObjectProperty<>();
+    private ObservableValue<Map<Tag, String>> pathMap = new SimpleObjectProperty<>(new HashMap<>());
 
     @FXML // fx:id="tagList"
     private TagList tagList; // Value injected by FXMLLoader
@@ -47,7 +53,10 @@ public class EntryPreviewViewController extends HBox {
         url.textProperty().bind(makeBinding(entry, Entry::getUrlString, ""));
         username.textProperty().bind(makeBinding(entry, Entry::getUsername, ""));
         validUntil.textProperty().bind(makeBinding(entry, Entry::getValidUntilString, ""));
-        tagList.itemsProperty().bind(makeBinding(entry, Entry::tagsObservable, FXCollections.emptyObservableList()));
+
+        tagList.itemsProperty().bind(makeBinding(entry, e -> e.tagsObservable().sorted((t1, t2) ->
+                pathMap.getValue().get(t1).toLowerCase().compareTo(pathMap.getValue().get(t2).toLowerCase())
+        ), FXCollections.emptyObservableList()));
     }
 
     public ObjectProperty<Entry> entryProperty() {
@@ -55,6 +64,12 @@ public class EntryPreviewViewController extends HBox {
     }
 
     public void setPmController(PMController pmController) {
-        tagList.setPmController(pmController);
+        Tag rootTag = pmController.getPasswordManager().getRootTag();
+        pathMap = Bindings.createObjectBinding(
+                rootTag::createPathMap,
+                rootTag.nameProperty(),
+                rootTag.subTagsObservable()
+        );
+        tagList.setPathMap(pathMap);
     }
 }
