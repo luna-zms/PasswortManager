@@ -59,6 +59,11 @@ public class StartWindowViewController extends GridPane {
         		WindowFactory.showError("Fehler beim Öffnen", "Die gewählte Datei existiert nicht!");
                 return;
         	}
+        	System.out.println(file.getPath());
+        	if (!file.getPath().endsWith(".pwds")) {
+        		WindowFactory.showError("Fehler beim Öffnen", "Die gewählte Datei ist kein Passwort-Archiv!");
+                return;
+        	}
         	if(customPasswordField.getText().isEmpty()) {
         		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben sie das Paswort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
         		return;
