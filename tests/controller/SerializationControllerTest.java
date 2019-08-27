@@ -125,7 +125,6 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, new ArrayList<>(), root);
             String result = out.toString();
-            System.out.println(result);
             assertEquals("writeEntriesToStream creates phantom entries", result, zeroEntries);
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -197,7 +196,6 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, entries, root);
             String result = out.toString();
-            System.out.println(result);
             assertEquals("writeEntriesToStream produces wrong output", result, twoEntries);
         } catch (IOException e) {
             e.printStackTrace();
@@ -233,7 +231,6 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, entries, root);
             String result = out.toString();
-            System.out.println(result);
             assertEquals("writeEntriesToStream produces wrong output", result, fullyInitialized);
         } catch (IOException e) {
             e.printStackTrace();
@@ -486,5 +483,4 @@ public class SerializationControllerTest extends SerializationController {
         // TODO Auto-generated method stub
 
     }
-
 }
