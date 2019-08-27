@@ -8,11 +8,10 @@ public class Tag {
     private String name;
     private List<Tag> subTags;
 
-    public Tag() {
-        this("");
-    }
-
     public Tag(String name) {
+        if(name == null || name.isEmpty())
+            throw new IllegalArgumentException("tag name is null or empty");
+
         this.subTags = new ArrayList<>();
         this.name = name;
     }

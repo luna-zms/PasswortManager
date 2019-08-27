@@ -63,7 +63,7 @@ public class TagTree extends TreeView<Tag> {
 
     public void createBelowSelected() {
         TreeItem<Tag> selected = getSelectedItem();
-        Tag newTag = new Tag();
+        Tag newTag = new Tag("");
         TagTreeItem newItem = new TagTreeItem(newTag);
 
         // TODO: delegate to controller
