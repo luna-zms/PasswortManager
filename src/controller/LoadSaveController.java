@@ -109,6 +109,8 @@ public class LoadSaveController extends SerializationController {
                     throw e;
                 }
 
+                readRootTag.setName(path.getFileName().toString());
+
                 wtf.setRootTag(readRootTag);
                 wtf.setEntries(entries);
                 wtf.setLastModified(lastModified);
