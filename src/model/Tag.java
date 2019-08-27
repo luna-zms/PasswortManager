@@ -84,13 +84,13 @@ public class Tag {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, subTags);
+        return Objects.hash(name.getValue(), subTags);
     }
 
     @Override
     public String toString() {
         return "Tag{" +
-                "name='" + name + '\'' +
+                "name='" + name.getValue() + '\'' +
                 ", subTags=" + subTags +
                 '}';
     }
