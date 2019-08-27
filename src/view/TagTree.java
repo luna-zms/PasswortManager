@@ -176,14 +176,11 @@ public class TagTree extends TreeView<Tag> {
                 }
             });
 
-            wtf.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
-                switch( keyEvent.getCharacter() ) {
-                    case "\\":
-                    case ";":
-                        keyEvent.consume(); break;
-                    default: break;
-                }
-            });
+            wtf.setTextFormatter(new TextFormatter<>(change -> {
+                String text = change.getControlNewText();
+                if( text.contains("\\") || text.contains(";") ) return null;
+                return change;
+            }));
 
             return wtf;
         }
