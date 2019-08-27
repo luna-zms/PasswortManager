@@ -147,6 +147,8 @@ public class CustomPasswordFieldViewController extends HBox {
      */
     public void setEnabled(boolean enabled) {
         textField.setDisable(!enabled);
+        textField.setEditable(enabled);
+        textField.setPromptText("Feld Freilassen!");
         copyButton.setDisable(!enabled);
         eyeButton.setDisable(!enabled);
     }
