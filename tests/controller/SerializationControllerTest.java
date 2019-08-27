@@ -1,6 +1,7 @@
 package controller;
 
 import model.Entry;
+import model.PasswordManager;
 import model.SecurityQuestion;
 import model.Tag;
 import org.apache.commons.csv.CSVParser;
@@ -38,6 +39,10 @@ public class SerializationControllerTest extends SerializationController {
     private static final String invalidURL = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,blub,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
     private static final String emptyCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
     private static final String emptyLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,,,,,,root;root\\foo\n";
+
+    public SerializationControllerTest() {
+        super(null);
+    }
 
     private Tuple<List<Entry>, Tag> parseCSVString(String str) {
         ByteArrayInputStream in = new ByteArrayInputStream(str.getBytes());
