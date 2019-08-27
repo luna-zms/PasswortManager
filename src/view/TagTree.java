@@ -5,7 +5,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 import model.Tag;
+import util.WindowFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,7 +81,13 @@ public class TagTree extends TreeView<Tag> {
 
         createTag.setOnAction(event -> createBelowSelected());
         createEntry.setOnAction(event -> {
-        }); // TODO: open add entry dialog
+            CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
+            dialogController.setPmController(pmController);
+            Stage stage = WindowFactory.createStage("Eintrag erstellen");
+            stage.show();
+            stage.setScene(WindowFactory.createScene(dialogController));
+            dialogController.init();
+        });
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
 
