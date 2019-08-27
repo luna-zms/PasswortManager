@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import model.Entry;
 import model.Tag;
@@ -27,16 +28,16 @@ public class EntryPreviewViewController extends HBox {
     private TagList tagList; // Value injected by FXMLLoader
 
     @FXML // fx:id="title"
-    private Label title; // Value injected by FXMLLoader
+    private TextField title; // Value injected by FXMLLoader
 
     @FXML // fx:id="url"
-    private Label url; // Value injected by FXMLLoader
+    private TextField url; // Value injected by FXMLLoader
 
     @FXML // fx:id="username"
-    private Label username; // Value injected by FXMLLoader
+    private TextField username; // Value injected by FXMLLoader
 
     @FXML // fx:id="validUntil"
-    private Label validUntil; // Value injected by FXMLLoader
+    private TextField validUntil; // Value injected by FXMLLoader
 
     public EntryPreviewViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EntryPreviewView.fxml"));
