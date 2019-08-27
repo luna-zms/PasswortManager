@@ -59,6 +59,8 @@ public class GeneratePasswordViewController extends GridPane {
 
     private PMController pmController;
 
+    private boolean okay = false;
+
     @FXML
     void initialize() {
         assert signList != null : "fx:id=\"signList\" was not injected: check your FXML file 'GeneratePasswordView.fxml'.";
@@ -130,7 +132,10 @@ public class GeneratePasswordViewController extends GridPane {
                         "Kein Passwort generiert",
                         "Sie haben kein Passwort eingegeben oder generieren lassen!"
                 );
-            else stage.close();
+            else {
+                stage.close();
+                okay = true;
+            }
         });
     }
 
@@ -183,5 +188,9 @@ public class GeneratePasswordViewController extends GridPane {
 
     public void setPassword(String password) {
         pwField.setText(password);
+    }
+
+    public boolean receivedOkay() {
+        return okay;
     }
 }

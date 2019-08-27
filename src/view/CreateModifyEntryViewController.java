@@ -2,7 +2,9 @@ package view;
 
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.Entry;
 import model.SecurityQuestion;
+import model.Tag;
 import util.WindowFactory;
 import util.PasswordQualityUtil;
 
@@ -137,6 +140,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
             newEntry.setValidUntil(validDatePicker.getExpirationDate());
             newEntry.setNote(notes.getText());
             newEntry.getTags().addAll(tagTree.getCheckedTags());
+            newEntry.getTags().add(pmController.getPasswordManager().getRootTag());
 
             if (oldEntry == null) {
                 newEntry.setCreatedAt(LocalDateTime.now());
@@ -156,16 +160,18 @@ public class CreateModifyEntryViewController extends AnchorPane {
             GeneratePasswordViewController dialogController = new GeneratePasswordViewController();
             dialogController.setPmController(pmController);
             WindowFactory.showDialog("Passwort generieren", dialogController, false);
-            password.setText(dialogController.getPassword());
-            String genPassword = dialogController.getPassword();
-            if (!genPassword.equals("")) repeatPassword.setText(genPassword);
+            if (dialogController.receivedOkay()) {
+                password.setText(dialogController.getPassword());
+                String genPassword = dialogController.getPassword();
+                repeatPassword.setText(genPassword);
+            }
         });
 
         password.onPasswordChanged((observable, oldValue, newValue) -> {
             if (newValue.equals("")) {
                 passwordQualityBar.setQuality(0);
             } else {
-            	passwordQualityBar.setQuality(PasswordQualityUtil.getNormalizedScore(newValue));
+                passwordQualityBar.setQuality(PasswordQualityUtil.getNormalizedScore(newValue));
             }
         });
     }
@@ -242,6 +248,10 @@ public class CreateModifyEntryViewController extends AnchorPane {
         answer.setText(question.getAnswer());
         notes.setText(entry.getNote());
         tagTree.setCheckedTags(entry.getTags());
+    }
+
+    public void setCheckedTags(List<Tag> tags) {
+        tagTree.setCheckedTags(tags);
     }
 
     public void setPmController(PMController pmController) {
