@@ -111,6 +111,8 @@ public class LoadSaveController extends SerializationController {
 
                 readRootTag.setName(path.getFileName().toString());
 
+                passwordManager.setRootTag(readRootTag);
+                passwordManager.setEntries(entries);
                 passwordManager.setLastModified(lastModified);
                 passwordManager.setValidUntil(validUntil);
             }
