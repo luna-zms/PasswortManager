@@ -24,6 +24,10 @@ public class PasswordManager {
 
     private ObservableList<Entry> entries;
 
+    public PasswordManager() {
+        this(null);
+    }
+
     public PasswordManager(SecretKey masterPasswordKey) {
         this.masterPasswordKey = masterPasswordKey;
         entries = FXCollections.observableArrayList();

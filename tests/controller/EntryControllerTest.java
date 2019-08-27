@@ -29,7 +29,7 @@ public class EntryControllerTest {
      */
     @Before
     public void setUp() {
-        passwordManager = new PasswordManager(null);
+        passwordManager = new PasswordManager();
         one = new Entry("one", "123Kevin");
         two = new Entry("two", "123Kevin");
         pmController = new PMController();

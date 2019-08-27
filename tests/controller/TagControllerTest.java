@@ -17,18 +17,18 @@ public class TagControllerTest {
 
 	private TagController tagController;
 	private PasswordManager passwordManager;
-	private PMController pmController; 
+	private PMController pmController;
 	private Entry entryWithTags;
 	private Entry entryWithoutTags;
 	private Tag nullTag;
 	private Tag exampleTagOne;
 	private Tag exampleTagTwo;
 	private Tag exampleTagThree;
-	
+
 	@Before
 	public void setUp(){
 		tagController = new TagController();
-		passwordManager = new PasswordManager(null);
+		passwordManager = new PasswordManager();
 		pmController = new PMController();
 		entryWithTags = new Entry("Muster-Seite", "musterpasswort");
 		entryWithoutTags = new Entry("example page", "samplepassword");
@@ -36,31 +36,31 @@ public class TagControllerTest {
 		exampleTagOne = new Tag("One");
 		exampleTagTwo = new Tag ("Two");
 		exampleTagThree = new Tag ("Three");
-		
+
 		ArrayList<Entry> exampleList = new ArrayList<Entry>();
 		exampleList.add(entryWithTags);
 		exampleList.add(entryWithoutTags);
-		
+
 		tagController.setPMController(pmController);
 		pmController.setPasswordManager(passwordManager);
 		passwordManager.setEntries(exampleList);
 		passwordManager.setRootTag(new Tag("rootTag"));
 		entryWithTags.getTags().add(exampleTagOne);
 		entryWithTags.getTags().add(exampleTagTwo);
-		
-		
+
+
 	}
 	/**
 	 * Tests whether the addTag method throws a NullPointerException when you give null to the method or not.
 	 */
-	@Test 
+	@Test
 	public void nullPointerTestAddTag() {
 		try{
 			tagController.addTag(exampleTagOne, null);
 			fail();
 		}
 		catch(NullPointerException e){
-			
+
 		}
 	}
 	/**
@@ -71,32 +71,32 @@ public class TagControllerTest {
 		try{
 			passwordManager.getRootTag().getSubTags().add(exampleTagOne);
 			entryWithTags.getTags().add(exampleTagTwo);
-			
+
 			tagController.removeTag(passwordManager.getRootTag(), null);
 			fail();
 		}
 		catch(NullPointerException e){
-			
+
 		}
 	}
 	/**
 	 * Tests whether the renameTag method throws a NullPointerException when you give null to the method or not.
 	 */
-	@Test 
+	@Test
 	public void nullPointerTestRenameTag() {
 		try{
 			tagController.renameTag(exampleTagOne, null);
 			fail();
 		}
 		catch(NullPointerException e){
-			
+
 		}
 		try{
 			tagController.renameTag(null, "test");
 			fail();
 		}
 		catch(NullPointerException e){
-			
+
 		}
 	}
 	/**
@@ -114,9 +114,9 @@ public class TagControllerTest {
 	@Test
 	public void testRemoveTag() {
 		passwordManager.getRootTag().getSubTags().add(exampleTagOne);
-		
+
 		tagController.removeTag(passwordManager.getRootTag(), exampleTagOne);
-		
+
 		assertTrue(passwordManager.getRootTag().getSubTags().isEmpty());
 		assertEquals(1, entryWithTags.getTags().size());
 		assertEquals(exampleTagTwo, entryWithTags.getTags().get(0));
@@ -127,7 +127,7 @@ public class TagControllerTest {
 	@Test
 	public void testRenameTag() {
 		tagController.renameTag(exampleTagThree, "four");
-		
+
 		assertEquals("four", exampleTagThree.getName());
 	}
 

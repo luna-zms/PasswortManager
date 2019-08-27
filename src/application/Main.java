@@ -28,7 +28,7 @@ public class Main extends Application {
     public void init() {
         pmController = new PMController();
 
-        PasswordManager passwordManager = new PasswordManager(null);
+        PasswordManager passwordManager = new PasswordManager();
         pmController.setPasswordManager(passwordManager);
 
         pmController.setPasswordController(new PasswordController());
