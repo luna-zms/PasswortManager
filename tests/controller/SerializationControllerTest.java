@@ -160,19 +160,20 @@ public class SerializationControllerTest extends SerializationController {
     @Test
     public void parseEntriesFuzzer() {
     	for (int i = 0; i < FUZZER_RUNS; i ++) {
-    		System.out.println("Fuzzing Run: " + (i + 1));
+    		System.out.print("Fuzzing Run: " + (i + 1));
     		String csv = generateRandomCSV();
     		try {
     			parseCSVString(csv);
+    			System.out.println("    Successful");
     		}
     		catch (CsvException exp) {
-    			
+    			System.out.println("    " + exp.getMessage());
     		}
     		catch (Exception exp) {
     			System.out.println("Fuzzing failed. Got Exception:");
     			System.out.println(exp.getMessage());
     			System.out.println("CSV file is:");
-    			//System.out.println(csv);
+    			System.out.println(csv);
     			fail();
     		}
     	}
