@@ -9,7 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
+/**
+ * this class is used to set Entry
+ * @author sopr016
+ *
+ */
 public class Entry {
     private String title, username, password, note;
     private URL url;
@@ -17,7 +21,13 @@ public class Entry {
     private LocalDate validUntil;
     private SecurityQuestion securityQuestion;
     private List<Tag> tags;
-
+    
+    /**
+     * Constructor sets the minimal required attributes title and password
+     * and the cratedAt or lastModifiedAt
+     * @param title
+     * @param password
+     */
     public Entry(String title, String password) {
         this.title = title;
         this.password = password;
@@ -33,7 +43,7 @@ public class Entry {
         url = null;
         validUntil = null;
     }
-
+  
     private static String stringFromDateTime(LocalDateTime dateTime) {
         return dateTime != null ? dateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : "";
     }

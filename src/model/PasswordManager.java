@@ -20,6 +20,11 @@ public class PasswordManager {
     private Tag rootTag;
 
     private List<Entry> entries;
+    /**
+     * constructor sets the minimal required attributes masterPasswordKey
+     * and lastModified or validUntil
+     * @param masterPasswordKey
+     */
 
     public PasswordManager(SecretKey masterPasswordKey) {
         this.masterPasswordKey = masterPasswordKey;
@@ -29,7 +34,11 @@ public class PasswordManager {
         lastModified = null;
         validUntil = null;
     }
-
+    /**
+     * this method will merge this tag newrootTag with the list newEntries
+     * @param newEntries
+     * @param newRootTag
+     */
     public void mergeWith(List<Entry> newEntries, Tag newRootTag){
         entries.addAll(newEntries);
         rootTag.mergeWith(newRootTag);
@@ -74,7 +83,7 @@ public class PasswordManager {
     public void setEntries(List<Entry> entries) {
         this.entries = entries;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
