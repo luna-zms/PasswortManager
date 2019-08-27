@@ -3,29 +3,44 @@ package model;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javafx.beans.Observable;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 @SuppressWarnings("PMD.ShortClassName")
 public class Tag {
-    private String name;
-    private List<Tag> subTags;
+    private StringProperty name = new SimpleStringProperty();
+    private ObservableList<Tag> subTags = FXCollections.observableArrayList(
+            t -> new Observable[] { t.nameProperty(), t.subTagsObservable() }
+    );
 
     public Tag() {
         this("");
     }
 
     public Tag(String name) {
-        this.subTags = new ArrayList<>();
-        this.name = name;
+        this.name.setValue(name);
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.setValue(name);
+    }
+
+    public StringProperty nameProperty() {
+        return name;
     }
 
     public List<Tag> getSubTags() {
+        return subTags;
+    }
+
+    public ObservableList<Tag> subTagsObservable() {
         return subTags;
     }
 
@@ -39,7 +54,7 @@ public class Tag {
     }
 
     public Tag getSubTagByName(String name) {
-        return subTags.stream().filter(subtag -> name.equals(subtag.name)).findFirst().orElse(null);
+        return subTags.stream().filter(subtag -> name.equals(subtag.getName())).findFirst().orElse(null);
     }
 
     public boolean hasSubTag(String name) {
@@ -47,14 +62,14 @@ public class Tag {
     }
 
     public Map<Tag, String> createPathMap() {
-        if (subTags.isEmpty()) return Collections.singletonMap(this, name);
+        if (subTags.isEmpty()) return Collections.singletonMap(this, getName());
 
         Map<Tag, String> children = subTags
                 .stream()
                 .flatMap(subtag -> subtag.createPathMap().entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> name + "\\" + entry.getValue()));
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> getName() + "\\" + entry.getValue()));
 
-        children.put(this, name);
+        children.put(this, getName());
 
         return children;
     }

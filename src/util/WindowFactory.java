@@ -3,6 +3,8 @@ package util;
 import application.Main;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -39,5 +41,35 @@ public class WindowFactory {
         stage.setScene(createScene(content));
         stage.setResizable(resizable);
         stage.showAndWait();
+    }
+
+    public static void showError(String header, String content) {
+        createError(header, content).showAndWait();
+    }
+
+    public static void showError(String header, String content, String title) {
+        createError(header, content, title).showAndWait();
+    }
+
+    public static Alert createError(String header, String content) {
+        Alert alert = createAlert(Alert.AlertType.ERROR, content);
+        alert.setHeaderText(header);
+
+        return alert;
+    }
+
+    public static Alert createError(String header, String content, String title) {
+        Alert alert = createError(header, content);
+        alert.setTitle(title);
+
+        return alert;
+    }
+
+    public static Alert createAlert(Alert.AlertType type, String content) {
+        Alert alert = new Alert(type, content);
+        // Necessary because content text gets truncated otherwise
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+
+        return alert;
     }
 }
