@@ -16,12 +16,11 @@ public class Tag {
             t -> new Observable[] { t.nameProperty(), t.subTagsObservable() }
     );
 
-    public Tag() {
-        this("");
-    }
-
     public Tag(String name) {
+        if(name == null || name.isEmpty())
+            throw new IllegalArgumentException("tag name is null or empty");
         this.name.setValue(name);
+
     }
 
     public String getName() {

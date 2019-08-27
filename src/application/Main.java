@@ -37,6 +37,8 @@ public class Main extends Application {
         pmController.setLoadSaveController(new LoadSaveController(passwordManager));
         pmController.setImportExportController(new ImportExportController(passwordManager));
 
+        pmController.getTagController().setPMController(pmController);
+
         // TODO: Replace with actually loading the data
         try {
             pmController.getImportExportController().load(
