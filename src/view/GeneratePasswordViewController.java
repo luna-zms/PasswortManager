@@ -17,6 +17,7 @@ import util.CharGroup;
 import static util.CharGroup.*;
 
 import util.PasswordGeneratorSettings;
+import util.PasswordQualityUtil;
 import util.WindowFactory;
 
 public class GeneratePasswordViewController extends GridPane {
@@ -112,7 +113,7 @@ public class GeneratePasswordViewController extends GridPane {
             if (newValue.equals("")) {
                 securityBar.setQuality(0);
             } else {
-                securityBar.setQuality(pmController.getPasswordController().checkPasswordQuality(newValue));
+                securityBar.setQuality(PasswordQualityUtil.getNormalizedScore(newValue));
             }
         });
 

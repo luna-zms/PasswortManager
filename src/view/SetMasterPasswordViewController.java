@@ -13,6 +13,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import sun.security.util.Password;
+import util.PasswordQualityUtil;
 
 public class SetMasterPasswordViewController extends GridPane {
 
@@ -106,7 +108,7 @@ public class SetMasterPasswordViewController extends GridPane {
             if (newValue.equals("")) {
                 masterPasswordQualityBar.setQuality(0);
             } else {
-                masterPasswordQualityBar.setQuality(pmController.getPasswordController().checkPasswordQuality(newValue));
+                masterPasswordQualityBar.setQuality(PasswordQualityUtil.getNormalizedScore(newValue));
             }
         });
 
