@@ -180,7 +180,7 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private void finishEdit(String str) {
-            if(getTreeItem() == null)
+            if (getTreeItem() == null)
                 return;
 
             TreeItem<Tag> parentTag = getTreeItem().getParent();
@@ -191,11 +191,13 @@ public class TagTree extends TreeView<Tag> {
             if (str.isEmpty()) {
                 cancelEdit();
             } else if (parentTag.getValue().hasSubTag(str)) {
-                Alert errorAlert = new Alert(Alert.AlertType.WARNING);
-                errorAlert.setTitle("Dupliziertes Schlagwort");
-                errorAlert.setHeaderText("Schlagwort existiert bereits");
-                errorAlert.setContentText("Ein Schlagwort mit dem Namen '" + str + "' existiert bereits. \n Wähle einen anderen Namen");
-                errorAlert.showAndWait();
+                if (getItem() == null || !getItem().getName().equals(str)) {
+                    Alert errorAlert = new Alert(Alert.AlertType.WARNING);
+                    errorAlert.setTitle("Dupliziertes Schlagwort");
+                    errorAlert.setHeaderText("Schlagwort existiert bereits");
+                    errorAlert.setContentText("Ein Schlagwort mit dem Namen '" + str + "' existiert bereits. \n Wähle einen anderen Namen");
+                    errorAlert.showAndWait();
+                }
 
                 cancelEdit();
             } else {
