@@ -176,6 +176,15 @@ public class TagTree extends TreeView<Tag> {
                 }
             });
 
+            wtf.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+                switch( keyEvent.getCharacter() ) {
+                    case "\\":
+                    case ";":
+                        keyEvent.consume(); break;
+                    default: break;
+                }
+            });
+
             return wtf;
         }
 
