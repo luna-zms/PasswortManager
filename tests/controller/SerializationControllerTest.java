@@ -282,7 +282,6 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, entries, root);
             String result = out.toString();
-            System.out.print(result);;
             assertEquals("writeEntriesToStream produces wrong output", result, oneEntry);
         } catch (IOException e) {
             e.printStackTrace();
