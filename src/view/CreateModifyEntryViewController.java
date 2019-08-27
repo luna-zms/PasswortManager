@@ -140,10 +140,10 @@ public class CreateModifyEntryViewController extends AnchorPane {
             newEntry.setValidUntil(validDatePicker.getExpirationDate());
             newEntry.setNote(notes.getText());
             newEntry.getTags().addAll(tagTree.getCheckedTags());
-            newEntry.getTags().add(pmController.getPasswordManager().getRootTag());
 
             if (oldEntry == null) {
                 newEntry.setCreatedAt(LocalDateTime.now());
+                newEntry.getTags().add(pmController.getPasswordManager().getRootTag());
                 pmController.getEntryController().addEntry(newEntry);
             } else {
                 newEntry.setCreatedAt(oldEntry.getCreatedAt());
