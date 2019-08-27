@@ -78,7 +78,7 @@ public class Tag {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Tag tag = (Tag) obj;
-        return name.equals(tag.name) &&
+        return name.getValue().equals(tag.name.getValue()) &&
                 subTags.equals(tag.subTags);
     }
 
