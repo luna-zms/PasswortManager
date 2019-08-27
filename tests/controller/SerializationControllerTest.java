@@ -1,6 +1,7 @@
 package controller;
 
 import model.Entry;
+import model.PasswordManager;
 import model.SecurityQuestion;
 import model.Tag;
 import org.apache.commons.csv.CSVParser;
@@ -25,19 +26,22 @@ import static org.junit.Assert.*;
 public class SerializationControllerTest extends SerializationController {
 
     private static final String zeroEntries = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\n";
-    private static final String oneEntry = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
-    private static final String twoEntries = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo\ntwo,,two,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root\n";
-    private static final String fullyInitialized = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\ntitle,username,password,https://localhost,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,-999999999-01-01,note,question,answer,root\n";
-    private static final String multipleRoots = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo;bar\\foo\n";
+    private static final String oneEntry = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,foo\n";
+    private static final String twoEntries = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,foo\ntwo,,two,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,\n";
+    private static final String fullyInitialized = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\ntitle,username,password,https://localhost,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,-999999999-01-01,note,question,answer,\n";
     private static final String emptyPath = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,";
     private static final String twoEmptyPaths = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,;";
-    private static final String inconsistentRecord = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,root;root\\foo\n";
-    private static final String invalidCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,blub,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
-    private static final String invalidLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,blub,,,,,root;root\\foo\n";
-    private static final String invalidValidUntil = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,blub,,,,root;root\\foo\n";
-    private static final String invalidURL = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,blub,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
-    private static final String emptyCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,,-999999999-01-01T00:00:00,,,,,root;root\\foo\n";
-    private static final String emptyLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,,,,,,root;root\\foo\n";
+    private static final String inconsistentRecord = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,foo\n";
+    private static final String invalidCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,blub,-999999999-01-01T00:00:00,,,,,foo\n";
+    private static final String invalidLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,blub,,,,,foo\n";
+    private static final String invalidValidUntil = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,blub,,,,foo\n";
+    private static final String invalidURL = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,blub,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,foo\n";
+    private static final String emptyCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,,-999999999-01-01T00:00:00,,,,,foo\n";
+    private static final String emptyLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,,,,,,foo\n";
+
+    public SerializationControllerTest() {
+        super(null);
+    }
 
     private Tuple<List<Entry>, Tag> parseCSVString(String str) {
         ByteArrayInputStream in = new ByteArrayInputStream(str.getBytes());
@@ -121,7 +125,6 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, new ArrayList<>(), root);
             String result = out.toString();
-            System.out.println(result);
             assertEquals("writeEntriesToStream creates phantom entries", result, zeroEntries);
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -228,7 +231,6 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, entries, root);
             String result = out.toString();
-            System.out.println(result);
             assertEquals("writeEntriesToStream produces wrong output", result, fullyInitialized);
         } catch (IOException e) {
             e.printStackTrace();
@@ -262,18 +264,6 @@ public class SerializationControllerTest extends SerializationController {
             e.printStackTrace();
         }
 
-    }
-
-    /**
-     * Tests parseEntries if no records are passed
-     * Expects a empty list of entries and a null (empty) tag tree
-     */
-    @Test
-    public void testParseEntriesZeroEntries() {
-        Tuple<List<Entry>, Tag> result = parseCSVString(zeroEntries);
-
-        assertEquals("parseEntries produces phantom entries", 0, result.first().size());
-        assertNull("parseEntries produces phantom tags", result.second());
     }
 
     /**
@@ -359,20 +349,6 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs recording containing a entry, whose tag paths contain multiple tree roots
-     * Parsing should fail with a CvsException
-     */
-    @Test
-    public void testParseEntriesWithMultipleRoots() {
-        try {
-            Tuple<List<Entry>, Tag> result = parseCSVString(multipleRoots);
-            fail("parseEntries accepts csv file with multiple roots in tag tree");
-        } catch (CsvException exc) {
-
-        }
-    }
-
-    /**
      * Tries parsing a cvs recording containing no tag paths
      * Parsing should fail with a CvsException
      */
@@ -380,9 +356,8 @@ public class SerializationControllerTest extends SerializationController {
     public void testParseEntriesWithEmptyTagPaths() {
         try {
             Tuple<List<Entry>, Tag> result = parseCSVString(emptyPath);
-            fail("parseEntries accepts cvs file with empty tag path in record");
         } catch (CsvException exc) {
-
+            fail("parseEntries does not accept cvs file with empty tag path in record");
         }
     }
 
@@ -394,9 +369,8 @@ public class SerializationControllerTest extends SerializationController {
     public void testParseEntriesWithTwoEmptyPaths() {
         try {
             Tuple<List<Entry>, Tag> result = parseCSVString(twoEmptyPaths);
-            fail("parseEntries accepts cvs file with two empty paths in tagPaths");
         } catch (CsvException exc) {
-
+            fail("parseEntries does not accept cvs file with two empty paths in tagPaths");
         }
     }
 
@@ -509,5 +483,4 @@ public class SerializationControllerTest extends SerializationController {
         // TODO Auto-generated method stub
 
     }
-
 }
