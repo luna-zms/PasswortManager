@@ -63,8 +63,7 @@ public class EntryPreviewViewController extends HBox {
         return entry;
     }
 
-    public void setPmController(PMController pmController) {
-        Tag rootTag = pmController.getPasswordManager().getRootTag();
+    public void init(Tag rootTag) {
         pathMap = Bindings.createObjectBinding(
                 rootTag::createPathMap,
                 rootTag.nameProperty(),
