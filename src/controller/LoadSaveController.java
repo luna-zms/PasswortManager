@@ -42,7 +42,7 @@ public class LoadSaveController extends SerializationController {
     }
 
     /**
-     * Loads the password/tag database stored at the given file into {@link SerializationController#pmController}
+     * Loads the password/tag database stored at the given file into {@link SerializationController#passwordManager}
      * <p>
      * If the current {@link PMController} already contains entries and tags, the loaded data will be merged with
      * the existing data
@@ -109,6 +109,8 @@ public class LoadSaveController extends SerializationController {
                     throw e;
                 }
 
+                readRootTag.setName(path.getFileName().toString());
+
                 passwordManager.setRootTag(readRootTag);
                 passwordManager.setEntries(entries);
                 passwordManager.setLastModified(lastModified);
@@ -173,7 +175,7 @@ public class LoadSaveController extends SerializationController {
 
             @Override
             public int read() throws IOException {
-                return 0;
+                return zis.read();
             }
         };
 
@@ -181,7 +183,7 @@ public class LoadSaveController extends SerializationController {
     }
 
     /**
-     * Saves the password/tag database from {@link SerializationController#pmController} to the given file
+     * Saves the password/tag database from {@link SerializationController#passwordManager} to the given file
      *
      * @param path The file to save to
      */
@@ -211,8 +213,7 @@ public class LoadSaveController extends SerializationController {
             }
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "TAGS"); PrintWriter writer = new PrintWriter(cos)) {
-                if (rootTag != null)
-                    rootTag.createPathMap().values().forEach(writer::println);
+                rootTag.createPathMap().values().forEach(writer::println);
             } catch (IOException e) {
                 // Error creating/writing new ZipEntry for tags section
                 e.printStackTrace();
