@@ -70,7 +70,7 @@
             <children>
                 <Button fx:id="openButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" text="Öffnen"
                         GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Button mnemonicParsing="false" text="Neues Archiv ..." GridPane.rowIndex="1">
+                <Button fx:id="createArchiveButton" mnemonicParsing="false" text="Neues Archiv ..." GridPane.rowIndex="1">
                     <tooltip>
                         <Tooltip text="Neues Passwort-Archiv erstellen" />
                     </tooltip>
