@@ -19,21 +19,21 @@ public class StartWindowViewController extends GridPane {
 
     @FXML
     private TextField choosePasswordAchivePath;
-    
+
     @FXML
     private Button fileButton;
-    
+
     @FXML
     private Button openButton;
-    
+
     @FXML
     private Button createArchiveButton;
 
     @FXML
     private CustomPasswordFieldViewController customPasswordField;
-    
+
     private Path path = null;
-    
+
     private boolean createNew = false;
 
     public StartWindowViewController() {
@@ -46,9 +46,9 @@ public class StartWindowViewController extends GridPane {
 
             e.printStackTrace();
         }
-        
+
         initFileChooser();
-        
+
         openButton.setOnAction(event -> {
         	if(choosePasswordAchivePath.getText().isEmpty()) {
         		WindowFactory.showError("Pfad nicht gesetzt", "Bitte geben sie einen Pfad zu einem Archiv an oder erstellen Sie ein neues Archiv");
@@ -59,7 +59,7 @@ public class StartWindowViewController extends GridPane {
         		WindowFactory.showError("Fehler beim Öffnen", "Die gewählte Datei existiert nicht!");
                 return;
         	}
-        	System.out.println(file.getPath());
+
         	if (!file.getPath().endsWith(".pwds")) {
         		WindowFactory.showError("Fehler beim Öffnen", "Die gewählte Datei ist kein Passwort-Archiv!");
                 return;
@@ -72,7 +72,7 @@ public class StartWindowViewController extends GridPane {
         	Stage stage = (Stage) getScene().getWindow();
             stage.close();
         });
-        
+
         createArchiveButton.setOnAction(event -> {
         	Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
@@ -91,15 +91,15 @@ public class StartWindowViewController extends GridPane {
             createNew = true;
             stage.close();
         });
-        	
+
     }
-    
+
     private void initFileChooser() {
         fileButton.setOnAction(event -> {
         	Stage dialog = WindowFactory.createStage();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            
+
             if(!choosePasswordAchivePath.getText().isEmpty()) {
             	Path path = Paths.get(choosePasswordAchivePath.getText());
             	if(path.toFile().exists()) {
@@ -111,24 +111,24 @@ public class StartWindowViewController extends GridPane {
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog(dialog);
-            
+
             if (file == null) return;
             choosePasswordAchivePath.setText(file.toString());
         });
     }
-    
+
     public Path getPath() {
     	return path;
     }
-    
+
     public void setPath(Path path) {
     	choosePasswordAchivePath.setText(path.toString());
     }
-    
+
     public String getPassword() {
     	return customPasswordField.getText();
     }
-    
+
   //If true, new archive will be created
     public boolean create() {
     	return createNew;
