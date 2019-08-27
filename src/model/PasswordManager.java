@@ -3,7 +3,12 @@ package model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import javax.crypto.SecretKey;
 
 import javafx.collections.FXCollections;
@@ -38,7 +43,15 @@ public class PasswordManager {
 
     public void mergeWith(List<Entry> newEntries, Tag newRootTag) {
         entries.addAll(newEntries);
-        rootTag.mergeWith(newRootTag);
+        Map<Tag, Tag> unify = rootTag.mergeWith(newRootTag);
+        
+        for (Entry entry : entries) {
+        	ListIterator<Tag> iterator = entry.getTags().listIterator();
+        	while (iterator.hasNext()) {
+        		Tag tag = iterator.next();
+        		iterator.set(unify.getOrDefault(tag, tag));
+        	}
+        }
     }
 
     public SecretKey getMasterPasswordKey() {

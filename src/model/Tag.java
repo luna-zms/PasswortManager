@@ -3,6 +3,7 @@ package model;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import controller.PMController;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -43,13 +44,30 @@ public class Tag {
         return subTags;
     }
 
-    public void mergeWith(Tag tag) {
-        tag.subTags.forEach(subtag -> {
-            Tag existing = getSubTagByName(subtag.getName());
-
-            if (existing != null) existing.mergeWith(subtag);
-            else subTags.add(subtag);
-        });
+    /**
+     * a.mergeWith(b) merges tag tree b into tag tree a.
+     * @param tag root of the tag tree to be merged into this tree.
+     * @return a Map<Tag, Tag>. An entry (s, t) in this
+     * map means that s from tree b and t from tree a are duplicates, and
+     * s has been merged into t.
+     */
+    public Map<Tag, Tag> mergeWith(Tag tag) {
+    	Map<Tag, Tag> unify = new HashMap<>();
+        mergeWith(tag, unify);
+        return unify;
+    }
+    
+    private void mergeWith(Tag tag, Map<Tag, Tag> unify) {
+    	tag.subTags.forEach(subtag -> {
+    		Tag existing = getSubTagByName(subtag.getName());
+    		
+    		if (existing != null) {
+    			existing.mergeWith(subtag, unify);
+    			unify.put(subtag, existing);
+    		} else {
+    			subTags.add(subtag);
+    		}
+    	});
     }
 
     public Tag getSubTagByName(String name) {
