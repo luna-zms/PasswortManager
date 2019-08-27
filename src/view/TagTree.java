@@ -51,7 +51,8 @@ public class TagTree extends TreeView<Tag> {
         TreeItem<Tag> parent = item.getParent();
 
         if (parent != null) {  // Cannot delete root node
-            pmController.getTagController().removeTag(parent.getValue(), item.getValue());
+            if (item.getValue() != null)
+                pmController.getTagController().removeTag(parent.getValue(), item.getValue());
             parent.getChildren().remove(item);
         }
     }
@@ -62,12 +63,9 @@ public class TagTree extends TreeView<Tag> {
 
     public void createBelowSelected() {
         TreeItem<Tag> selected = getSelectedItem();
-        //Tag newTag = new Tag("");
         TagTreeItem newItem = new TagTreeItem(null);
 
-        // TODO: delegate to controller
         selected.getChildren().add(newItem);
-        //selected.getValue().getSubTags().add(newTag);
     }
 
     private ContextMenu createContextMenu() {
@@ -182,6 +180,9 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private void finishEdit(String str) {
+            if(getTreeItem() == null)
+                return;
+
             TreeItem<Tag> parentTag = getTreeItem().getParent();
 
             if (parentTag == null)
@@ -204,6 +205,7 @@ public class TagTree extends TreeView<Tag> {
                 }
 
                 commitEdit(tag);
+
             }
         }
 
