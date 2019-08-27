@@ -38,9 +38,15 @@ public class SerializationControllerTest extends SerializationController {
     private static final String invalidURL = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,blub,-999999999-01-01T00:00:00,-999999999-01-01T00:00:00,,,,,foo\n";
     private static final String emptyCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,,-999999999-01-01T00:00:00,,,,,foo\n";
     private static final String emptyLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,,,,,,foo\n";
+    
+    private static final int FUZZER_RUNS = 100;
 
     public SerializationControllerTest() {
         super(null);
+    }
+    
+    private String generateRandomCSV() {
+    	return "";
     }
 
     private Tuple<List<Entry>, Tag> parseCSVString(String str) {
@@ -53,6 +59,29 @@ public class SerializationControllerTest extends SerializationController {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    /**
+     * Generates random CSV files and parses them. Parsing should either fail with a CSV error, or succeed.
+     */
+    @Test
+    public void parseEntriesFuzzer() {
+    	for (int i = 0; i < FUZZER_RUNS; i ++) {
+    		String csv = generateRandomCSV();
+    		try {
+    			parseCSVString(csv);
+    		}
+    		catch (CsvException exp) {
+    			
+    		}
+    		catch (Exception exp) {
+    			System.out.println("Fuzzing failed. Got Exception:");
+    			System.out.println(exp.getMessage());
+    			System.out.println("CSV file is:");
+    			System.out.println(csv);
+    			fail();
+    		}
+    	}
     }
 
     /**
