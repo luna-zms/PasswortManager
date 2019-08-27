@@ -98,7 +98,7 @@ public abstract class SerializationController {
 
         // Print Entries
         for (Entry entry : entries) {
-            String paths = entry.getTags().stream().map(pathMap::get).collect(Collectors.joining(";"));
+            String paths = entry.getTags().stream().filter(pathMap::containsKey).map(pathMap::get).collect(Collectors.joining(";"));
             // NOTE: null values are written as empty strings.
             printer.printRecord(
                     entry.getTitle(),
