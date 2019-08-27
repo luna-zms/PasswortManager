@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.*;
 
@@ -39,15 +40,107 @@ public class SerializationControllerTest extends SerializationController {
     private static final String emptyCreatedAt = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,,-999999999-01-01T00:00:00,,,,,foo\n";
     private static final String emptyLastModified = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\none,,one,,-999999999-01-01T00:00:00,,,,,,foo\n";
     
+    // Fuzzer data
     private static final int FUZZER_RUNS = 100;
+    private static final int MAX_STRING_LENGTH = 100;
+    private static final int MAX_RECORDS = 100;
+    private static final int MAX_DATE_LOOKAHEAD = 100;
+    private static final char[] SYMBOLS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefhijklmnopqrstuvwxyz1234567890".toCharArray();
+    private static final String HEADER = "title,username,password,url,createdAt,lastModified,validUntil,note,securityQuestion,securityQuestionAnswer,tagPaths\n";
+    private static final String[] PATH_COMPONENTS = new String[]{"foo", "bar", "baz", "blub", "test", "test2"};
+    private static final int MAX_PATH_LENGTH = 25;
+    private static final int MAX_PATH_LIST_LENGTH = 100;
 
     public SerializationControllerTest() {
         super(null);
     }
     
-    private String generateRandomCSV() {
-    	return "";
+    private String randomString(int length) {
+    	StringBuilder builder = new StringBuilder();
+    	for (int i = 0; i < length; i++) {
+    		builder.append(SYMBOLS[ThreadLocalRandom.current().nextInt(SYMBOLS.length)]);
+    	}
+    	return builder.toString();
     }
+    
+    private LocalDate randomLocalDate() {
+    	return LocalDate.now()
+    			.plusDays(ThreadLocalRandom.current().nextInt(MAX_DATE_LOOKAHEAD))
+    			.plusMonths(ThreadLocalRandom.current().nextInt(MAX_DATE_LOOKAHEAD))
+    			.plusYears(ThreadLocalRandom.current().nextInt(MAX_DATE_LOOKAHEAD));
+    }
+    
+    private LocalDateTime randomLocalDateTime() {
+    	return LocalDateTime.now()
+    			.plusDays(ThreadLocalRandom.current().nextInt(MAX_DATE_LOOKAHEAD))
+    			.plusMonths(ThreadLocalRandom.current().nextInt(MAX_DATE_LOOKAHEAD))
+    			.plusYears(ThreadLocalRandom.current().nextInt(MAX_DATE_LOOKAHEAD));
+    	
+    }
+    
+    private String randomPath(int length) {
+    	StringBuilder result = new StringBuilder();
+    	for (int i = 0; i < length; i++) {
+    		result.append(PATH_COMPONENTS[ThreadLocalRandom.current().nextInt(PATH_COMPONENTS.length)]);
+    		result.append("\\");
+    	}
+    	return result.toString();
+    }
+    
+    private String randomPathList(int amount) {
+    	StringBuilder result = new StringBuilder();
+    	for (int i = 0; i < amount; i++) {
+    		result.append(randomPath(ThreadLocalRandom.current().nextInt(MAX_PATH_LENGTH)));
+    		result.append(";");
+    	}
+    	return result.toString();
+    }
+    
+    private String generateRandomCSV() {
+    	StringBuilder result = new StringBuilder();
+    	ThreadLocalRandom random = ThreadLocalRandom.current();
+    	int numRecords = random.nextInt(MAX_RECORDS);
+    	result.append(HEADER);
+    	
+    	for (int i = 0; i < numRecords; i++) {
+    		// title
+    		result.append(randomString(MAX_STRING_LENGTH));
+    		result.append(",");
+    		// username
+    		result.append(randomString(MAX_STRING_LENGTH ));
+    		result.append(",");
+    		// password
+    		result.append(randomString(MAX_STRING_LENGTH));
+    		result.append(",");
+    		// url
+    		result.append("https://localhost");
+    		result.append(",");
+    		// createdAt
+    		result.append(randomLocalDateTime().format(DATE_TIME_FORMAT));
+    		result.append(",");
+    		// lastModified
+    		result.append(randomLocalDateTime().format(DATE_TIME_FORMAT));
+    		result.append(",");
+    		// validUntil
+    		result.append(randomLocalDate().format(DATE_FORMAT));
+    		result.append(",");
+    		// note
+    		result.append(randomString(MAX_STRING_LENGTH));
+    		result.append(",");
+    		// sec Quest.
+    		result.append(randomString(MAX_STRING_LENGTH));
+    		result.append(",");
+    		// sec answer
+    		result.append(randomString(MAX_STRING_LENGTH));
+    		result.append(",");
+    		// taglist
+    		result.append(randomPathList(random.nextInt(MAX_PATH_LIST_LENGTH)));
+    		result.append("\n");
+    	}
+    	return result.toString();
+    }
+    
+    
 
     private Tuple<List<Entry>, Tag> parseCSVString(String str) {
         ByteArrayInputStream in = new ByteArrayInputStream(str.getBytes());
@@ -67,6 +160,7 @@ public class SerializationControllerTest extends SerializationController {
     @Test
     public void parseEntriesFuzzer() {
     	for (int i = 0; i < FUZZER_RUNS; i ++) {
+    		System.out.println("Fuzzing Run: " + (i + 1));
     		String csv = generateRandomCSV();
     		try {
     			parseCSVString(csv);
@@ -78,7 +172,7 @@ public class SerializationControllerTest extends SerializationController {
     			System.out.println("Fuzzing failed. Got Exception:");
     			System.out.println(exp.getMessage());
     			System.out.println("CSV file is:");
-    			System.out.println(csv);
+    			//System.out.println(csv);
     			fail();
     		}
     	}
@@ -187,6 +281,7 @@ public class SerializationControllerTest extends SerializationController {
         try {
             writeEntriesToStream(out, entries, root);
             String result = out.toString();
+            System.out.print(result);;
             assertEquals("writeEntriesToStream produces wrong output", result, oneEntry);
         } catch (IOException e) {
             e.printStackTrace();
