@@ -83,11 +83,9 @@ public class TagTree extends TreeView<Tag> {
             CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
             dialogController.setPmController(pmController);
             dialogController.init();
-            if( getSelectedTag() != null ) {
-                List<Tag> selected = new ArrayList<>();
-                selected.add(getSelectedTag());
-                dialogController.setCheckedTags(selected);
-            }
+            if( getSelectedTag() != null )
+                dialogController.setCheckedTags(Collections.singletonList(getSelectedTag()));
+
             WindowFactory.showDialog("Eintrag erstellen", dialogController);
         });
         edit.setOnAction(event -> editSelected());
