@@ -210,6 +210,7 @@ public class MainWindowToolbarViewController extends GridPane {
         setMasterPasswordToolbar.setOnAction(event -> {
             SetMasterPasswordViewController dialogController = new SetMasterPasswordViewController();
             dialogController.setPmController(pmController);
+            dialogController.setMode(true);
             WindowFactory.showDialog("Einstellungen: Master-Passwort setzen", dialogController);
         });
     }

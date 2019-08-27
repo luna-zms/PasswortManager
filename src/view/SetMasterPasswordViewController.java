@@ -100,7 +100,7 @@ public class SetMasterPasswordViewController extends GridPane {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
         
-        
+        customPasswordFieldRepeat.setPromptText("Password wiederholen");
         
         customPasswordFieldBase.onPasswordChanged((observable, oldValue, newValue) -> {
             if (newValue.equals("")) {
