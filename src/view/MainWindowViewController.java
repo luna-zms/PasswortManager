@@ -40,6 +40,9 @@ public class MainWindowViewController extends BorderPane {
         }
         setLeft(tagTree.createPaneWithButtons());
         //System.out.println(this.getLeft());
+        widthProperty().addListener((observable, oldWidth, newWidth) ->
+                ((BorderPane) getLeft()).setMaxWidth( newWidth.doubleValue() <= 1000 ? newWidth.doubleValue()/5 : 200 )
+        );
     }
 
     private Tag getRootTag() {
@@ -69,8 +72,6 @@ public class MainWindowViewController extends BorderPane {
         tagTree.getSelectionModel().selectFirst();
 
         entryList.setEntries(pmController.getPasswordManager().entriesObservable());
-
-        widthProperty().addListener((observable, oldWidth, newWidth) -> tagTree.setMaxWidth(newWidth.doubleValue()/5));
     }
 
     public void setPmController(PMController pmController) {
