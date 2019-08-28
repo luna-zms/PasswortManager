@@ -31,8 +31,7 @@ public class ImportExportController extends SerializationController {
             CSVParser csvParser = new CSVParser(bufferedReader, entryParseFormat);
 
             Tuple<List<Entry>, Tag> result = parseEntries(csvParser);
-            passwordManager.setEntries(result.first());
-            passwordManager.setRootTag(result.second());
+            passwordManager.mergeWith(result.first(), result.second());
         } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(1);

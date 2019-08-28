@@ -39,6 +39,8 @@ public class SetMasterPasswordViewController extends GridPane {
     private PMController pmController;
 
     private boolean mode;
+    
+    private boolean passwordSet;
 
     private void errorMessage(String title, String content) {
         Alert errorAlert = new Alert(AlertType.ERROR);
@@ -77,6 +79,7 @@ public class SetMasterPasswordViewController extends GridPane {
             e.printStackTrace();
         }
         customPasswordFieldOldPassword.setEnabled(mode);
+        passwordSet = false;
     }
 
     public void setMode(boolean other) {
@@ -113,21 +116,26 @@ public class SetMasterPasswordViewController extends GridPane {
                 if (!checkOldPassword(customPasswordFieldOldPassword.getText())) {
                     errorMessage("Passwort-Fehler", "Altes Passwort ist falsch!");
                 } else if (setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())) {
+                	passwordSet = true;
                     Stage stage = (Stage) getScene().getWindow();
                     stage.close();
                 }
             } else {
                 if (setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())) {
+                	passwordSet = true;
                     Stage stage = (Stage) getScene().getWindow();
                     stage.close();
                 }
             }
-
         });
 
     }
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
+    }
+    
+    public boolean getPasswordSet(){
+    	return passwordSet;
     }
 }

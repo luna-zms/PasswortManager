@@ -11,8 +11,9 @@ public class SecurityQuestion {
     private String question, answer;
 
     /**
-     * @param question the value to be asked
-     * @param answer   the value to be answered
+     * constructor sets the minimal required attributes question and answer
+     * @param question 
+     * @param answer  
      */
     public SecurityQuestion(String question, String answer) {
         this.question = question;

@@ -87,8 +87,8 @@ public class CustomExpirationDateViewController extends GridPane {
             e.printStackTrace();
         }
 
-        datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
-        daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE));
+        daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE));
+        
     }
     
     private String getNumber(String value) {
@@ -99,10 +99,10 @@ public class CustomExpirationDateViewController extends GridPane {
             String[] array = value.split("");
             for (String tab : array) {
                 try {
-                    System.out.println(tab);
+                    //System.out.println(tab);
                     n = n.concat(String.valueOf(Integer.parseInt(String.valueOf(tab))));
                 } catch (Exception ex) {
-                    System.out.println("not nomber");
+                    //System.out.println("not nomber");
                 }
             }
             return n;
@@ -126,6 +126,9 @@ public class CustomExpirationDateViewController extends GridPane {
                     	daysUntilExpiration.getEditor().clear();
                     	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
                     }
+                } else {
+                	daysUntilExpiration.getEditor().clear();
+                	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
                 }
             }
         });

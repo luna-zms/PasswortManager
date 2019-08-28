@@ -3,10 +3,13 @@ package view;
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 import model.Tag;
 import util.BindingUtils;
@@ -35,11 +38,19 @@ public class MainWindowViewController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        setLeft(tagTree.createPaneWithButtons());
+        //System.out.println(this.getLeft());
     }
+
     private Tag getRootTag() {
         return pmController.getPasswordManager().getRootTag();
     }
-    public void init() {
+
+    public void init(Consumer<Path> showOpenDialog) {
+        // Init subcomponents
+        entryPreview.init(getRootTag());
+        mainWindowToolbar.setOpenDatabaseFileAction(showOpenDialog);
+
         // Bind preview to update when table selection changes
         entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
         entryList.tagProperty()
@@ -47,7 +58,7 @@ public class MainWindowViewController extends BorderPane {
                                                 TreeItem::getValue, getRootTag()));
         mainWindowToolbar.setOnSearchRefreshAction((filter, searchEverywhere) -> {
             if (!searchEverywhere) {
-                filter = filter.and(entry -> entry.getTags().contains(getRootTag()));
+                filter = filter.and(entry -> entry.getTags().contains(entryList.tagProperty().getValue()));
             }
             entryList.filterOnce(filter);
         });
@@ -57,6 +68,8 @@ public class MainWindowViewController extends BorderPane {
         tagTree.getSelectionModel().selectFirst();
 
         entryList.setEntries(pmController.getPasswordManager().entriesObservable());
+
+        widthProperty().addListener((observable, oldWidth, newWidth) -> tagTree.setMaxWidth(newWidth.doubleValue()/5));
     }
 
     public void setPmController(PMController pmController) {
@@ -66,7 +79,6 @@ public class MainWindowViewController extends BorderPane {
 
     private void setPmControllers() {
         entryList.setPmController(pmController);
-        entryPreview.setPmController(pmController);
         mainWindowToolbar.setPmController(pmController);
     }
 }

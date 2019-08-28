@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import javafx.beans.Observable;
@@ -13,6 +14,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 
+/**
+ * this class is used to set Entry
+ * @author sopr016
+ *
+ */
 public class Entry {
     private String title, username, password, note;
     private URL url;
@@ -20,9 +26,16 @@ public class Entry {
     private LocalDate validUntil;
     private SecurityQuestion securityQuestion;
     private ObservableList<Tag> tags = FXCollections.observableArrayList(
-            t -> new Observable[] { t.nameProperty(), t.subTagsObservable() }
+            tag -> new Observable[] { tag.nameProperty(), tag.subTagsObservable() }
     );
 
+
+    /**
+     * Constructor sets the minimal required attributes title and password
+     * and the cratedAt or lastModifiedAt
+     * @param title
+     * @param password
+     */
     public Entry(String title, String password) {
         this.title = title;
         this.password = password;
@@ -111,7 +124,9 @@ public class Entry {
     }
 
     public String getValidUntilString() {
-        return validUntil != null ? validUntil.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : "";
+        return validUntil != null ? validUntil.format(
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.GERMAN)
+        ) : "";
     }
 
     public SecurityQuestion getSecurityQuestion() {
