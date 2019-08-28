@@ -9,6 +9,7 @@ import java.util.Arrays;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import java.util.Base64;
 
@@ -41,6 +42,8 @@ public class PMController {
 
     private Path savePath;
 
+    static final byte[] INSECURE_SALT = "\0si\0ro\0D".getBytes();
+
     /**
      * Set a new master password. The master password is encrypted via a KDF and
      * then this method will update the current PasswordManager instance.
@@ -56,23 +59,19 @@ public class PMController {
         }
         String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
         SecretKeyFactory skFactory;
+        SecretKey derivedKey, aesKey;
 
         try {
-            skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
-        } catch (NoSuchAlgorithmException noSuchAlgorithm) {
-            throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
-        }
+            skFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
-        KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
-        SecretKey derivedKey;
-
-        try {
+            KeySpec specs = new PBEKeySpec(safePassword.toCharArray(), INSECURE_SALT, 65536, 256);
             derivedKey = skFactory.generateSecret(specs);
-        } catch (InvalidKeySpecException invalidKeySpec) {
+            aesKey = new SecretKeySpec(derivedKey.getEncoded(), "AES");
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException internalEncryptionError) {
             throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
         }
 
-        passwordManager.setMasterPasswordKey(derivedKey);
+        passwordManager.setMasterPasswordKey(aesKey);
     }
 
     /**
@@ -97,19 +96,20 @@ public class PMController {
 
         String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
         SecretKeyFactory skFactory;
-        SecretKey derivedKey;
+        SecretKey derivedKey, aesKey;
 
         try {
-            skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
+            skFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
-            KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
+            KeySpec specs = new PBEKeySpec(safePassword.toCharArray(), INSECURE_SALT, 65536, 256);
 
             derivedKey = skFactory.generateSecret(specs);
+            aesKey = new SecretKeySpec(derivedKey.getEncoded(), "AES");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException noSuchAlgorithm) {
             throw new RuntimeException("Internal error! Please check your Java installation (minimum Java 8)!");
         }
 
-        return Arrays.equals(derivedKey.getEncoded(), passwordManager.getMasterPasswordKey().getEncoded());
+        return Arrays.equals(aesKey.getEncoded(), passwordManager.getMasterPasswordKey().getEncoded());
     }
 
     public TagController getTagController() {
