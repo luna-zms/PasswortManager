@@ -106,7 +106,6 @@ public class StartWindowViewController extends GridPane {
 
             setPath(Paths.get(properties.getProperty("savePath")));
         } catch (IOException e) {
-            e.printStackTrace();
             // No need to do anything as it's just a convenience feature
         }
     }

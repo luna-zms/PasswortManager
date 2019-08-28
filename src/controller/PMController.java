@@ -182,7 +182,6 @@ public class PMController {
         ) {
             properties.store(writer, "");
         } catch (IOException e) {
-            e.printStackTrace();
             // No need to handle this further as it's just a helpful addition and not needed for program operation
         }
     }
