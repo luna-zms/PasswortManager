@@ -1,5 +1,6 @@
 package controller;
 
+import static controller.PMController.INSECURE_SALT;
 import static org.junit.Assert.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -10,6 +11,7 @@ import java.security.spec.KeySpec;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -64,12 +66,15 @@ public class PMControllerTest {
         usedPassword = new String(randomBytes);
         String safePassword = Base64.getEncoder().encodeToString(usedPassword.getBytes());
 
-        KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
-        SecretKeyFactory skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
+        KeySpec specs = new PBEKeySpec(safePassword.toCharArray(), INSECURE_SALT, 65536, 256);
+        SecretKeyFactory skFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
         try {
-            mockPasswordManager = new PasswordManager(skFactory.generateSecret(specs));
+            mockPasswordManager = new PasswordManager(
+                    new SecretKeySpec(skFactory.generateSecret(specs).getEncoded(), "AES")
+            );
         } catch (InvalidKeySpecException invalidKeySpec) {
+            invalidKeySpec.printStackTrace();
             fail("Error while generating SecretKey!");
             return;
         }
@@ -127,17 +132,17 @@ public class PMControllerTest {
 
         SecretKeyFactory skFactory;
         try {
-            skFactory = SecretKeyFactory.getInstance("PBEWithMD5AndTripleDES");
+            skFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         } catch (NoSuchAlgorithmException noSuchAlgorithm) {
             fail("Error within SecretKeyFactory! Please check your Java installation!");
             return;
         }
-        KeySpec specs = new PBEKeySpec(safePassword.toCharArray());
+        KeySpec specs = new PBEKeySpec(safePassword.toCharArray(), INSECURE_SALT, 65536, 256);
 
         SecretKey expectedKey;
 
         try {
-            expectedKey = skFactory.generateSecret(specs);
+            expectedKey = new SecretKeySpec(skFactory.generateSecret(specs).getEncoded(), "AES");
         } catch (InvalidKeySpecException invalidKeySpec) {
             fail("Error while generating SecretKey!");
             return;
