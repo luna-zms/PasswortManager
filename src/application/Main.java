@@ -126,7 +126,6 @@ public class Main extends Application {
     private Tag getRootTagFromPath(Path path) {
         String fileNameWithExt = path.getFileName().toString();
         String fileName = fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf(".pwds"));
-        System.out.println(fileName);
 
         return new Tag(fileName);
     }
