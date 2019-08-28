@@ -3,6 +3,7 @@ package view;
 import controller.PMController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -53,7 +54,7 @@ public class TagTree extends TreeView<Tag> {
         if (parent != null) {  // Cannot delete root node
             if (item.getValue() != null)
                 pmController.getTagController().removeTag(parent.getValue(), item.getValue());
-            parent.getChildren().remove(item);
+            //parent.getChildren().remove(item);
         }
     }
 
@@ -95,7 +96,7 @@ public class TagTree extends TreeView<Tag> {
         return menu;
     }
 
-    private static class TagTreeItem extends TreeItem<Tag> {
+    private static class TagTreeItem extends TreeItem<Tag> implements ListChangeListener<Tag> {
         private boolean checked;
 
         TagTreeItem(Tag tag) {
@@ -103,8 +104,10 @@ public class TagTree extends TreeView<Tag> {
 
             setExpanded(true);
 
-            if (tag != null)
+            if (tag != null) {
                 tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeItem(subtag)));
+                tag.subTagsObservable().addListener(this);
+            }
         }
 
         boolean isChecked() {
@@ -132,6 +135,21 @@ public class TagTree extends TreeView<Tag> {
                 selectedSubItems.add(getValue());
 
             return selectedSubItems;
+        }
+
+        @Override
+        public void onChanged(Change<? extends Tag> change) {
+            while (change.next()) {
+                outer:
+                for (Tag added : change.getAddedSubList()) {
+                    for (TreeItem<Tag> item : getChildren()) {
+                        if (item.getValue().getName().equals(added.getName()))
+                            continue outer;
+                    }
+                    getChildren().add(new TagTreeItem(added));
+                }
+                getChildren().removeAll(getChildren().stream().filter(child -> change.getRemoved().contains(child.getValue())).collect(Collectors.toList()));
+            }
         }
     }
 
@@ -178,7 +196,7 @@ public class TagTree extends TreeView<Tag> {
 
             wtf.setTextFormatter(new TextFormatter<>(change -> {
                 String text = change.getControlNewText();
-                if( text.contains("\\") || text.contains(";") ) return null;
+                if (text.contains("\\") || text.contains(";")) return null;
                 return change;
             }));
 
@@ -211,8 +229,8 @@ public class TagTree extends TreeView<Tag> {
 
                 if (getItem() == null) { // newly created tags
                     tag = new Tag(str);
-                    pmController.getTagController().addTag(parentTag.getValue(), tag);
                     getTreeItem().setValue(tag);
+                    pmController.getTagController().addTag(parentTag.getValue(), tag);
                 } else { // Editing of existing tags
                     tag = getItem();
                     pmController.getTagController().renameTag(tag, str);
