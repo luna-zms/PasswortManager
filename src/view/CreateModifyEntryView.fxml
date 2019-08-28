@@ -141,7 +141,7 @@
                         </TextArea>
                         <HBox alignment="BOTTOM_RIGHT" prefHeight="40.0" prefWidth="246.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
                             <children>
-                                <Button fx:id="okButton" mnemonicParsing="false" text="Speichern">
+                                <Button fx:id="okButton" mnemonicParsing="false" text="Speichern" defaultButton="true" >
                                     <HBox.margin>
                                         <Insets right="20.0" />
                                     </HBox.margin>
