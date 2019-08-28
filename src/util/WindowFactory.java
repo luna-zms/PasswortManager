@@ -27,7 +27,7 @@ public class WindowFactory {
 
     public static Scene createScene(Parent content) {
         Scene scene = new Scene(content);
-        scene.getStylesheets().add(Main.class.getResource("application.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("resources/application.css").toExternalForm());
 
         return scene;
     }

@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 
 /**
- * class to test Tag
+ * this class is to test class Tag
  * @author sopr016
  *
  */
@@ -16,7 +17,8 @@ public class TagTest {
 	private List<Tag> subTags;
 	
 	/**
-	 * Sets up the Test object before each test run.
+	 * Sets up the Test object before each test run. so there are a set of tags and subtags 
+	 * that can be directly used in the later testmethods.
 	 */
 	@Before
 	public void setUp(){
@@ -44,20 +46,58 @@ public class TagTest {
 		subTags.add(tagCc);
 	}
 	/**
-	 * 
+	 * test mergeWith() 
+	 * tests by adding two Maps and two Tags
+	 */
+	@Test
+	public void testMergeWith() throws Exception{
+		Tag rootOne = new Tag();
+		final Tag rootTwo = new Tag();
+
+		Map<Tag, String> mapOne = rootOne.createPathMap();
+		Map<Tag, String> mapTwo = rootTwo.createPathMap();
+		
+		rootOne.mergeWith(rootTwo);
+		
+		Map<Tag, String> mapCombined = rootOne.createPathMap();
+		
+		for (String path : mapOne.values()) {
+			assertTrue(mapCombined.containsValue(path));
+		}
+		
+		for (String path : mapTwo.values()) {
+			assertTrue(mapCombined.containsValue(path));
+		}
+	}
+	/**
+	 * test getSubTagByName()
+	 * tests whether the tag has a subtag ,that with the correspond name
+	 */
+	@Test
+	public void testGetSubTagByName(){
+		assertEquals(tagBb, tagAb.getSubTagByName("TagBb"));
+		assertEquals(tagCc, tagBc.getSubTagByName("TagCc"));
+		assertEquals(tagAb, rootTag.getSubTagByName("TagAb"));
+		assertTrue(tagBc.equals(tagAb.getSubTagByName("TagBc")));
+		assertFalse(tagCb.equals(tagBc.getSubTagByName("TagCc")));
+	}
+	/**
+	 * test hasSubTag()
+	 * tests whether a tag has Subtag  or not
 	 */
 	@Test
 	public void testHasSubTag(){
-		assertEquals(false, rootTag.hasSubTag(""));
-		assertEquals(true, rootTag.hasSubTag("TagAa"));
-		assertEquals(false, tagAa.hasSubTag(" "));
-		assertTrue(tagAb.hasSubTag("TagBb"));
-		assertFalse(rootTag.hasSubTag("TagCc"));
-		assertFalse(tagCa.hasSubTag(" "));
-		assertTrue(tagAb.hasSubTag("TagCb"));
+		assertTrue(tagAb.hasSubTag("TagBa"));
+		assertFalse(tagAa.hasSubTag(" "));
+		assertTrue(tagBc.hasSubTag("TagCa"));
+		assertFalse(tagAc.hasSubTag(" "));
+		assertFalse(tagAb.hasSubTag("TagAc"));
+		assertFalse(tagCc.hasSubTag(" "));
+		
 	}
 	/**
-	 * 
+	 * test createPathMap
+	 * tests whether the Path in correspond map is true or not
 	 */
 	@Test
 	public void testcCreatePathMap(){
@@ -73,8 +113,4 @@ public class TagTest {
 		assertFalse(mapB.get(tagCc).equals("Tag\\TagAb\\TagBc"));
 	}
 	
-	@Test
-	public void testEquals(){
-		
-	}
 }

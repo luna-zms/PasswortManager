@@ -293,10 +293,11 @@ public class MainWindowToolbarViewController extends GridPane {
 
             onSearchRefreshAction.accept((entry -> {
                 LocalDate validUntil = entry.getValidUntil();
-                if (expiredUntil != null && validUntil != null && (
+                if (expiredUntil != null && validUntil != null && !(
                         expiredUntil.isAfter(validUntil) || expiredUntil.isEqual(validUntil)
                 ))
-                    return false;
+                	return false;
+
                 List<String> queryParts = Arrays.asList(searchQuery.split(" "));
                 List<String> notYetFound = new ArrayList<>(queryParts);
 

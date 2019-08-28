@@ -3,6 +3,7 @@ package view;
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 
@@ -36,10 +37,15 @@ public class MainWindowViewController extends BorderPane {
             e.printStackTrace();
         }
     }
+
     private Tag getRootTag() {
         return pmController.getPasswordManager().getRootTag();
     }
+
     public void init() {
+        // Init subcomponents
+        entryPreview.init(getRootTag());
+
         // Bind preview to update when table selection changes
         entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
         entryList.tagProperty()
@@ -47,7 +53,7 @@ public class MainWindowViewController extends BorderPane {
                                                 TreeItem::getValue, getRootTag()));
         mainWindowToolbar.setOnSearchRefreshAction((filter, searchEverywhere) -> {
             if (!searchEverywhere) {
-                filter = filter.and(entry -> entry.getTags().contains(getRootTag()));
+                filter = filter.and(entry -> entry.getTags().contains(entryList.tagProperty().getValue()));
             }
             entryList.filterOnce(filter);
         });
@@ -57,6 +63,8 @@ public class MainWindowViewController extends BorderPane {
         tagTree.getSelectionModel().selectFirst();
 
         entryList.setEntries(pmController.getPasswordManager().entriesObservable());
+
+        widthProperty().addListener((observable, oldWidth, newWidth) -> tagTree.setMaxWidth(newWidth.doubleValue()/5));
     }
 
     public void setPmController(PMController pmController) {
@@ -66,7 +74,6 @@ public class MainWindowViewController extends BorderPane {
 
     private void setPmControllers() {
         entryList.setPmController(pmController);
-        entryPreview.setPmController(pmController);
         mainWindowToolbar.setPmController(pmController);
     }
 }

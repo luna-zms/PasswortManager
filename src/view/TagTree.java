@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import model.Tag;
 import util.WindowFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,10 +82,11 @@ public class TagTree extends TreeView<Tag> {
         createEntry.setOnAction(event -> {
             CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
             dialogController.setPmController(pmController);
-            Stage stage = WindowFactory.createStage("Eintrag erstellen");
-            stage.show();
-            stage.setScene(WindowFactory.createScene(dialogController));
             dialogController.init();
+            if( getSelectedTag() != null )
+                dialogController.setCheckedTags(Collections.singletonList(getSelectedTag()));
+
+            WindowFactory.showDialog("Eintrag erstellen", dialogController);
         });
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
@@ -175,6 +178,12 @@ public class TagTree extends TreeView<Tag> {
                         break;
                 }
             });
+
+            wtf.setTextFormatter(new TextFormatter<>(change -> {
+                String text = change.getControlNewText();
+                if( text.contains("\\") || text.contains(";") ) return null;
+                return change;
+            }));
 
             return wtf;
         }
