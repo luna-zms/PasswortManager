@@ -16,6 +16,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -32,7 +33,7 @@ import util.ClipboardUtils;
 import util.WindowFactory;
 
 public class EntryListViewController extends TableView<Entry> {
-    private ObjectProperty<ObservableList<Entry>> entries = new SimpleObjectProperty<>();
+    private ObservableList<Entry> entries;
     private ObjectProperty<Tag> tag = new SimpleObjectProperty<>();
     private PMController pmController;
 
@@ -108,7 +109,6 @@ public class EntryListViewController extends TableView<Entry> {
         });
 
         // Entry setting and filtering
-        entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
         tag.addListener((obs, oldTag, newTag) -> applyFilter());
 
         setOnMouseClicked(event -> {
@@ -153,13 +153,9 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     public void filterOnce(Predicate<Entry> predicate) {
-        setItems(entries.getValue().filtered(predicate));
+        setItems(entries.filtered(predicate));
     }
 
-    public void setEntries(ObservableList<Entry> entries) {
-        assert entries != null;
-        this.entries.set(entries);
-    }
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
@@ -169,17 +165,19 @@ public class EntryListViewController extends TableView<Entry> {
         return tag;
     }
 
-    private void applyFilter() {
-        ObservableList<Entry> newEntries = entries.getValue();
-        if (newEntries == null) return;
+    public void init() {
+        entries = pmController.getPasswordManager().entriesObservable();
+        setItems(entries);
+    }
 
+    private void applyFilter() {
         // Always non-null as it's initialized to the root tag
         Tag newTag = tag.getValue();
 
         // De-inlined because it gets massacred by autoformat otherwise
         Predicate<Entry> predicate = entry -> entry.getTags().contains(newTag);
         // FilteredList cannot be sorted => wrap in SortedList
-        SortedList<Entry> sortedList = new SortedList<>(newEntries.filtered(predicate));
+        SortedList<Entry> sortedList = new SortedList<>(entries.filtered(predicate));
         // Necessary if manually passing a SortedList to setItems
         sortedList.comparatorProperty().bind(comparatorProperty());
 

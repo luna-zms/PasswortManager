@@ -51,6 +51,7 @@ public class MainWindowViewController extends BorderPane {
 
     public void init(Consumer<Path> showOpenDialog) {
         // Init subcomponents
+        entryList.init();
         entryPreview.init(getRootTag());
         mainWindowToolbar.setOpenDatabaseFileAction(showOpenDialog);
 
@@ -70,8 +71,6 @@ public class MainWindowViewController extends BorderPane {
         tagTree.init(false, pmController);
         // Prevent limbo state of no tag being selected
         tagTree.getSelectionModel().selectFirst();
-
-        entryList.setEntries(pmController.getPasswordManager().entriesObservable());
     }
 
     public void setPmController(PMController pmController) {
