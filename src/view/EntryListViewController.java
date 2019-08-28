@@ -3,6 +3,7 @@ package view;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import model.Entry;
 import model.Tag;
 import util.BindingUtils;
@@ -45,7 +47,7 @@ public class EntryListViewController extends TableView<Entry> {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         passwordColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper("*****"));
-        urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
+        urlColumn.setCellValueFactory(new PropertyValueFactory<>("urlString"));
         // Use getter with specific string formatting
         validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntilString"));
 
@@ -72,9 +74,13 @@ public class EntryListViewController extends TableView<Entry> {
 
         setContextMenu(buildContextMenu());
 
-        // Clear selection on background click
+        // Set cell factory to adjust text color
+        columns.forEach(col -> col.setCellFactory(innerCol -> new EntryListCell()));
+
         setRowFactory(table -> {
             TableRow<Entry> row = new TableRow<>();
+
+            // Clear selection on background click
             row.setOnMouseClicked(event -> {
                 // User clicked background => item null => clear selection
                 if (row.getItem() == null) getSelectionModel().clearSelection();
@@ -271,5 +277,26 @@ public class EntryListViewController extends TableView<Entry> {
         createModifyEntryViewController.init();
 
         return createModifyEntryViewController;
+    }
+
+    private class EntryListCell extends TableCell<Entry, String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            TableRow<Entry> row = (TableRow<Entry>) getTableRow();
+            Entry entry = row.getItem();
+
+            super.updateItem(item, empty);
+
+            if (empty || item == null || item.isEmpty()) {
+                setText(null);
+            } else {
+                setText(item);
+            }
+
+            if (entry != null && entry.getValidUntil() != null &&
+                entry.getValidUntil().isBefore(LocalDate.now())) {
+                setTextFill(Color.RED);
+            }
+        }
     }
 }
