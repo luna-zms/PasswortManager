@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import controller.PMController;
 import controller.PasswordController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -98,6 +100,24 @@ public class GeneratePasswordViewController extends GridPane {
                 return 0.0;
             }
         });
+        
+        lengthSpinner.getEditor().textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.isEmpty()) {
+                    try {
+                        long pointI = Integer.parseInt(newValue);
+                        lengthSpinner.getEditor().setText(String.valueOf(pointI));
+                    } catch (Exception e) {
+                    	lengthSpinner.getEditor().clear();
+                    	lengthSpinner.getEditor().setText(getNumber(oldValue));
+                    }
+                } else {
+                	lengthSpinner.getEditor().clear();
+                	lengthSpinner.getEditor().setText(getNumber(oldValue));
+                }
+            }
+        });
 
         lengthSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             spinnerValueFactory.setValue(8 * newVal.intValue());
@@ -180,6 +200,24 @@ public class GeneratePasswordViewController extends GridPane {
         }
 
         pwField.setText(pwController.generatePassword(pwGenSettings));
+    }
+    
+    private String getNumber(String value) {
+        String n = "";
+        try {
+            return String.valueOf(Integer.parseInt(value));
+        } catch (Exception e) {
+            String[] array = value.split("");
+            for (String tab : array) {
+                try {
+                    //System.out.println(tab);
+                    n = n.concat(String.valueOf(Integer.parseInt(String.valueOf(tab))));
+                } catch (Exception ex) {
+                    //System.out.println("not nomber");
+                }
+            }
+            return n;
+        }
     }
 
     public String getPassword() {
