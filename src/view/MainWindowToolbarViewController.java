@@ -186,7 +186,8 @@ public class MainWindowToolbarViewController extends GridPane {
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
             }
-            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Speichern erfolgreich!");
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Speichern erfolgreich!")
+                    .showAndWait();
         });
     }
 
@@ -244,7 +245,8 @@ public class MainWindowToolbarViewController extends GridPane {
             }
             if( onTreeViewRefresh != null ) onTreeViewRefresh.run();
 
-            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich importiert!");
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich importiert!")
+                    .showAndWait();
         });
     }
 
@@ -268,7 +270,8 @@ public class MainWindowToolbarViewController extends GridPane {
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
             }
 
-            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich exportiert!");
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich exportiert!")
+                    .showAndWait();
         });
     }
 
