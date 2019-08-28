@@ -122,13 +122,16 @@ public class CustomExpirationDateViewController extends GridPane {
                     try {
                         long pointI = Integer.parseInt(newValue);
                         daysUntilExpiration.getEditor().setText(String.valueOf(pointI));
+                        daysUntilExpiration.increment(0);
                     } catch (Exception e) {
                     	daysUntilExpiration.getEditor().clear();
                     	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
+                    	daysUntilExpiration.increment(0);
                     }
                 } else {
                 	daysUntilExpiration.getEditor().clear();
                 	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
+                	daysUntilExpiration.increment(0);
                 }
             }
         });
