@@ -14,7 +14,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import model.PasswordManager;
-import net.harawata.appdirs.AppDirsFactory;
 
 /**
  * The PMController class provides access to all the
@@ -29,11 +28,7 @@ import net.harawata.appdirs.AppDirsFactory;
  */
 public class PMController {
 
-    public static final File configFile = new File(AppDirsFactory.getInstance()
-                                                                 .getUserConfigDir("PasswordManager",
-                                                                                   "1.0.0",
-                                                                                   "sopra-group1"),
-                                                   "settings.properties");
+    public static final File configFile = new File(System.getenv("HOME"), ".config/sopra-pwm/settings.properties");
 
     static final byte[] INSECURE_SALT = "\0si\0ro\0D".getBytes();
 
