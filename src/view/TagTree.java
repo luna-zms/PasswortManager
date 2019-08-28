@@ -7,8 +7,15 @@ import controller.PMController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import model.Tag;
 import util.WindowFactory;
 
@@ -16,6 +23,57 @@ import java.util.Collections;
 
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
+
+    public BorderPane createPaneWithButtons() {
+        BorderPane outer = new BorderPane();
+
+        FlowPane inner = new FlowPane(Orientation.HORIZONTAL);
+        inner.setAlignment(Pos.CENTER);
+
+        Button remove = new Button();
+        Button add = new Button();
+
+        remove.setTooltip(new Tooltip("Ausgewähltes Schlagwort löschen"));
+        add.setTooltip(new Tooltip("Neues Schlagwort"));
+
+        inner.setMaxHeight(34);
+        inner.setVgap(5);
+        inner.setHgap(5);
+        inner.setPadding(new Insets(5, 5, 5, 5));
+
+        inner.getChildren().addAll(remove, add);
+
+        outer.setCenter(this);
+        outer.setBottom(inner);
+
+        ImageView addCategoryimage = new ImageView(new Image(
+            getClass().getResourceAsStream("/view/resources/add_category_toolbar_icon.png")));
+        addCategoryimage.setFitHeight(24);
+        addCategoryimage.setFitWidth(24);
+        add.setGraphic(addCategoryimage);
+
+        ImageView deleteCategoryimage = new ImageView(new Image(
+            getClass().getResourceAsStream("/view/resources/delete_category_icon.png")));
+        deleteCategoryimage.setFitHeight(24);
+        deleteCategoryimage.setFitWidth(24);
+        remove.setGraphic(deleteCategoryimage);
+
+        remove.setOnMouseClicked(event -> deleteSelected());
+        add.setOnMouseClicked(event -> createBelowSelected());
+
+        return outer;
+    }
+
+    private void openCreateEntryDialog() {
+        CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
+        dialogController.setPmController(pmController);
+        dialogController.init();
+        if (getSelectedTag() != null) {
+            dialogController.setCheckedTags(Collections.singletonList(getSelectedTag()));
+        }
+
+        WindowFactory.showDialog("Eintrag erstellen", dialogController);
+    }
 
     public void init(final boolean hasCheckBoxes, PMController controller) {
         pmController = controller;
@@ -39,7 +97,9 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public Tag getSelectedTag() {
-        return getSelectedItem() == null ? null : getSelectedItem().getValue();
+        return getSelectedItem() == null
+               ? null
+               : getSelectedItem().getValue();
     }
 
     public void deleteSelected() {
@@ -78,15 +138,7 @@ public class TagTree extends TreeView<Tag> {
         MenuItem delete = new MenuItem("Löschen");
 
         createTag.setOnAction(event -> createBelowSelected());
-        createEntry.setOnAction(event -> {
-            CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
-            dialogController.setPmController(pmController);
-            dialogController.init();
-            if( getSelectedTag() != null )
-                dialogController.setCheckedTags(Collections.singletonList(getSelectedTag()));
-
-            WindowFactory.showDialog("Eintrag erstellen", dialogController);
-        });
+        createEntry.setOnAction(event -> openCreateEntryDialog());
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
 
@@ -217,7 +269,8 @@ public class TagTree extends TreeView<Tag> {
                     Alert errorAlert = new Alert(Alert.AlertType.WARNING);
                     errorAlert.setTitle("Dupliziertes Schlagwort");
                     errorAlert.setHeaderText("Schlagwort existiert bereits");
-                    errorAlert.setContentText("Ein Schlagwort mit dem Namen '" + str + "' existiert bereits. \n Wähle einen anderen Namen");
+                    errorAlert.setContentText(
+                        "Ein Schlagwort mit dem Namen '" + str + "' existiert bereits. \n Wähle einen anderen Namen");
                     errorAlert.showAndWait();
                 }
 
@@ -235,7 +288,6 @@ public class TagTree extends TreeView<Tag> {
                 }
 
                 commitEdit(tag);
-
             }
         }
 

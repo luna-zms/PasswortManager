@@ -17,8 +17,9 @@ import view.StartWindowViewController;
 
 
 public class Main extends Application {
-    private PMController pmController;
     private MainWindowViewController mainWindowViewController;
+    private PMController pmController;
+    private Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -42,28 +43,38 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+
         try {
             mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
             primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));
             primaryStage.show();
 
-            boolean successfulInit;
-            do {
-                StartWindowViewController startWindowViewController = new StartWindowViewController();
-                WindowFactory.showDialog("Datenbank öffnen", startWindowViewController);
-
-                Optional<Boolean> tmp = initApplication(startWindowViewController);
-                if (!tmp.isPresent()) {
-                    primaryStage.close();
-                    return;
-                } else {
-                    successfulInit = tmp.get();
-                }
-            } while (!successfulInit);
+            showOpenDialog(null);
         } catch (Exception e) {
-            e.printStackTrace();
+            WindowFactory.showError("Kritischer Fehler",
+                                    "Aufgrund eines kritischen Fehlers muss die Anwendung beendet werden.\n\nNähere Informationen:\n" + e
+                                            .getMessage());
         }
+    }
+
+    public void showOpenDialog(Path initialPath) {
+        boolean successfulInit;
+        do {
+            StartWindowViewController startWindowViewController = new StartWindowViewController();
+            if (initialPath != null) startWindowViewController.setPath(initialPath);
+
+            WindowFactory.showDialog("Datenbank öffnen", startWindowViewController);
+
+            Optional<Boolean> tmp = initApplication(startWindowViewController);
+            if (!tmp.isPresent()) {
+                primaryStage.close();
+                return;
+            } else {
+                successfulInit = tmp.get();
+            }
+        } while (!successfulInit);
     }
 
     private Optional<Boolean> initApplication(StartWindowViewController startWindowViewController) {
@@ -81,9 +92,13 @@ public class Main extends Application {
             WindowFactory.showDialog("Master-Passwort setzen", setMasterPasswordViewController);
 
             // User pressed cancel or closed window => go back to start
-            if (!setMasterPasswordViewController.getPasswordSet()) ret = false;
+            if (!setMasterPasswordViewController.getPasswordSet()) {
+                ret = false;
+            }
             // Root tag is null otherwise
-            else pmController.getPasswordManager().setRootTag(getRootTagFromPath(path));
+            else {
+                pmController.getPasswordManager().setRootTag(getRootTagFromPath(path));
+            }
         } else {
             pmController.setMasterPassword(startWindowViewController.getPassword());
 
@@ -103,7 +118,7 @@ public class Main extends Application {
             }
         }
 
-        if (ret) mainWindowViewController.init();
+        if (ret) mainWindowViewController.init(this::showOpenDialog);
         return Optional.of(ret);
     }
 
