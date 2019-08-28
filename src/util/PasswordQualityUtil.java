@@ -137,7 +137,7 @@ public class PasswordQualityUtil {
                 repeatCounter += 1;
             } else {
                 if (repeatCounter >= 2) {
-                    score += Math.pow((double)repeatCounter, 1.2);
+                    score += CharGroup.getCharGroupOf(lastChar).getBonusFactor()*(repeatCounter-1);
                 }
                 repeatCounter = 1;
             }
@@ -145,7 +145,7 @@ public class PasswordQualityUtil {
             lastChar = c;
         }
 
-        if (repeatCounter >= 2) score += Math.pow((double)repeatCounter, 1.2);
+        if (repeatCounter >= 2) score += CharGroup.getCharGroupOf(lastChar).getBonusFactor()*(repeatCounter-1);
 
         return -(int)score;
     }
