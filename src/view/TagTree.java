@@ -140,6 +140,7 @@ public class TagTree extends TreeView<Tag> {
         @Override
         public void onChanged(Change<? extends Tag> change) {
             while (change.next()) {
+                // If the add was done via this TagTree, the TreeItem already exists!
                 outer:
                 for (Tag added : change.getAddedSubList()) {
                     for (TreeItem<Tag> item : getChildren()) {
