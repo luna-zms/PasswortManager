@@ -148,6 +148,8 @@ public class CreateModifyEntryViewController extends AnchorPane {
                     "lassen Sie das Feld leer!");
                 return;
             }
+            SecurityQuestion temp = new SecurityQuestion(securityQuestion.getText(),answer.getText());
+            newEntry.setSecurityQuestion(temp);
             newEntry.setValidUntil(validDatePicker.getExpirationDate());
             newEntry.setNote(notes.getText());
             newEntry.getTags().addAll(tagTree.getCheckedTags());
