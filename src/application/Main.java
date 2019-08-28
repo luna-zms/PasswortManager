@@ -2,10 +2,12 @@ package application;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import controller.*;
 import javafx.application.Application;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import model.PasswordManager;
 import model.Tag;
@@ -117,10 +119,28 @@ public class Main extends Application {
                                         "Aufgrund eines unspezifizierten Fehlers ist das Öffnen der Datei fehlgeschlagen.\n\nNähere Informationen:\n" + e
                                                 .getLocalizedMessage());
             }
+
+            checkMasterPasswordExpiration();
         }
 
         if (ret) mainWindowViewController.init(this::showOpenDialog);
         return Optional.of(ret);
+    }
+
+    private void checkMasterPasswordExpiration() {
+        if (!pmController.getPasswordManager().getValidUntil().isBefore(LocalDateTime.now())) {
+            return;
+        }
+
+        Alert alert = WindowFactory.createAlert(Alert.AlertType.INFORMATION,
+                                                "Das Master-Passwort für diese Datenbank ist abgelaufen.");
+        alert.setHeaderText("Master-Passwort abgelaufen");
+        alert.showAndWait();
+
+        SetMasterPasswordViewController setMasterPasswordViewController = new SetMasterPasswordViewController();
+        setMasterPasswordViewController.setPmController(pmController);
+        setMasterPasswordViewController.setMode(true);
+        WindowFactory.showDialog("Master-Passwort ändern", setMasterPasswordViewController);
     }
 
     private Tag getRootTagFromPath(Path path) {
