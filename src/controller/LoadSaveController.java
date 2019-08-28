@@ -58,7 +58,7 @@ public class LoadSaveController extends SerializationController {
             try (InputStream fis = Files.newInputStream(path);
                  ZipInputStream zis = new ZipInputStream(fis)) {
                 LocalDateTime lastModified;
-                LocalDateTime validUntil;
+                LocalDateTime validUntil = null;
 
                 List<Entry> entries;
                 Tag readRootTag;
@@ -73,7 +73,9 @@ public class LoadSaveController extends SerializationController {
                         throw new IOException("Mismatch in Magic Bytes, is the password correct? Read: " + magicLine);
 
                     lastModified = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_TIME_FORMAT);
-                    validUntil = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_TIME_FORMAT);
+                    String validUntilLine = bur.readLine();
+                    if( validUntilLine != null )
+                        validUntil = LocalDateTime.parse(validUntilLine, SerializationController.DATE_TIME_FORMAT);
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw e;
@@ -110,7 +112,9 @@ public class LoadSaveController extends SerializationController {
                     throw e;
                 }
 
-                readRootTag.setName(path.getFileName().toString());
+                String fileName = path.getFileName().toString();
+
+                readRootTag.setName(fileName.substring(0, fileName.lastIndexOf(".pwds")));
 
                 passwordManager.setRootTag(readRootTag);
                 passwordManager.setEntries(entries);
@@ -196,7 +200,8 @@ public class LoadSaveController extends SerializationController {
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "MAGIC"); PrintWriter writer = new PrintWriter(cos)) {
                 writer.println("siroD");
                 writer.println(passwordManager.getLastModified().format(SerializationController.DATE_TIME_FORMAT));
-                writer.println(passwordManager.getValidUntil().format(SerializationController.DATE_TIME_FORMAT));
+                if( passwordManager.getValidUntil() != null )
+                    writer.println(passwordManager.getValidUntil().format(SerializationController.DATE_TIME_FORMAT));
             } catch (IOException e) {
                 // Error creating/writing new ZipEntry for metadata/magic header
                 e.printStackTrace();

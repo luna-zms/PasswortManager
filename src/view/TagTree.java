@@ -10,7 +10,6 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,6 +20,7 @@ import model.Tag;
 import util.WindowFactory;
 
 import java.util.Collections;
+
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
 
@@ -115,7 +115,6 @@ public class TagTree extends TreeView<Tag> {
             if (item.getValue() != null) {
                 pmController.getTagController().removeTag(parent.getValue(), item.getValue());
             }
-            //parent.getChildren().remove(item);
         }
     }
 

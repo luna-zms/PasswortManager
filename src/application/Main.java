@@ -101,6 +101,7 @@ public class Main extends Application {
             }
         } else {
             pmController.setMasterPassword(startWindowViewController.getPassword());
+            pmController.setSavePath(path);
 
             try {
                 // Hack to not have to copy `ret = false` into each catch
@@ -125,7 +126,6 @@ public class Main extends Application {
     private Tag getRootTagFromPath(Path path) {
         String fileNameWithExt = path.getFileName().toString();
         String fileName = fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf(".pwds"));
-        System.out.println(fileName);
 
         return new Tag(fileName);
     }
