@@ -1,16 +1,17 @@
 package view;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import controller.PMController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import model.Tag;
 import util.WindowFactory;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
@@ -45,15 +46,15 @@ public class TagTree extends TreeView<Tag> {
     }
 
     private void deleteItem(TreeItem<Tag> item) {
-        if (item == null)
-            return;
+        if (item == null) return;
 
         TreeItem<Tag> parent = item.getParent();
 
         if (parent != null) {  // Cannot delete root node
-            if (item.getValue() != null)
+            if (item.getValue() != null) {
                 pmController.getTagController().removeTag(parent.getValue(), item.getValue());
-            parent.getChildren().remove(item);
+            }
+            //parent.getChildren().remove(item);
         }
     }
 
@@ -95,7 +96,7 @@ public class TagTree extends TreeView<Tag> {
         return menu;
     }
 
-    private static class TagTreeItem extends TreeItem<Tag> {
+    private static class TagTreeItem extends TreeItem<Tag> implements ListChangeListener<Tag> {
         private boolean checked;
 
         TagTreeItem(Tag tag) {
@@ -103,8 +104,10 @@ public class TagTree extends TreeView<Tag> {
 
             setExpanded(true);
 
-            if (tag != null)
+            if (tag != null) {
                 tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeItem(subtag)));
+                tag.subTagsObservable().addListener(this);
+            }
         }
 
         boolean isChecked() {
@@ -116,22 +119,38 @@ public class TagTree extends TreeView<Tag> {
         }
 
         void setCheckedIfAny(List<Tag> tags) {
-            if (tags.contains(getValue()))
-                checked = true;
+            if (tags.contains(getValue())) checked = true;
 
             getChildren().forEach(treeItem -> ((TagTreeItem) treeItem).setCheckedIfAny(tags));
         }
 
         List<Tag> getSelectedSubTags() {
-            List<Tag> selectedSubItems = getChildren()
-                    .stream()
-                    .flatMap(treeItem -> ((TagTreeItem) treeItem).getSelectedSubTags().stream())
-                    .collect(Collectors.toList());
+            List<Tag> selectedSubItems = getChildren().stream()
+                                                      .flatMap(treeItem -> ((TagTreeItem) treeItem).getSelectedSubTags()
+                                                                                                   .stream())
+                                                      .collect(Collectors.toList());
 
-            if (isChecked())
-                selectedSubItems.add(getValue());
+            if (isChecked()) selectedSubItems.add(getValue());
 
             return selectedSubItems;
+        }
+
+        @Override
+        public void onChanged(Change<? extends Tag> change) {
+            while (change.next()) {
+                // If the add was done via this TagTree, the TreeItem already exists!
+                outer:
+                for (Tag added : change.getAddedSubList()) {
+                    for (TreeItem<Tag> item : getChildren()) {
+                        if (item.getValue().getName().equals(added.getName())) continue outer;
+                    }
+                    getChildren().add(new TagTreeItem(added));
+                }
+                getChildren().removeAll(getChildren().stream()
+                                                     .filter(child -> change.getRemoved()
+                                                                            .contains(child.getValue()))
+                                                     .collect(Collectors.toList()));
+            }
         }
     }
 
@@ -149,12 +168,10 @@ public class TagTree extends TreeView<Tag> {
         private TextField createEditTextField() {
             TextField wtf = new TextField();
 
-            if (getItem() != null)
-                wtf.setText(getItem().getName());
+            if (getItem() != null) wtf.setText(getItem().getName());
 
             final ChangeListener<? super Boolean> focusListener = (observable, oldValue, newValue) -> {
-                if (!newValue)
-                    finishEdit(wtf.getText());
+                if (!newValue) finishEdit(wtf.getText());
             };
 
             wtf.focusedProperty().addListener(focusListener);
@@ -178,7 +195,7 @@ public class TagTree extends TreeView<Tag> {
 
             wtf.setTextFormatter(new TextFormatter<>(change -> {
                 String text = change.getControlNewText();
-                if( text.contains("\\") || text.contains(";") ) return null;
+                if (text.contains("\\") || text.contains(";")) return null;
                 return change;
             }));
 
@@ -186,13 +203,11 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private void finishEdit(String str) {
-            if (getTreeItem() == null)
-                return;
+            if (getTreeItem() == null) return;
 
             TreeItem<Tag> parentTag = getTreeItem().getParent();
 
-            if (parentTag == null)
-                return;
+            if (parentTag == null) return;
 
             if (str.isEmpty()) {
                 cancelEdit();
@@ -211,8 +226,8 @@ public class TagTree extends TreeView<Tag> {
 
                 if (getItem() == null) { // newly created tags
                     tag = new Tag(str);
-                    pmController.getTagController().addTag(parentTag.getValue(), tag);
                     getTreeItem().setValue(tag);
+                    pmController.getTagController().addTag(parentTag.getValue(), tag);
                 } else { // Editing of existing tags
                     tag = getItem();
                     pmController.getTagController().renameTag(tag, str);
@@ -226,6 +241,7 @@ public class TagTree extends TreeView<Tag> {
         private void setToTextField() {
             TextField editTextField = createEditTextField();
 
+            textProperty().unbind();
             setText(null);
             setGraphic(editTextField);
             editTextField.requestFocus();
@@ -236,15 +252,18 @@ public class TagTree extends TreeView<Tag> {
             super.updateItem(tag, empty);
 
             if (empty) {
+                textProperty().unbind();
                 setText(null);
                 setGraphic(null);
             } else {
                 if (tag == null || tag.getName().isEmpty()) {
                     setToTextField();
                 } else {
-                    if (checkbox != null) checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
+                    if (checkbox != null) {
+                        checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
+                    }
 
-                    setText(tag.getName());
+                    textProperty().bind(tag.nameProperty());
                     setGraphic(checkbox);
                 }
             }
@@ -261,7 +280,7 @@ public class TagTree extends TreeView<Tag> {
         public void commitEdit(Tag tag) {
             super.commitEdit(tag);
 
-            setText(tag.getName());
+            textProperty().bind(tag.nameProperty());
             setGraphic(checkbox);
         }
 
@@ -274,17 +293,20 @@ public class TagTree extends TreeView<Tag> {
             if (tag == null || tag.getName().isEmpty()) {
                 deleteItem(getTreeItem());
             } else {
-                setText(tag.getName());
+                textProperty().bind(tag.nameProperty());
                 setGraphic(checkbox);
             }
         }
 
         @Override
-        public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+        public void changed(
+                ObservableValue<? extends Boolean> observableValue,
+                Boolean oldValue,
+                Boolean newValue
+        ) {
             TagTreeItem item = (TagTreeItem) getTreeItem();
 
-            if (item != null)
-                item.setChecked(newValue);
+            if (item != null) item.setChecked(newValue);
         }
     }
 }
