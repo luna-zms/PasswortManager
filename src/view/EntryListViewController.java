@@ -184,8 +184,8 @@ public class EntryListViewController extends TableView<Entry> {
             try {
                 Desktop.getDesktop().browse(entry.getValue().getUrl().toURI());  // Yikes
             } catch (IOException | URISyntaxException e) {
-                // TODO: Show error popup
-                e.printStackTrace();
+                WindowFactory.showError("Fehler: URL öffnen",
+                                        "Der Link konnte nicht geöffnet werden. Bitte öffnen Sie ihn manuell indem Sie den Link in ihren Browser kopieren.");
             }
         }, urlIsNull, new KeyCharacterCombination("U", KeyCombination.CONTROL_DOWN)));
 
