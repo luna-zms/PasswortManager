@@ -87,7 +87,7 @@ public class CustomExpirationDateViewController extends GridPane {
             e.printStackTrace();
         }
 
-        daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE));
+        daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,2147483647-1));//LocalDate.now().until(LocalDate.MAX).getDays())
         
     }
     
@@ -120,18 +120,23 @@ public class CustomExpirationDateViewController extends GridPane {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (!newValue.isEmpty()) {
                     try {
+                    	System.out.println("1");
                         long pointI = Integer.parseInt(newValue);
                         daysUntilExpiration.getEditor().setText(String.valueOf(pointI));
                         daysUntilExpiration.increment(0);
+                        
                     } catch (Exception e) {
+                    	System.out.println("1");
                     	daysUntilExpiration.getEditor().clear();
                     	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
                     	daysUntilExpiration.increment(0);
+                    	
                     }
                 } else {
-                	daysUntilExpiration.getEditor().clear();
-                	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
+                	System.out.println("1");
+                	daysUntilExpiration.getEditor().setText("1");
                 	daysUntilExpiration.increment(0);
+                	
                 }
             }
         });
