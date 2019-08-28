@@ -97,7 +97,8 @@ public class Main extends Application {
             }
             // Root tag is null otherwise
             else {
-                PasswordManager passwordManager = new PasswordManager();
+                PasswordManager passwordManager = pmController.getPasswordManager();
+                passwordManager.getEntries().clear();
                 passwordManager.setRootTag(getRootTagFromPath(path));
                 pmController.setPasswordManager(passwordManager);
             }
