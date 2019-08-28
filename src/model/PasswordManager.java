@@ -27,7 +27,7 @@ public class PasswordManager {
 
     private Tag rootTag;
 
-    private ObservableList<Entry> entries;
+    private ObservableList<Entry> entries = FXCollections.observableArrayList(Entry.observableProps);
 
     public PasswordManager() {
         this(null);
@@ -40,7 +40,6 @@ public class PasswordManager {
      */
     public PasswordManager(SecretKey masterPasswordKey) {
         this.masterPasswordKey = masterPasswordKey;
-        entries = FXCollections.observableArrayList();
     }
     /**
      * this method will merge this tag newrootTag with the list newEntries
@@ -98,7 +97,7 @@ public class PasswordManager {
     }
 
     public void setEntries(List<Entry> entries) {
-        this.entries = FXCollections.observableList(entries);
+        this.entries.setAll(entries);
     }
 
     public ObservableList<Entry> entriesObservable() {
