@@ -39,7 +39,7 @@ public class SetMasterPasswordViewController extends GridPane {
     private PMController pmController;
 
     private boolean mode;
-    
+
     private boolean passwordSet;
 
     private void errorMessage(String title, String content) {
@@ -80,11 +80,14 @@ public class SetMasterPasswordViewController extends GridPane {
         }
         customPasswordFieldOldPassword.setEnabled(mode);
         passwordSet = false;
+        if( !mode ) okButton.setText("Erstellen");
     }
 
     public void setMode(boolean other) {
         mode = other;
         customPasswordFieldOldPassword.setEnabled(mode);
+        if( !mode ) okButton.setText("Erstellen");
+        else okButton.setText("Konfigurieren");
     }
 
     public boolean getMode() {
@@ -96,7 +99,7 @@ public class SetMasterPasswordViewController extends GridPane {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'SetMasterPasswordView.fxml'.";
 
-        customPasswordFieldRepeat.setPromptText("Password wiederholen");
+        customPasswordFieldRepeat.setPromptText("Passwort wiederholen");
 
         customPasswordFieldBase.onPasswordChanged((observable, oldValue, newValue) -> {
             if (newValue.equals("")) {
@@ -134,7 +137,7 @@ public class SetMasterPasswordViewController extends GridPane {
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
     }
-    
+
     public boolean getPasswordSet(){
     	return passwordSet;
     }
