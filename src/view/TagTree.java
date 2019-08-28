@@ -226,6 +226,7 @@ public class TagTree extends TreeView<Tag> {
         private void setToTextField() {
             TextField editTextField = createEditTextField();
 
+            textProperty().unbind();
             setText(null);
             setGraphic(editTextField);
             editTextField.requestFocus();
@@ -236,6 +237,7 @@ public class TagTree extends TreeView<Tag> {
             super.updateItem(tag, empty);
 
             if (empty) {
+                textProperty().unbind();
                 setText(null);
                 setGraphic(null);
             } else {
@@ -244,7 +246,7 @@ public class TagTree extends TreeView<Tag> {
                 } else {
                     if (checkbox != null) checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
 
-                    setText(tag.getName());
+                    textProperty().bind(tag.nameProperty());
                     setGraphic(checkbox);
                 }
             }
@@ -261,7 +263,7 @@ public class TagTree extends TreeView<Tag> {
         public void commitEdit(Tag tag) {
             super.commitEdit(tag);
 
-            setText(tag.getName());
+            textProperty().bind(tag.nameProperty());
             setGraphic(checkbox);
         }
 
@@ -274,7 +276,7 @@ public class TagTree extends TreeView<Tag> {
             if (tag == null || tag.getName().isEmpty()) {
                 deleteItem(getTreeItem());
             } else {
-                setText(tag.getName());
+                textProperty().bind(tag.nameProperty());
                 setGraphic(checkbox);
             }
         }
