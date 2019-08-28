@@ -26,7 +26,7 @@ public class Entry {
     private LocalDate validUntil;
     private SecurityQuestion securityQuestion;
     private ObservableList<Tag> tags = FXCollections.observableArrayList(
-            t -> new Observable[] { t.nameProperty(), t.subTagsObservable() }
+            tag -> new Observable[] { tag.nameProperty(), tag.subTagsObservable() }
     );
 
 

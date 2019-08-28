@@ -18,7 +18,7 @@ import javafx.collections.ObservableList;
 public class Tag {
     private StringProperty name = new SimpleStringProperty();
     private ObservableList<Tag> subTags = FXCollections.observableArrayList(
-            t -> new Observable[] { t.nameProperty(), t.subTagsObservable() }
+            tag -> new Observable[] { tag.nameProperty(), tag.subTagsObservable() }
     );
 
     public Tag() {
@@ -72,7 +72,7 @@ public class Tag {
 
    /**
     * this method will return a tag,that has the correspond subtag's name
-    * @param name 
+    * @param name
     * @return Tag with Name name
     */
     public Tag getSubTagByName(String name) {
@@ -81,7 +81,7 @@ public class Tag {
 
     /**
      * this method is to check,if the tag with the correspond name has subtag or not
-     * @param name 
+     * @param name
      * @return boolean indicates if there is a subtag with Name name
      */
     public boolean hasSubTag(String name) {

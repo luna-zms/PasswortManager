@@ -16,7 +16,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -90,11 +89,10 @@ public class EntryListViewController extends TableView<Entry> {
         tag.addListener((obs, oldTag, newTag) -> applyFilter());
 
         this.setOnMouseClicked(event -> {
-            if( event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2 ) {
+            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
                 CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
                 Entry entry = getSelectionModel().getSelectedItem();
-                if( entry != null )
-                    createModifyEntryViewController.setOldEntry(entry);
+                if (entry != null) createModifyEntryViewController.setOldEntry(entry);
                 else
                     createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
 
@@ -184,17 +182,16 @@ public class EntryListViewController extends TableView<Entry> {
             try {
                 Desktop.getDesktop().browse(entry.getValue().getUrl().toURI());  // Yikes
             } catch (IOException | URISyntaxException e) {
-                // TODO: Show error popup
-                e.printStackTrace();
+                WindowFactory.showError("Fehler: URL öffnen",
+                                        "Der Link konnte nicht geöffnet werden. Bitte öffnen Sie ihn manuell indem Sie den Link in ihren Browser kopieren.");
             }
         }, urlIsNull, new KeyCharacterCombination("U", KeyCombination.CONTROL_DOWN)));
 
         // For some reason, IntelliJ wants to break this one into multiple lines but not the others
         // ¯\_(ツ)_/¯
         menuItems.add(createMenuItem("URL kopieren",
-                                     event -> {
-                                         ClipboardUtils.copyToClipboard(entry, Entry::getUrlString);
-                                     },
+                                     event -> ClipboardUtils.copyToClipboard(entry,
+                                                                             Entry::getUrlString),
                                      urlIsNull,
                                      new KeyCharacterCombination("U",
                                                                  KeyCombination.CONTROL_DOWN,
@@ -207,9 +204,10 @@ public class EntryListViewController extends TableView<Entry> {
             ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
     ) {
 
-        return createMenuItem("Passwort kopieren", event -> {
-            ClipboardUtils.copyToClipboard(entry, Entry::getPassword);
-        }, entryIsNull, new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
+        return createMenuItem("Passwort kopieren",
+                              event -> ClipboardUtils.copyToClipboard(entry, Entry::getPassword),
+                              entryIsNull,
+                              new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
     }
 
     private MenuItem createCopyUsername(ObservableValue<Entry> entry) {
@@ -218,9 +216,10 @@ public class EntryListViewController extends TableView<Entry> {
                                                                            currEntry -> currEntry.getUsername() == null,
                                                                            true);
 
-        return createMenuItem("Nutzername kopieren", event -> {
-            ClipboardUtils.copyToClipboard(entry, Entry::getUsername);
-        }, usernameIsNull, new KeyCharacterCombination("B", KeyCombination.CONTROL_DOWN));
+        return createMenuItem("Nutzername kopieren",
+                              event -> ClipboardUtils.copyToClipboard(entry, Entry::getUsername),
+                              usernameIsNull,
+                              new KeyCharacterCombination("B", KeyCombination.CONTROL_DOWN));
     }
 
     private MenuItem createAddEntry() {
