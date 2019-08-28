@@ -101,6 +101,7 @@ public class Main extends Application {
             }
         } else {
             pmController.setMasterPassword(startWindowViewController.getPassword());
+            pmController.setSavePath(path);
 
             try {
                 // Hack to not have to copy `ret = false` into each catch
