@@ -89,17 +89,27 @@ public class EntryListViewController extends TableView<Entry> {
 
         this.setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
-                CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-                Entry entry = getSelectionModel().getSelectedItem();
-                if (entry != null) createModifyEntryViewController.setOldEntry(entry);
-                else
-                    createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
-
-                WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
-
-                // TODO: Maybe update displayed entry if necessary
+                modifyEntry(tag);
             }
         });
+
+        this.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if( keyEvent.getCode() == KeyCode.ENTER ) {
+                keyEvent.consume();
+
+                modifyEntry(tag);
+            }
+        });
+    }
+
+    private void modifyEntry(ObjectProperty<Tag> tag) {
+        CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
+        Entry entry = getSelectionModel().getSelectedItem();
+        if (entry != null) createModifyEntryViewController.setOldEntry(entry);
+        else
+            createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
+
+        WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
     }
 
     private static MenuItem createMenuItem(
