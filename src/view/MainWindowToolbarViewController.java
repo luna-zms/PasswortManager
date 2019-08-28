@@ -19,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Entry;
 import util.CsvException;
@@ -183,6 +184,7 @@ public class MainWindowToolbarViewController extends GridPane {
     private void initializeActionsSaveAsDatabase() {
         saveAsDatabaseToolbar.setOnAction(event -> {
             Stage dialog = WindowFactory.createStage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Speichere Kopie als");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
@@ -211,6 +213,7 @@ public class MainWindowToolbarViewController extends GridPane {
     private void initializeActionsOpenDatabase() {
         openDatabaseToolbar.setOnAction(event -> {
             Stage dialog = WindowFactory.createStage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Öffne Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
@@ -240,6 +243,7 @@ public class MainWindowToolbarViewController extends GridPane {
     private void initializeActionsImportDatabase() {
         importDatabaseToolbar.setOnAction(event -> {
             Stage dialog = WindowFactory.createStage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Importiere Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
@@ -271,6 +275,7 @@ public class MainWindowToolbarViewController extends GridPane {
     private void initializeActionsExportDatabase() {
         exportDatabaseToolbar.setOnAction(event -> {
             Stage dialog = WindowFactory.createStage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exportiere Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
