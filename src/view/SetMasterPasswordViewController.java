@@ -52,7 +52,8 @@ public class SetMasterPasswordViewController extends GridPane {
 
     private boolean setNewPassword(String newPassword, String repeatedPassword) {
         if (newPassword.equals("")) errorMessage("Passwort-Fehler", "Bitte geben Sie ein Passwort ein.");
-        else if (!newPassword.equals(repeatedPassword)) errorMessage("Passwort-Fehler", "Passwörter stimmen nicht überein!");
+        else if (!newPassword.equals(repeatedPassword))
+            errorMessage("Passwort-Fehler", "Passwörter stimmen nicht überein!");
         else {
             pmController.setMasterPassword(newPassword);
             return true;
@@ -80,13 +81,13 @@ public class SetMasterPasswordViewController extends GridPane {
         }
         customPasswordFieldOldPassword.setEnabled(mode);
         passwordSet = false;
-        if( !mode ) okButton.setText("Erstellen");
+        if (!mode) okButton.setText("Erstellen");
     }
 
     public void setMode(boolean other) {
         mode = other;
         customPasswordFieldOldPassword.setEnabled(mode);
-        if( !mode ) okButton.setText("Erstellen");
+        if (!mode) okButton.setText("Erstellen");
         else okButton.setText("Konfigurieren");
     }
 
@@ -119,26 +120,25 @@ public class SetMasterPasswordViewController extends GridPane {
                 if (!checkOldPassword(customPasswordFieldOldPassword.getText())) {
                     errorMessage("Passwort-Fehler", "Altes Passwort ist falsch!");
                 } else if (setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())) {
-                	passwordSet = true;
+                    passwordSet = true;
                     Stage stage = (Stage) getScene().getWindow();
                     stage.close();
                 }
             } else {
                 if (setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())) {
-                	passwordSet = true;
+                    passwordSet = true;
                     Stage stage = (Stage) getScene().getWindow();
                     stage.close();
                 }
             }
         });
-
     }
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
     }
 
-    public boolean getPasswordSet(){
-    	return passwordSet;
+    public boolean getPasswordSet() {
+        return passwordSet;
     }
 }

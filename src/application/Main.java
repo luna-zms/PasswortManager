@@ -2,6 +2,7 @@ package application;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -129,7 +130,8 @@ public class Main extends Application {
     }
 
     private void checkMasterPasswordExpiration() {
-        if (!pmController.getPasswordManager().getValidUntil().isBefore(LocalDateTime.now())) {
+        LocalDateTime validUntil = pmController.getPasswordManager().getValidUntil();
+        if (validUntil == null || !validUntil.isBefore(LocalDateTime.now())) {
             return;
         }
 
