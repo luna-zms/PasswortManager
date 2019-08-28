@@ -85,7 +85,7 @@ public class Tag {
 
    /**
     * this method will return a tag,that has the correspond subtag's name
-    * @param name
+    * @param name the subtag's name
     * @return Tag with Name name
     */
     public Tag getSubTagByName(String name) {
@@ -94,7 +94,7 @@ public class Tag {
 
     /**
      * this method is to check,if the tag with the correspond name has subtag or not
-     * @param name
+     * @param name the tag's name
      * @return boolean indicates if there is a subtag with Name name
      */
     public boolean hasSubTag(String name) {
