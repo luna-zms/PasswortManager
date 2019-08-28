@@ -2,6 +2,7 @@ package view;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +69,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private BiConsumer<Predicate<Entry>, Boolean> onSearchRefreshAction;
 
-    private Consumer<String> openDatabaseFileAction;
+    private Consumer<Path> openDatabaseFileAction;
 
     public MainWindowToolbarViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
@@ -202,7 +203,7 @@ public class MainWindowToolbarViewController extends GridPane {
                 return;
             }
 
-            openDatabaseFileAction.accept(file.getPath());
+            openDatabaseFileAction.accept(file.toPath());
         });
     }
 
@@ -348,7 +349,7 @@ public class MainWindowToolbarViewController extends GridPane {
         this.onSearchRefreshAction = onSearchRefreshAction;
     }
 
-    public void setOpenDatabaseFileAction(Consumer<String> openDatabaseFileAction) {
+    public void setOpenDatabaseFileAction(Consumer<Path> openDatabaseFileAction) {
         this.openDatabaseFileAction = openDatabaseFileAction;
     }
 }

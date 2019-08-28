@@ -1,21 +1,79 @@
 package view;
 
-import controller.PMController;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
-import model.Tag;
-import util.WindowFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import controller.PMController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import model.Tag;
+import util.WindowFactory;
+
+import java.util.Collections;
+
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
+
+    public BorderPane createPaneWithButtons() {
+        BorderPane outer = new BorderPane();
+
+        FlowPane inner = new FlowPane(Orientation.HORIZONTAL);
+        inner.setAlignment(Pos.CENTER);
+
+        Button remove = new Button();
+        Button add = new Button();
+
+        remove.setTooltip(new Tooltip("Ausgewähltes Schlagwort löschen"));
+        add.setTooltip(new Tooltip("Neues Schlagwort"));
+
+        inner.setMaxHeight(34);
+        inner.setVgap(5);
+        inner.setHgap(5);
+        inner.setPadding(new Insets(5, 5, 5, 5));
+
+        inner.getChildren().addAll(remove, add);
+
+        outer.setCenter(this);
+        outer.setBottom(inner);
+
+        ImageView addCategoryimage = new ImageView(new Image(
+            getClass().getResourceAsStream("/view/resources/add_category_toolbar_icon.png")));
+        addCategoryimage.setFitHeight(24);
+        addCategoryimage.setFitWidth(24);
+        add.setGraphic(addCategoryimage);
+
+        ImageView deleteCategoryimage = new ImageView(new Image(
+            getClass().getResourceAsStream("/view/resources/delete_category_icon.png")));
+        deleteCategoryimage.setFitHeight(24);
+        deleteCategoryimage.setFitWidth(24);
+        remove.setGraphic(deleteCategoryimage);
+
+        remove.setOnMouseClicked(event -> deleteSelected());
+        add.setOnMouseClicked(event -> createBelowSelected());
+
+        return outer;
+    }
+
+    private void openCreateEntryDialog() {
+        CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
+        dialogController.setPmController(pmController);
+        dialogController.init();
+        if (getSelectedTag() != null) {
+            dialogController.setCheckedTags(Collections.singletonList(getSelectedTag()));
+        }
+
+        WindowFactory.showDialog("Eintrag erstellen", dialogController);
+    }
 
     public void init(final boolean hasCheckBoxes, PMController controller) {
         pmController = controller;
@@ -39,7 +97,9 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public Tag getSelectedTag() {
-        return getSelectedItem() == null ? null : getSelectedItem().getValue();
+        return getSelectedItem() == null
+               ? null
+               : getSelectedItem().getValue();
     }
 
     public void deleteSelected() {
@@ -47,15 +107,14 @@ public class TagTree extends TreeView<Tag> {
     }
 
     private void deleteItem(TreeItem<Tag> item) {
-        if (item == null)
-            return;
+        if (item == null) return;
 
         TreeItem<Tag> parent = item.getParent();
 
         if (parent != null) {  // Cannot delete root node
-            if (item.getValue() != null)
+            if (item.getValue() != null) {
                 pmController.getTagController().removeTag(parent.getValue(), item.getValue());
-            parent.getChildren().remove(item);
+            }
         }
     }
 
@@ -79,15 +138,7 @@ public class TagTree extends TreeView<Tag> {
         MenuItem delete = new MenuItem("Löschen");
 
         createTag.setOnAction(event -> createBelowSelected());
-        createEntry.setOnAction(event -> {
-            CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
-            dialogController.setPmController(pmController);
-            dialogController.init();
-            if( getSelectedTag() != null )
-                dialogController.setCheckedTags(Collections.singletonList(getSelectedTag()));
-
-            WindowFactory.showDialog("Eintrag erstellen", dialogController);
-        });
+        createEntry.setOnAction(event -> openCreateEntryDialog());
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
 
@@ -98,7 +149,7 @@ public class TagTree extends TreeView<Tag> {
         return menu;
     }
 
-    private static class TagTreeItem extends TreeItem<Tag> {
+    private static class TagTreeItem extends TreeItem<Tag> implements ListChangeListener<Tag> {
         private boolean checked;
 
         TagTreeItem(Tag tag) {
@@ -106,8 +157,10 @@ public class TagTree extends TreeView<Tag> {
 
             setExpanded(true);
 
-            if (tag != null)
+            if (tag != null) {
                 tag.getSubTags().forEach(subtag -> getChildren().add(new TagTreeItem(subtag)));
+                tag.subTagsObservable().addListener(this);
+            }
         }
 
         boolean isChecked() {
@@ -119,22 +172,38 @@ public class TagTree extends TreeView<Tag> {
         }
 
         void setCheckedIfAny(List<Tag> tags) {
-            if (tags.contains(getValue()))
-                checked = true;
+            if (tags.contains(getValue())) checked = true;
 
             getChildren().forEach(treeItem -> ((TagTreeItem) treeItem).setCheckedIfAny(tags));
         }
 
         List<Tag> getSelectedSubTags() {
-            List<Tag> selectedSubItems = getChildren()
-                    .stream()
-                    .flatMap(treeItem -> ((TagTreeItem) treeItem).getSelectedSubTags().stream())
-                    .collect(Collectors.toList());
+            List<Tag> selectedSubItems = getChildren().stream()
+                                                      .flatMap(treeItem -> ((TagTreeItem) treeItem).getSelectedSubTags()
+                                                                                                   .stream())
+                                                      .collect(Collectors.toList());
 
-            if (isChecked())
-                selectedSubItems.add(getValue());
+            if (isChecked()) selectedSubItems.add(getValue());
 
             return selectedSubItems;
+        }
+
+        @Override
+        public void onChanged(Change<? extends Tag> change) {
+            while (change.next()) {
+                // If the add was done via this TagTree, the TreeItem already exists!
+                outer:
+                for (Tag added : change.getAddedSubList()) {
+                    for (TreeItem<Tag> item : getChildren()) {
+                        if (item.getValue().getName().equals(added.getName())) continue outer;
+                    }
+                    getChildren().add(new TagTreeItem(added));
+                }
+                getChildren().removeAll(getChildren().stream()
+                                                     .filter(child -> change.getRemoved()
+                                                                            .contains(child.getValue()))
+                                                     .collect(Collectors.toList()));
+            }
         }
     }
 
@@ -152,12 +221,10 @@ public class TagTree extends TreeView<Tag> {
         private TextField createEditTextField() {
             TextField wtf = new TextField();
 
-            if (getItem() != null)
-                wtf.setText(getItem().getName());
+            if (getItem() != null) wtf.setText(getItem().getName());
 
             final ChangeListener<? super Boolean> focusListener = (observable, oldValue, newValue) -> {
-                if (!newValue)
-                    finishEdit(wtf.getText());
+                if (!newValue) finishEdit(wtf.getText());
             };
 
             wtf.focusedProperty().addListener(focusListener);
@@ -181,7 +248,7 @@ public class TagTree extends TreeView<Tag> {
 
             wtf.setTextFormatter(new TextFormatter<>(change -> {
                 String text = change.getControlNewText();
-                if( text.contains("\\") || text.contains(";") ) return null;
+                if (text.contains("\\") || text.contains(";")) return null;
                 return change;
             }));
 
@@ -189,13 +256,11 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private void finishEdit(String str) {
-            if (getTreeItem() == null)
-                return;
+            if (getTreeItem() == null) return;
 
             TreeItem<Tag> parentTag = getTreeItem().getParent();
 
-            if (parentTag == null)
-                return;
+            if (parentTag == null) return;
 
             if (str.isEmpty()) {
                 cancelEdit();
@@ -204,7 +269,8 @@ public class TagTree extends TreeView<Tag> {
                     Alert errorAlert = new Alert(Alert.AlertType.WARNING);
                     errorAlert.setTitle("Dupliziertes Schlagwort");
                     errorAlert.setHeaderText("Schlagwort existiert bereits");
-                    errorAlert.setContentText("Ein Schlagwort mit dem Namen '" + str + "' existiert bereits. \n Wähle einen anderen Namen");
+                    errorAlert.setContentText(
+                        "Ein Schlagwort mit dem Namen '" + str + "' existiert bereits. \n Wähle einen anderen Namen");
                     errorAlert.showAndWait();
                 }
 
@@ -214,21 +280,21 @@ public class TagTree extends TreeView<Tag> {
 
                 if (getItem() == null) { // newly created tags
                     tag = new Tag(str);
-                    pmController.getTagController().addTag(parentTag.getValue(), tag);
                     getTreeItem().setValue(tag);
+                    pmController.getTagController().addTag(parentTag.getValue(), tag);
                 } else { // Editing of existing tags
                     tag = getItem();
                     pmController.getTagController().renameTag(tag, str);
                 }
 
                 commitEdit(tag);
-
             }
         }
 
         private void setToTextField() {
             TextField editTextField = createEditTextField();
 
+            textProperty().unbind();
             setText(null);
             setGraphic(editTextField);
             editTextField.requestFocus();
@@ -239,15 +305,18 @@ public class TagTree extends TreeView<Tag> {
             super.updateItem(tag, empty);
 
             if (empty) {
+                textProperty().unbind();
                 setText(null);
                 setGraphic(null);
             } else {
                 if (tag == null || tag.getName().isEmpty()) {
                     setToTextField();
                 } else {
-                    if (checkbox != null) checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
+                    if (checkbox != null) {
+                        checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
+                    }
 
-                    setText(tag.getName());
+                    textProperty().bind(tag.nameProperty());
                     setGraphic(checkbox);
                 }
             }
@@ -264,7 +333,7 @@ public class TagTree extends TreeView<Tag> {
         public void commitEdit(Tag tag) {
             super.commitEdit(tag);
 
-            setText(tag.getName());
+            textProperty().bind(tag.nameProperty());
             setGraphic(checkbox);
         }
 
@@ -277,17 +346,20 @@ public class TagTree extends TreeView<Tag> {
             if (tag == null || tag.getName().isEmpty()) {
                 deleteItem(getTreeItem());
             } else {
-                setText(tag.getName());
+                textProperty().bind(tag.nameProperty());
                 setGraphic(checkbox);
             }
         }
 
         @Override
-        public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+        public void changed(
+                ObservableValue<? extends Boolean> observableValue,
+                Boolean oldValue,
+                Boolean newValue
+        ) {
             TagTreeItem item = (TagTreeItem) getTreeItem();
 
-            if (item != null)
-                item.setChecked(newValue);
+            if (item != null) item.setChecked(newValue);
         }
     }
 }

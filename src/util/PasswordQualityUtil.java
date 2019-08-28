@@ -20,17 +20,22 @@ public class PasswordQualityUtil {
      * Loads the dictionary file when initialized by getInstance() as a singleton
      */
     private PasswordQualityUtil() {
+        boolean dictLoaded = true;
         InputStream dictFile = PasswordQualityUtil.class.getResourceAsStream("resources/dict.txt");
+
+        if (dictFile == null) dictLoaded = false;
 
         dict = new ArrayList<String>();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(dictFile))) {
-            while (reader.ready()) dict.add(reader.readLine());
-        } catch (IOException ioe) {
-            // TODO hier muss auch noch Fehlerhandling passieren, siehe Issue #79
-            ioe.printStackTrace();
-            System.exit(-1);
+        if (dictLoaded) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(dictFile))) {
+                while (reader.ready()) dict.add(reader.readLine());
+            } catch (IOException ioe) {
+                dictLoaded = false;
+            }
         }
+
+        if (!dictLoaded) WindowFactory.showError("Dateifehler", "Konnte Wörterbuch für Passwortqualitätsüberprüfung nicht laden.");
     }
 
     /**
@@ -137,7 +142,7 @@ public class PasswordQualityUtil {
                 repeatCounter += 1;
             } else {
                 if (repeatCounter >= 2) {
-                    score += Math.pow((double)repeatCounter, 1.2);
+                    score += CharGroup.getCharGroupOf(lastChar).getBonusFactor()*(repeatCounter-1);
                 }
                 repeatCounter = 1;
             }
@@ -145,7 +150,7 @@ public class PasswordQualityUtil {
             lastChar = c;
         }
 
-        if (repeatCounter >= 2) score += Math.pow((double)repeatCounter, 1.2);
+        if (repeatCounter >= 2) score += CharGroup.getCharGroupOf(lastChar).getBonusFactor()*(repeatCounter-1);
 
         return -(int)score;
     }

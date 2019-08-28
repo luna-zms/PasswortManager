@@ -8,6 +8,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 import model.Tag;
 import util.BindingUtils;
@@ -36,15 +38,18 @@ public class MainWindowViewController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        setLeft(tagTree.createPaneWithButtons());
+        //System.out.println(this.getLeft());
     }
 
     private Tag getRootTag() {
         return pmController.getPasswordManager().getRootTag();
     }
 
-    public void init() {
+    public void init(Consumer<Path> showOpenDialog) {
         // Init subcomponents
         entryPreview.init(getRootTag());
+        mainWindowToolbar.setOpenDatabaseFileAction(showOpenDialog);
 
         // Bind preview to update when table selection changes
         entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());

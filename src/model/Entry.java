@@ -1,10 +1,12 @@
 package model;
 
 import java.net.URL;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -41,7 +43,8 @@ public class Entry {
         this.password = password;
 
         createdAt = LocalDateTime.now();
-        lastModified = createdAt;
+        lastModified = createdAt.plus(Duration.ofSeconds(1)); // We have to add a second, otherwise it looks like
+        // Java has floating point problems, so the lastModified value can potential be lesser than createdAt.
 
         username = "";
         note = "";

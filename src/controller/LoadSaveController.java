@@ -5,6 +5,7 @@ import model.PasswordManager;
 import model.Tag;
 import org.apache.commons.csv.CSVParser;
 import util.Tuple;
+import util.WindowFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -57,7 +58,7 @@ public class LoadSaveController extends SerializationController {
             try (InputStream fis = Files.newInputStream(path);
                  ZipInputStream zis = new ZipInputStream(fis)) {
                 LocalDateTime lastModified;
-                LocalDateTime validUntil;
+                LocalDateTime validUntil = null;
 
                 List<Entry> entries;
                 Tag readRootTag;
@@ -72,7 +73,9 @@ public class LoadSaveController extends SerializationController {
                         throw new IOException("Mismatch in Magic Bytes, is the password correct? Read: " + magicLine);
 
                     lastModified = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_TIME_FORMAT);
-                    validUntil = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_TIME_FORMAT);
+                    String validUntilLine = bur.readLine();
+                    if( validUntilLine != null )
+                        validUntil = LocalDateTime.parse(validUntilLine, SerializationController.DATE_TIME_FORMAT);
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw e;
@@ -109,7 +112,9 @@ public class LoadSaveController extends SerializationController {
                     throw e;
                 }
 
-                readRootTag.setName(path.getFileName().toString());
+                String fileName = path.getFileName().toString();
+
+                readRootTag.setName(fileName.substring(0, fileName.lastIndexOf(".pwds")));
 
                 passwordManager.setRootTag(readRootTag);
                 passwordManager.setEntries(entries);
@@ -117,8 +122,8 @@ public class LoadSaveController extends SerializationController {
                 passwordManager.setValidUntil(validUntil);
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
-            e.printStackTrace();
-            System.exit(-1);
+            WindowFactory.showError("Interner Fehler beim Laden", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht geladen werden:\n\n" + e.getLocalizedMessage());
+            throw new RuntimeException(e);
         }
     }
 
@@ -195,7 +200,8 @@ public class LoadSaveController extends SerializationController {
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "MAGIC"); PrintWriter writer = new PrintWriter(cos)) {
                 writer.println("siroD");
                 writer.println(passwordManager.getLastModified().format(SerializationController.DATE_TIME_FORMAT));
-                writer.println(passwordManager.getValidUntil().format(SerializationController.DATE_TIME_FORMAT));
+                if( passwordManager.getValidUntil() != null )
+                    writer.println(passwordManager.getValidUntil().format(SerializationController.DATE_TIME_FORMAT));
             } catch (IOException e) {
                 // Error creating/writing new ZipEntry for metadata/magic header
                 e.printStackTrace();
@@ -221,16 +227,16 @@ public class LoadSaveController extends SerializationController {
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
             // The java installation does not support AES encryption for some reason
-            e.printStackTrace();
-            System.exit(-1);
+            WindowFactory.showError("Interner Fehler beim Laden", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht geladen werden:\n\n" + e.getLocalizedMessage());
+            throw new RuntimeException(e);
         } catch (InvalidKeyException e) {
             // Internal error: The master password key was invalid, meaning there was an error in the cdf!
-            e.printStackTrace();
-            System.exit(-1);
+            WindowFactory.showError("Interner Fehler beim Laden", "Es ist ein interner Fehler aufgetreten. Möglicherweise war das angegebene Masterpasswort ungültig.\n\n" + e.getLocalizedMessage());
+            throw new RuntimeException(e);
         } catch (IOException e) {
             // Error while accessing the file (path to file didn't exist, missing write permissions, etc)
-            e.printStackTrace();
-            throw e;
+            WindowFactory.showError("Dateifehler", "Die Datei konnte nicht geladen werden.\nÜberprüfen Sie, ob die Datei existiert und Sie die notwendigen Berechtigungen zum Ändern dieser besitzen.");
+            throw new RuntimeException(e);
         }
     }
 
