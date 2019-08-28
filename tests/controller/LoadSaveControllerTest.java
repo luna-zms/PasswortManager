@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -65,7 +67,7 @@ public class LoadSaveControllerTest {
         roundTrip("roundTripEmptyTest");
 
         assertTrue(passwordManager.getEntries().isEmpty());
-        assertEquals(passwordManager.getRootTag(), new Tag("roundTripEmptyTest"));
+        assertTrue(tagEquals(new Tag("roundTripEmptyTest"), passwordManager.getRootTag()));
     }
 
     /**
@@ -84,8 +86,8 @@ public class LoadSaveControllerTest {
         roundTrip("roundTripOnlyRootTagAndOneEntry");
 
         assertEquals(passwordManager.getEntries().size(), 1);
-        assertEquals(passwordManager.getEntries().get(0), entry);
-        assertEquals(passwordManager.getRootTag(), new Tag("roundTripOnlyRootTagAndOneEntry"));
+        assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
+        assertTrue(tagEquals(new Tag("roundTripOnlyRootTagAndOneEntry"), passwordManager.getRootTag()));
     }
 
     /**
@@ -106,8 +108,8 @@ public class LoadSaveControllerTest {
         roundTrip("roundTripOnlyManyTagsAndOneEntry");
 
         assertEquals(passwordManager.getEntries().size(), 1);
-        assertEquals(passwordManager.getEntries().get(0), entry);
-        assertEquals(passwordManager.getRootTag(), testTag);
+        assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
+        assertTrue(tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     /**
@@ -137,8 +139,8 @@ public class LoadSaveControllerTest {
         toTest.load(testFile);
 
         assertEquals(passwordManager.getEntries().size(), 1);
-        assertEquals(passwordManager.getEntries().get(0), entry);
-        assertEquals(passwordManager.getRootTag(), testTag);
+        assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
+        assertTrue(tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     /**
@@ -169,13 +171,43 @@ public class LoadSaveControllerTest {
         toTest.load(testFile);
 
         assertEquals(1, passwordManager.getEntries().size());
-        assertEquals(entry, passwordManager.getEntries().get(0));
-        assertEquals(testTag, passwordManager.getRootTag());
+        assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
+        assertTrue(tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     private void roundTrip(String test) throws IOException {
         Path testFile = Paths.get(tempDir.toString(), test);
         toTest.save(testFile);
         toTest.load(testFile);
+    }
+
+    private boolean tagEquals(Tag tag1, Tag tag2) {
+        if(tag1 == tag2) return true;
+        return tag1.getName().equals(tag2.getName()) && tagsEquals(tag1.getSubTags(), tag2.getSubTags());
+    }
+
+    private boolean tagsEquals(List<Tag> l1, List<Tag> l2)  {
+        outer: for (Tag t1: l1) {
+            for(Tag t2: l2) {
+                if(tagEquals(t1, t2))
+                    continue outer;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public boolean entryEquals(Entry e1, Entry e2) {
+        if (e1 == e2) return true;
+        return e1.getTitle().equals(e2.getTitle()) &&
+                e1.getUsername().equals(e2.getUsername() )&&
+                e1.getPassword().equals(e2.getPassword()) &&
+                e1.getNote().equals(e2.getNote()) &&
+                Objects.equals(e1.getUrl(), e2.getUrl()) &&
+                e1.getCreatedAt().equals(e2.getCreatedAt()) &&
+                e1.getLastModified().equals(e2.getLastModified()) &&
+                Objects.equals(e1.getValidUntil(), e2.getValidUntil()) &&
+                Objects.equals(e1.getSecurityQuestion(), e2.getSecurityQuestion()) &&
+                tagsEquals(e1.getTags(), e2.getTags());
     }
 }
