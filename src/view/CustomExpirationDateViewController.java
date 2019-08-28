@@ -87,8 +87,7 @@ public class CustomExpirationDateViewController extends GridPane {
             e.printStackTrace();
         }
 
-        datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
-        daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE));
+        daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE));
         
     }
     
