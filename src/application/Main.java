@@ -53,7 +53,9 @@ public class Main extends Application {
 
             showOpenDialog(null);
         } catch (Exception e) {
-            e.printStackTrace();
+            WindowFactory.showError("Kritischer Fehler",
+                                    "Aufgrund eines kritischen Fehlers muss die Anwendung beendet werden.\n\nNähere Informationen:\n" + e
+                                            .getMessage());
         }
     }
 
