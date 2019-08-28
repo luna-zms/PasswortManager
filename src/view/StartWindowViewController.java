@@ -68,7 +68,7 @@ public class StartWindowViewController extends GridPane {
                 return;
         	}
         	if(customPasswordField.getText().isEmpty()) {
-        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben sie das Paswort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
+        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben sie das Passwort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
         		return;
         	}
         	path = file.toPath();

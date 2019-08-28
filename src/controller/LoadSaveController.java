@@ -208,20 +208,20 @@ public class LoadSaveController extends SerializationController {
                 writer.println(passwordManager.getLastModified().format(SerializationController.DATE_TIME_FORMAT));
                 if( passwordManager.getValidUntil() != null )
                     writer.println(passwordManager.getValidUntil().format(SerializationController.DATE_TIME_FORMAT));
-            } catch (IOException e) {
+            } catch (IOException exception) {
                 // Error creating/writing new ZipEntry for metadata/magic header
-                e.printStackTrace();
-                throw e;
+                exception.printStackTrace();
+                throw exception;
             }
 
             Tag rootTag = passwordManager.getRootTag();
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "ENTRIES")) {
                 writeEntriesToStream(cos, passwordManager.getEntries(), rootTag);
-            } catch (IOException e) {
+            } catch (IOException exception) {
                 // Error creating/writing new ZipEntry for entries section
-                e.printStackTrace();
-                throw e;
+                exception.printStackTrace();
+                throw exception;
             }
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "TAGS"); PrintWriter writer = new PrintWriter(cos)) {
@@ -231,18 +231,9 @@ public class LoadSaveController extends SerializationController {
                 e.printStackTrace();
                 throw e;
             }
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
+        } catch (NoSuchPaddingException | InvalidKeyException | IOException | NoSuchAlgorithmException exception) {
             // The java installation does not support AES encryption for some reason
-            WindowFactory.showError("Interner Fehler beim Laden", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht geladen werden:\n\n" + e.getLocalizedMessage());
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            // Internal error: The master password key was invalid, meaning there was an error in the cdf!
-            WindowFactory.showError("Interner Fehler beim Laden", "Es ist ein interner Fehler aufgetreten. Möglicherweise war das angegebene Masterpasswort ungültig.\n\n" + e.getLocalizedMessage());
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            // Error while accessing the file (path to file didn't exist, missing write permissions, etc)
-            WindowFactory.showError("Dateifehler", "Die Datei konnte nicht geladen werden.\nÜberprüfen Sie, ob die Datei existiert und Sie die notwendigen Berechtigungen zum Ändern dieser besitzen.");
-            throw new RuntimeException(e);
+            throw new RuntimeException(exception);
         }
     }
 
