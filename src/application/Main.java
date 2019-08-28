@@ -12,6 +12,7 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import model.PasswordManager;
 import model.Tag;
+import util.BadPasswordException;
 import util.CsvException;
 import util.WindowFactory;
 import view.MainWindowViewController;
@@ -112,13 +113,16 @@ public class Main extends Application {
                 ret = false;
                 pmController.getLoadSaveController().load(path);
                 ret = true;
-            } catch (CsvException e) {
+            } catch (CsvException csvException) {
                 WindowFactory.showError("Die Datei ist vermutlich beschädigt.",
-                                        "Aufgrund von internen Formatfehlern konnte die Datei nicht geladen werden.\n\nNähere Informationen:\n" + e
-                                                .getMessage());
-            } catch (IOException e) {
+                        "Aufgrund von internen Formatfehlern konnte die Datei nicht geladen werden.\n\nNähere Informationen:\n" + csvException
+                                .getMessage());
+            } catch (BadPasswordException badPasswordException) {
+                WindowFactory.showError("Falsches Passwort",
+                        "Die Datei kann nicht sinnvoll entschlüsselt werden. Geben Sie das Passwort erneut ein.");
+            } catch (IOException ioException) {
                 WindowFactory.showError("Datei konnte nicht geöffnet werden.",
-                                        "Aufgrund eines unspezifizierten Fehlers ist das Öffnen der Datei fehlgeschlagen.\n\nNähere Informationen:\n" + e
+                                        "Aufgrund eines unspezifizierten Fehlers ist das Öffnen der Datei fehlgeschlagen.\n\nNähere Informationen:\n" + ioException
                                                 .getLocalizedMessage());
             }
 

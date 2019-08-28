@@ -4,6 +4,7 @@ import model.Entry;
 import model.PasswordManager;
 import model.Tag;
 import org.apache.commons.csv.CSVParser;
+import util.BadPasswordException;
 import util.Tuple;
 import util.WindowFactory;
 
@@ -50,7 +51,7 @@ public class LoadSaveController extends SerializationController {
      *
      * @param path The file to load from
      */
-    public void load(Path path) throws IOException {
+    public void load(Path path) throws IOException, BadPasswordException {
         try {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, passwordManager.getMasterPasswordKey());
@@ -67,10 +68,16 @@ public class LoadSaveController extends SerializationController {
                      InputStreamReader isr = new InputStreamReader(cis);
                      BufferedReader bur = new BufferedReader(isr)) {
 
-                    String magicLine = bur.readLine();
+                    String magicLine;
+                    try {
+                        magicLine = bur.readLine();
+                    } catch( IOException ioc ) {
+                        ioc.printStackTrace();
+                        throw new BadPasswordException(ioc.getMessage());
+                    }
 
                     if (!"siroD".equals(magicLine))
-                        throw new IOException("Mismatch in Magic Bytes, is the password correct? Read: " + magicLine);
+                        throw new BadPasswordException("Mismatch in Magic Bytes, is the password correct? Read: " + magicLine);
 
                     lastModified = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_TIME_FORMAT);
                     String validUntilLine = bur.readLine();
