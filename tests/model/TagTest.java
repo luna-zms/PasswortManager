@@ -1,7 +1,11 @@
 package model;
 import static org.junit.Assert.*;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.theories.suppliers.TestedOn;
@@ -46,28 +50,49 @@ public class TagTest {
 		subTags.add(tagCc);
 	}
 	/**
-	 * test mergeWith() 
-	 * tests by adding two Maps and two Tags
+	 * test mergeWith() by adding two rootTags with subtags
+	 * tests if these two rootTags can be keerect merged or not
 	 */
+
 	@Test
 	public void testMergeWith() throws Exception{
-		Tag rootOne = new Tag();
-		final Tag rootTwo = new Tag();
-
+		Tag rootOne = new Tag("tagOne");
+		Tag rootTwo = new Tag("tagTwo");
+		tagAa =new Tag("TagAa");
+		tagAb =new Tag("TagAb");
+	    tagAc =new Tag("TagAc");
+	    tagBa =new Tag("TagBa");
+	    tagBb =new Tag("TagBb");
+		tagBc =new Tag("TagBc");
+		subTags = rootOne.getSubTags();
+		subTags.add(tagAa);
+		subTags.add(tagAb);
+		subTags.add(tagAc);
+		subTags = rootTwo.getSubTags();
+		subTags.add(tagAa);
+		subTags.add(tagBa);
+		subTags.add(tagBb);
+		subTags.add(tagBc);
+			
 		Map<Tag, String> mapOne = rootOne.createPathMap();
+		mapOne.replaceAll((Tag tag, String str) -> Arrays.stream(str.split("\\\\")).skip(1).collect(Collectors.joining("")));
 		Map<Tag, String> mapTwo = rootTwo.createPathMap();
-		
+		mapTwo.replaceAll((Tag tag, String str) -> Arrays.stream(str.split("\\\\")).skip(1).collect(Collectors.joining("")));
+	
 		rootOne.mergeWith(rootTwo);
 		
-		Map<Tag, String> mapCombined = rootOne.createPathMap();
+		Map<Tag, String> mapCombinedOne = rootOne.createPathMap();
+		mapCombinedOne.replaceAll((Tag tag, String str) -> Arrays.stream(str.split("\\\\")).skip(1).collect(Collectors.joining("")));
 		
 		for (String path : mapOne.values()) {
-			assertTrue(mapCombined.containsValue(path));
+			assertTrue(mapCombinedOne.containsValue(path));
 		}
 		
-		for (String path : mapTwo.values()) {
-			assertTrue(mapCombined.containsValue(path));
-		}
+		for (Map.Entry<Tag, String> entry : mapTwo.entrySet()) {
+			if (entry.getKey() != rootTwo) {
+				assertTrue(mapCombinedOne.containsValue(entry.getValue()));
+			}
+		}  
 	}
 	/**
 	 * test getSubTagByName()
@@ -96,7 +121,7 @@ public class TagTest {
 		
 	}
 	/**
-	 * test createPathMap
+	 * test createPathMap()
 	 * tests whether the Path in correspond map is true or not
 	 */
 	@Test

@@ -108,13 +108,16 @@ public class GeneratePasswordViewController extends GridPane {
                     try {
                         long pointI = Integer.parseInt(newValue);
                         lengthSpinner.getEditor().setText(String.valueOf(pointI));
+                        lengthSpinner.increment(0);
                     } catch (Exception e) {
                     	lengthSpinner.getEditor().clear();
                     	lengthSpinner.getEditor().setText(getNumber(oldValue));
+                    	lengthSpinner.increment(0);
                     }
                 } else {
                 	lengthSpinner.getEditor().clear();
                 	lengthSpinner.getEditor().setText(getNumber(oldValue));
+                	lengthSpinner.increment(0);
                 }
             }
         });
