@@ -285,7 +285,7 @@ public class TagTree extends TreeView<Tag> {
             });
 
             wtf.setTextFormatter(new TextFormatter<>(change -> {
-                String text = change.getControlNewText();
+                String text = change.getText();
                 if (text.contains("\\") || text.contains(";"))
                     change.setText(text.replace("\\", "﹨").replace(";", ";"));
                 return change;
