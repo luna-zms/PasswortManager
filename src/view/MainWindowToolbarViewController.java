@@ -86,43 +86,60 @@ public class MainWindowToolbarViewController extends GridPane {
     }
 
     public void initialize() {
-        Image addEntryImage = new Image(getClass().getResourceAsStream("/view/resources/add_entry_toolbar_icon.png"));
+        Image addEntryImage;
+        Image saveDatabaseImage;
+        Image openDatabaseImage;
+        Image saveAsDatabaseImage;
+        Image setMasterPwImage;
+        Image importImage;
+        Image exportImage;
+        Image generatePasswordImage;
+        Image searchButtonImage;
+        Image filterButtonImage;
+        try {
+            addEntryImage = new Image(getClass().getResourceAsStream("/view/resources/add_entry_toolbar_icon.png"));
+            saveDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_toolbar_icon.png"));
+            openDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/open_toolbar_icon.png"));
+            saveAsDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_as_toolbar_icon.png"));
+            setMasterPwImage = new Image(getClass().getResourceAsStream("/view/resources/change_master_password_toolbar_icon.png"));
+            importImage = new Image(getClass().getResourceAsStream("/view/resources/import_toolbar_icon.png"));
+            exportImage = new Image(getClass().getResourceAsStream("/view/resources/export_toolbar_icon.png"));
+            generatePasswordImage = new Image(getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon.png"));
+            searchButtonImage = new Image(getClass().getResourceAsStream("/view/resources/search_icon_15px.png"));
+            filterButtonImage = new Image(getClass().getResourceAsStream("/view/resources/filter_icon_20px.png"));
+        } catch( Exception e ) {
+            errorMessage("Kritischer Fehler", "Beim Laden der Programmdaten ist ein Fehler aufgetreten! Vergewissern Sie sich, dass Sie das Programm korrekt installiert haben! Das Programm schließt sich nach dieser Meldung.");
+            System.exit(1);
+            return;
+        }
+
         addEntryToolbar.setGraphic(new ImageView(addEntryImage));
         initializeActionsAddEntry();
 
-        Image saveDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_toolbar_icon.png"));
         saveDatabaseToolbar.setGraphic(new ImageView(saveDatabaseImage));
         initializeActionsSaveDatabase();
 
-        Image openDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/open_toolbar_icon.png"));
         openDatabaseToolbar.setGraphic(new ImageView(openDatabaseImage));
         initializeActionsOpenDatabase();
 
-        Image saveAsDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_as_toolbar_icon.png"));
         saveAsDatabaseToolbar.setGraphic(new ImageView(saveAsDatabaseImage));
         initializeActionsSaveAsDatabase();
 
-        Image setMasterPwImage = new Image(getClass().getResourceAsStream("/view/resources/change_master_password_toolbar_icon.png"));
         setMasterPasswordToolbar.setGraphic(new ImageView(setMasterPwImage));
         initializeActionsSetMasterPassword();
 
-        Image importImage = new Image(getClass().getResourceAsStream("/view/resources/import_toolbar_icon.png"));
         importDatabaseToolbar.setGraphic(new ImageView(importImage));
         initializeActionsImportDatabase();
 
-        Image exportImage = new Image(getClass().getResourceAsStream("/view/resources/export_toolbar_icon.png"));
         exportDatabaseToolbar.setGraphic(new ImageView(exportImage));
         initializeActionsExportDatabase();
 
-        Image generatePasswordImage = new Image(getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon.png"));
         generatePasswordToolbar.setGraphic(new ImageView(generatePasswordImage));
         initializeActionsGeneratePassword();
 
-        Image searchButtonImage = new Image(getClass().getResourceAsStream("/view/resources/search_icon_15px.png"));
         searchButtonSearchbar.setGraphic(new ImageView(searchButtonImage));
         initializeActionsSearchButton();
 
-        Image filterButtonImage = new Image(getClass().getResourceAsStream("/view/resources/filter_icon_20px.png"));
         selectedColumnsSearchbar.setGraphic(new ImageView(filterButtonImage));
     }
 
@@ -244,6 +261,7 @@ public class MainWindowToolbarViewController extends GridPane {
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
             }
             if( onTreeViewRefresh != null ) onTreeViewRefresh.run();
+            // if( on)
 
             WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich importiert!")
                     .showAndWait();

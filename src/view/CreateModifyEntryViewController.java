@@ -253,9 +253,14 @@ public class CreateModifyEntryViewController extends AnchorPane {
         assert okButton != null : "fx:id=\"okButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
 
-        Image generatePasswordImage = new Image(
-                getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon_small.png"));
-        generatePasswordButton.setGraphic(new ImageView(generatePasswordImage));
+        try {
+            Image generatePasswordImage = new Image(
+                    getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon_small.png"));
+            generatePasswordButton.setGraphic(new ImageView(generatePasswordImage));
+        } catch( Exception e ) {
+            WindowFactory.showError("Kritischer Fehler", "Beim Laden der Programmdaten ist ein Fehler aufgetreten! Vergewissern Sie sich, dass Sie das Programm korrekt installiert haben! Das Programm schließt sich nach dieser Meldung.");
+            System.exit(1);
+        }
     }
 
     public void setOldEntry(Entry entry) {

@@ -49,17 +49,22 @@ public class TagTree extends TreeView<Tag> {
         outer.setCenter(this);
         outer.setBottom(inner);
 
-        ImageView addCategoryImage = new ImageView(new Image(
-            getClass().getResourceAsStream("/view/resources/add_category_toolbar_icon.png")));
-        addCategoryImage.setFitHeight(24);
-        addCategoryImage.setFitWidth(24);
-        add.setGraphic(addCategoryImage);
+        try {
+            ImageView addCategoryImage = new ImageView(new Image(
+                    getClass().getResourceAsStream("/view/resources/add_category_toolbar_icon.png")));
+            addCategoryImage.setFitHeight(24);
+            addCategoryImage.setFitWidth(24);
+            add.setGraphic(addCategoryImage);
 
-        ImageView deleteCategoryImage = new ImageView(new Image(
-            getClass().getResourceAsStream("/view/resources/delete_category_icon.png")));
-        deleteCategoryImage.setFitHeight(24);
-        deleteCategoryImage.setFitWidth(24);
-        remove.setGraphic(deleteCategoryImage);
+            ImageView deleteCategoryImage = new ImageView(new Image(
+                    getClass().getResourceAsStream("/view/resources/delete_category_icon.png")));
+            deleteCategoryImage.setFitHeight(24);
+            deleteCategoryImage.setFitWidth(24);
+            remove.setGraphic(deleteCategoryImage);
+        } catch( Exception e ) {
+            WindowFactory.showError("Kritischer Fehler", "Beim Laden der Programmdaten ist ein Fehler aufgetreten! Vergewissern Sie sich, dass Sie das Programm korrekt installiert haben! Das Programm schließt sich nach dieser Meldung.");
+            System.exit(1);
+        }
 
         remove.setOnAction(event -> deleteSelected());
         add.setOnAction(event -> createBelowSelected());
