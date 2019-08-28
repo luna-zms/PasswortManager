@@ -74,11 +74,29 @@ public class EntryListViewController extends TableView<Entry> {
 
         setContextMenu(buildContextMenu());
 
-        // Set cell factory to adjust text color
+        // Highlight expired tags
         columns.forEach(col -> col.setCellFactory(innerCol -> new EntryListCell()));
+        getSelectionModel().selectedItemProperty().addListener((obs, oldEntry, newEntry) -> {
+            if (newEntry != null && newEntry.getValidUntil() != null &&
+                newEntry.getValidUntil().isBefore(LocalDate.now())) {
+                setStyle("-fx-selection-bar: red;");
+            } else {
+                setStyle("");
+            }
+        });
 
         setRowFactory(table -> {
             TableRow<Entry> row = new TableRow<>();
+
+            // Cursed bind
+            row.styleProperty().bind(BindingUtils.makeBinding(row.itemProperty(), entry -> {
+                if (getSelectionModel().getSelectedItem() != entry && entry.getValidUntil() != null &&
+                    entry.getValidUntil().isBefore(LocalDate.now())) {
+                    return "-fx-background-color: darkred";
+                } else {
+                    return "";
+                }
+            }, "", getSelectionModel().selectedItemProperty()));
 
             // Clear selection on background click
             row.setOnMouseClicked(event -> {
@@ -291,7 +309,7 @@ public class EntryListViewController extends TableView<Entry> {
             }
 
             if (entry != null && entry.getValidUntil() != null && entry.getValidUntil().isBefore(LocalDate.now())) {
-                setTextFill(Color.RED);
+                setTextFill(Color.WHITE);
             }
         }
     }
