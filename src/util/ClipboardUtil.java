@@ -6,8 +6,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
-public class ClipboardUtils {
-    private ClipboardUtils() {
+public class ClipboardUtil {
+    private ClipboardUtil() {
     }
 
     public static void copyToClipboard(String str) {

@@ -23,7 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Entry;
 import util.CsvException;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 public class MainWindowToolbarViewController extends GridPane {
 

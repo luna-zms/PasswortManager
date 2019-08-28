@@ -6,7 +6,7 @@ import model.Tag;
 import org.apache.commons.csv.CSVParser;
 import util.BadPasswordException;
 import util.Tuple;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -129,7 +129,6 @@ public class LoadSaveController extends SerializationController {
                 passwordManager.setValidUntil(validUntil);
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
-            WindowFactory.showError("Interner Fehler beim Laden", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht geladen werden:\n\n" + e.getLocalizedMessage());
             throw new RuntimeException(e);
         }
     }

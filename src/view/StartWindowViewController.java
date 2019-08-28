@@ -14,7 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 public class StartWindowViewController extends GridPane {
 

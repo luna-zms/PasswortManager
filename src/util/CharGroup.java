@@ -18,15 +18,15 @@ public enum CharGroup {
     public char[] getChars() { return chars; }
     public int getBonusFactor() { return bonusFactor; }
 
-    public static CharGroup getCharGroupOf(char c) {
+    public static CharGroup getCharGroupOf(char cIsTooShort) {
         for (CharGroup charGroup : CharGroup.values()) {
-            if (new String(charGroup.getChars()).indexOf(c) != -1) return charGroup;
+            if (new String(charGroup.getChars()).indexOf(cIsTooShort) != -1) return charGroup;
         }
 
         return OTHER;
     }
 
-    public static int getIndexOfCharInGroup(char c) {
-        return new String(getCharGroupOf(c).getChars()).indexOf(c);
+    public static int getIndexOfCharInGroup(char cIsTooShort) {
+        return new String(getCharGroupOf(cIsTooShort).getChars()).indexOf(cIsTooShort);
     }
 }

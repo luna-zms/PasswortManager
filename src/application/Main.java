@@ -2,7 +2,6 @@ package application;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -14,7 +13,7 @@ import model.PasswordManager;
 import model.Tag;
 import util.BadPasswordException;
 import util.CsvException;
-import util.WindowFactory;
+import factory.WindowFactory;
 import view.MainWindowViewController;
 import view.SetMasterPasswordViewController;
 import view.StartWindowViewController;
@@ -124,6 +123,9 @@ public class Main extends Application {
                 WindowFactory.showError("Datei konnte nicht geöffnet werden.",
                                         "Aufgrund eines unspezifizierten Fehlers ist das Öffnen der Datei fehlgeschlagen.\n\nNähere Informationen:\n" + ioException
                                                 .getLocalizedMessage());
+            } catch (RuntimeException runtimeException) {
+                WindowFactory.showError("Interner Fehler beim Laden", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht geladen werden:\n\n"
+                        + runtimeException.getLocalizedMessage());
             }
 
             checkMasterPasswordExpiration();

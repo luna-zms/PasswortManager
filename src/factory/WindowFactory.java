@@ -1,4 +1,4 @@
-package util;
+package factory;
 
 import application.Main;
 import javafx.scene.Parent;

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import controller.PMController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,13 +11,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import model.Entry;
 import model.Tag;
 
-import static util.BindingUtils.makeBinding;
+import static util.BindingUtil.makeBinding;
 
 public class EntryPreviewViewController extends HBox {
     private ObjectProperty<Entry> entry = new SimpleObjectProperty<>();
