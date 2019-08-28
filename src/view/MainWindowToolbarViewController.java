@@ -212,22 +212,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsOpenDatabase() {
         openDatabaseToolbar.setOnAction(event -> {
-            Stage dialog = WindowFactory.createStage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Öffne Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
-            fileChooser.getExtensionFilters().add(extFilter);
-            fileChooser.setSelectedExtensionFilter(extFilter);
-            File file = fileChooser.showOpenDialog(dialog);
-
-            if (file == null) return;
-            if (!file.exists()) {
-                errorMessage("Fehler beim Öffnen", "Die gewählte Datei existiert nicht!");
-                return;
-            }
-
-            openDatabaseFileAction.accept(file.toPath());
+            openDatabaseFileAction.accept(pmController.getSavePath());
         });
     }
 
