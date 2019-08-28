@@ -96,7 +96,7 @@ public class EntryListViewController extends TableView<Entry> {
                 else
                     createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
 
-                WindowFactory.showDialog("Eintrag bearbeiten", createModifyEntryViewController);
+                WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
 
                 // TODO: Maybe update displayed entry if necessary
             }
