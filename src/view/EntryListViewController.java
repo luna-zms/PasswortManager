@@ -3,6 +3,7 @@ package view;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import model.Entry;
 import model.Tag;
 import util.BindingUtils;
@@ -45,7 +47,7 @@ public class EntryListViewController extends TableView<Entry> {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         passwordColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper("*****"));
-        urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
+        urlColumn.setCellValueFactory(new PropertyValueFactory<>("urlString"));
         // Use getter with specific string formatting
         validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntilString"));
 
@@ -72,9 +74,31 @@ public class EntryListViewController extends TableView<Entry> {
 
         setContextMenu(buildContextMenu());
 
-        // Clear selection on background click
+        // Highlight expired tags
+        columns.forEach(col -> col.setCellFactory(innerCol -> new EntryListCell()));
+        getSelectionModel().selectedItemProperty().addListener((obs, oldEntry, newEntry) -> {
+            if (newEntry != null && newEntry.getValidUntil() != null &&
+                newEntry.getValidUntil().isBefore(LocalDate.now())) {
+                setStyle("-fx-selection-bar: red;");
+            } else {
+                setStyle("");
+            }
+        });
+
         setRowFactory(table -> {
             TableRow<Entry> row = new TableRow<>();
+
+            // Cursed bind
+            row.styleProperty().bind(BindingUtils.makeBinding(row.itemProperty(), entry -> {
+                if (getSelectionModel().getSelectedItem() != entry && entry.getValidUntil() != null &&
+                    entry.getValidUntil().isBefore(LocalDate.now())) {
+                    return "-fx-background-color: darkred";
+                } else {
+                    return "";
+                }
+            }, "", getSelectionModel().selectedItemProperty()));
+
+            // Clear selection on background click
             row.setOnMouseClicked(event -> {
                 // User clicked background => item null => clear selection
                 if (row.getItem() == null) getSelectionModel().clearSelection();
@@ -87,7 +111,7 @@ public class EntryListViewController extends TableView<Entry> {
         entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
         tag.addListener((obs, oldTag, newTag) -> applyFilter());
 
-        this.setOnMouseClicked(event -> {
+        setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
                 modifyEntry(tag);
             }
@@ -105,9 +129,11 @@ public class EntryListViewController extends TableView<Entry> {
     private void modifyEntry(ObjectProperty<Tag> tag) {
         CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
         Entry entry = getSelectionModel().getSelectedItem();
-        if (entry != null) createModifyEntryViewController.setOldEntry(entry);
-        else
+        if (entry != null) {
+            createModifyEntryViewController.setOldEntry(entry);
+        } else {
             createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
+        }
 
         WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
     }
@@ -200,8 +226,7 @@ public class EntryListViewController extends TableView<Entry> {
         // For some reason, IntelliJ wants to break this one into multiple lines but not the others
         // ¯\_(ツ)_/¯
         menuItems.add(createMenuItem("URL kopieren",
-                                     event -> ClipboardUtils.copyToClipboard(entry,
-                                                                             Entry::getUrlString),
+                                     event -> ClipboardUtils.copyToClipboard(entry, Entry::getUrlString),
                                      urlIsNull,
                                      new KeyCharacterCombination("U",
                                                                  KeyCombination.CONTROL_DOWN,
@@ -234,12 +259,8 @@ public class EntryListViewController extends TableView<Entry> {
 
     private MenuItem createAddEntry() {
         return createMenuItem("Eintrag erstellen",
-                              event -> {
-                                  CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-
-                                  WindowFactory.showDialog("Eintrag erstellen",
-                                                           createModifyEntryViewController);
-                              },
+                              event -> WindowFactory.showDialog("Eintrag erstellen",
+                                                                createCreateModifyEntryViewController()),
                               new ReadOnlyBooleanWrapper(false),
                               new KeyCharacterCombination("I", KeyCombination.CONTROL_DOWN));
     }
@@ -281,5 +302,25 @@ public class EntryListViewController extends TableView<Entry> {
         createModifyEntryViewController.init();
 
         return createModifyEntryViewController;
+    }
+
+    private class EntryListCell extends TableCell<Entry, String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            TableRow<Entry> row = (TableRow<Entry>) getTableRow();
+            Entry entry = row.getItem();
+
+            super.updateItem(item, empty);
+
+            if (empty || item == null || item.isEmpty()) {
+                setText(null);
+            } else {
+                setText(item);
+            }
+
+            if (entry != null && entry.getValidUntil() != null && entry.getValidUntil().isBefore(LocalDate.now())) {
+                setTextFill(Color.WHITE);
+            }
+        }
     }
 }

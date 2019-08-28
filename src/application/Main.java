@@ -2,10 +2,12 @@ package application;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import controller.*;
 import javafx.application.Application;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import model.PasswordManager;
 import model.Tag;
@@ -19,7 +21,6 @@ import view.StartWindowViewController;
 public class Main extends Application {
     private MainWindowViewController mainWindowViewController;
     private PMController pmController;
-    private Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -43,15 +44,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-
         try {
             mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
             primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));
             primaryStage.show();
 
-            showOpenDialog(null);
+            if (!showOpenDialog(null)) primaryStage.close();
         } catch (Exception e) {
             WindowFactory.showError("Kritischer Fehler",
                                     "Aufgrund eines kritischen Fehlers muss die Anwendung beendet werden.\n\nNähere Informationen:\n" + e
@@ -59,7 +58,7 @@ public class Main extends Application {
         }
     }
 
-    public void showOpenDialog(Path initialPath) {
+    private boolean showOpenDialog(Path initialPath) {
         boolean successfulInit;
         do {
             StartWindowViewController startWindowViewController = new StartWindowViewController();
@@ -69,12 +68,13 @@ public class Main extends Application {
 
             Optional<Boolean> tmp = initApplication(startWindowViewController);
             if (!tmp.isPresent()) {
-                primaryStage.close();
-                return;
+                return false;
             } else {
                 successfulInit = tmp.get();
             }
         } while (!successfulInit);
+
+        return true;
     }
 
     private Optional<Boolean> initApplication(StartWindowViewController startWindowViewController) {
@@ -120,10 +120,28 @@ public class Main extends Application {
                                         "Aufgrund eines unspezifizierten Fehlers ist das Öffnen der Datei fehlgeschlagen.\n\nNähere Informationen:\n" + e
                                                 .getLocalizedMessage());
             }
+
+            checkMasterPasswordExpiration();
         }
 
         if (ret) mainWindowViewController.init(this::showOpenDialog);
         return Optional.of(ret);
+    }
+
+    private void checkMasterPasswordExpiration() {
+        if (!pmController.getPasswordManager().getValidUntil().isBefore(LocalDateTime.now())) {
+            return;
+        }
+
+        Alert alert = WindowFactory.createAlert(Alert.AlertType.INFORMATION,
+                                                "Das Master-Passwort für diese Datenbank ist abgelaufen.");
+        alert.setHeaderText("Master-Passwort abgelaufen");
+        alert.showAndWait();
+
+        SetMasterPasswordViewController setMasterPasswordViewController = new SetMasterPasswordViewController();
+        setMasterPasswordViewController.setPmController(pmController);
+        setMasterPasswordViewController.setMode(true);
+        WindowFactory.showDialog("Master-Passwort ändern", setMasterPasswordViewController);
     }
 
     private Tag getRootTagFromPath(Path path) {
