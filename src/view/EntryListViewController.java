@@ -94,13 +94,15 @@ public class EntryListViewController extends TableView<Entry> {
         entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
         tag.addListener((obs, oldTag, newTag) -> applyFilter());
 
-        this.setOnMouseClicked(event -> {
+        setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
                 CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
                 Entry entry = getSelectionModel().getSelectedItem();
-                if (entry != null) createModifyEntryViewController.setOldEntry(entry);
-                else
+                if (entry != null) {
+                    createModifyEntryViewController.setOldEntry(entry);
+                } else {
                     createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
+                }
 
                 WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
 
@@ -196,8 +198,7 @@ public class EntryListViewController extends TableView<Entry> {
         // For some reason, IntelliJ wants to break this one into multiple lines but not the others
         // ¯\_(ツ)_/¯
         menuItems.add(createMenuItem("URL kopieren",
-                                     event -> ClipboardUtils.copyToClipboard(entry,
-                                                                             Entry::getUrlString),
+                                     event -> ClipboardUtils.copyToClipboard(entry, Entry::getUrlString),
                                      urlIsNull,
                                      new KeyCharacterCombination("U",
                                                                  KeyCombination.CONTROL_DOWN,
@@ -230,12 +231,8 @@ public class EntryListViewController extends TableView<Entry> {
 
     private MenuItem createAddEntry() {
         return createMenuItem("Eintrag erstellen",
-                              event -> {
-                                  CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-
-                                  WindowFactory.showDialog("Eintrag erstellen",
-                                                           createModifyEntryViewController);
-                              },
+                              event -> WindowFactory.showDialog("Eintrag erstellen",
+                                                                createCreateModifyEntryViewController()),
                               new ReadOnlyBooleanWrapper(false),
                               new KeyCharacterCombination("I", KeyCombination.CONTROL_DOWN));
     }
@@ -293,8 +290,7 @@ public class EntryListViewController extends TableView<Entry> {
                 setText(item);
             }
 
-            if (entry != null && entry.getValidUntil() != null &&
-                entry.getValidUntil().isBefore(LocalDate.now())) {
+            if (entry != null && entry.getValidUntil() != null && entry.getValidUntil().isBefore(LocalDate.now())) {
                 setTextFill(Color.RED);
             }
         }
