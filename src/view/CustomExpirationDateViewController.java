@@ -99,10 +99,10 @@ public class CustomExpirationDateViewController extends GridPane {
             String[] array = value.split("");
             for (String tab : array) {
                 try {
-                    System.out.println(tab);
+                    //System.out.println(tab);
                     n = n.concat(String.valueOf(Integer.parseInt(String.valueOf(tab))));
                 } catch (Exception ex) {
-                    System.out.println("not nomber");
+                    //System.out.println("not nomber");
                 }
             }
             return n;
