@@ -285,7 +285,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsSearchButton() {
         searchButtonSearchbar.setOnAction(event -> {
-            String searchQuery = searchFieldSearchbar.getText();
+            String searchQuery = searchFieldSearchbar.getText().toLowerCase();
 
             if (
                     selectedColumnsSearchbar
@@ -309,6 +309,8 @@ public class MainWindowToolbarViewController extends GridPane {
                         expiredUntil.isAfter(validUntil) || expiredUntil.isEqual(validUntil)
                 ))
                 	return false;
+                else if (expiredUntil != null && validUntil == null)
+                    return false; // Don't show dates without expiration date when expiredUntil is selected
 
                 List<String> queryParts = Arrays.asList(searchQuery.split(" "));
                 List<String> notYetFound = new ArrayList<>(queryParts);
@@ -337,6 +339,8 @@ public class MainWindowToolbarViewController extends GridPane {
                             break;
                     }
                     if (value == null) continue;
+
+                    value = value.toLowerCase();
 
                     for (String queriedValue : queryParts) {
                         if (value.contains(queriedValue)) {
