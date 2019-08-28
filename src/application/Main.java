@@ -92,9 +92,13 @@ public class Main extends Application {
             WindowFactory.showDialog("Master-Passwort setzen", setMasterPasswordViewController);
 
             // User pressed cancel or closed window => go back to start
-            if (!setMasterPasswordViewController.getPasswordSet()) ret = false;
+            if (!setMasterPasswordViewController.getPasswordSet()) {
+                ret = false;
+            }
             // Root tag is null otherwise
-            else pmController.getPasswordManager().setRootTag(getRootTagFromPath(path));
+            else {
+                pmController.getPasswordManager().setRootTag(getRootTagFromPath(path));
+            }
         } else {
             pmController.setMasterPassword(startWindowViewController.getPassword());
 
