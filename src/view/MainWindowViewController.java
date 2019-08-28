@@ -36,6 +36,8 @@ public class MainWindowViewController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        setLeft(tagTree.createPaneWithButtons());
+        //System.out.println(this.getLeft());
     }
 
     private Tag getRootTag() {
