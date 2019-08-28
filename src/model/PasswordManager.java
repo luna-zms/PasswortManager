@@ -17,8 +17,8 @@ import javafx.collections.ObservableList;
 public class PasswordManager {
     private SecretKey masterPasswordKey;
 
-    private LocalDateTime lastModified;
-    private LocalDateTime validUntil;
+    private LocalDateTime lastModified = LocalDateTime.now();
+    private LocalDateTime validUntil = null;
 
     private Tag rootTag;
 
@@ -36,9 +36,6 @@ public class PasswordManager {
     public PasswordManager(SecretKey masterPasswordKey) {
         this.masterPasswordKey = masterPasswordKey;
         entries = FXCollections.observableArrayList();
-
-        lastModified = null;
-        validUntil = null;
     }
     /**
      * this method will merge this tag newrootTag with the list newEntries
