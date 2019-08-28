@@ -8,10 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import model.Entry;
 import model.SecurityQuestion;
@@ -70,6 +67,12 @@ public class CreateModifyEntryViewController extends AnchorPane {
     @FXML
     private Button cancelButton;
 
+    @FXML
+    private HBox ourLittleHbox;
+
+    @FXML
+    private GridPane entryGridPane;
+
     private Entry oldEntry = null;
 
     private PMController pmController = null;
@@ -85,13 +88,12 @@ public class CreateModifyEntryViewController extends AnchorPane {
             e.printStackTrace();
         }
 
-        getChildren().remove(tagTree);
-        BorderPane newNode = tagTree.createPaneWithButtons();
-        newNode.setLayoutX(520);
-        HBox.setHgrow(newNode, Priority.ALWAYS);
-        getChildren().add(newNode);
-        HBox.setMargin(newNode, new Insets(10,0,10,10));
-
+        ourLittleHbox.getChildren().remove(tagTree);
+        BorderPane tagTreePaneWithButtons = tagTree.createPaneWithButtons();
+        HBox.setHgrow(tagTreePaneWithButtons, Priority.ALWAYS);
+        ourLittleHbox.getChildren().add(tagTreePaneWithButtons);
+        HBox.setMargin(tagTreePaneWithButtons, new Insets(5, 0, 0, 0));
+        tagTreePaneWithButtons.setPrefWidth(200);
 
         repeatPassword.setPromptText("Passwort wiederholen");
         String errorTitle = "Fehler: Eintrag erstellen";
@@ -132,7 +134,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
             if (!passwordString.equals(repeatPasswordString)) {
                 errorMessage(errorTitle, "Passwörter sind nicht gleich",
-                             "Bitte geben sie zweimal das gleiche Passwort ein.");
+                        "Bitte geben sie zweimal das gleiche Passwort ein.");
                 return;
             }
 
@@ -145,7 +147,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 errorMessage(errorTitle, "Ungültige URL", "Tragen Sie bitte eine gültige URL ein oder " +
-                    "lassen Sie das Feld leer!");
+                        "lassen Sie das Feld leer!");
                 return;
             }
             newEntry.setValidUntil(validDatePicker.getExpirationDate());
@@ -162,9 +164,9 @@ public class CreateModifyEntryViewController extends AnchorPane {
             } else {
                 newEntry.setCreatedAt(oldEntry.getCreatedAt());
                 newEntry.setLastModified(oldEntry.getPassword().equals(newEntry.getPassword())
-                                         ?
-                                         oldEntry.getLastModified()
-                                         : LocalDateTime.now());
+                        ?
+                        oldEntry.getLastModified()
+                        : LocalDateTime.now());
                 pmController.getEntryController().editEntry(oldEntry, newEntry);
             }
 
@@ -190,6 +192,9 @@ public class CreateModifyEntryViewController extends AnchorPane {
                 passwordQualityBar.setQuality(PasswordQualityUtil.getNormalizedScore(newValue));
             }
         });
+
+        heightProperty().addListener((observable, oldHeight, newHeight) ->
+                tagTreePaneWithButtons.setMaxHeight(newHeight.doubleValue() - 60));
     }
 
     /**
@@ -247,7 +252,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'CreateModifyEntryView.fxml'.";
 
         Image generatePasswordImage = new Image(
-            getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon_small.png"));
+                getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon_small.png"));
         generatePasswordButton.setGraphic(new ImageView(generatePasswordImage));
     }
 
