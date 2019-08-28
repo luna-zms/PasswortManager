@@ -1,17 +1,17 @@
 package controller;
 
+import java.io.*;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
-
+import java.util.Base64;
+import java.util.Properties;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import java.util.Base64;
 
 import model.PasswordManager;
 
@@ -28,6 +28,10 @@ import model.PasswordManager;
  */
 public class PMController {
 
+    public static final File configFile = new File(System.getenv("HOME"), ".config/sopra-pwm/settings.properties");
+
+    static final byte[] INSECURE_SALT = "\0si\0ro\0D".getBytes();
+
     private TagController tagController;
 
     private PasswordManager passwordManager;
@@ -41,8 +45,6 @@ public class PMController {
     private EntryController entryController;
 
     private Path savePath;
-
-    static final byte[] INSECURE_SALT = "\0si\0ro\0D".getBytes();
 
     /**
      * Set a new master password. The master password is encrypted via a KDF and
@@ -91,8 +93,9 @@ public class PMController {
             throw new IllegalArgumentException("The master password may not be empty!");
         }
 
-        if (passwordManager.getMasterPasswordKey() == null)
+        if (passwordManager.getMasterPasswordKey() == null) {
             throw new IllegalStateException("The master password of passwordManager is not initialized!");
+        }
 
         String safePassword = Base64.getEncoder().encodeToString(password.getBytes());
         SecretKeyFactory skFactory;
@@ -166,5 +169,20 @@ public class PMController {
 
     public void setSavePath(Path savePath) {
         this.savePath = savePath;
+
+        Properties properties = new Properties();
+        properties.setProperty("savePath", savePath.toString());
+
+        // Create directory tree if it doesn't exist yet
+        configFile.getParentFile().mkdirs();
+        try (
+                FileOutputStream fos = new FileOutputStream(configFile);
+                OutputStreamWriter osw = new OutputStreamWriter(fos);
+                BufferedWriter writer = new BufferedWriter(osw)
+        ) {
+            properties.store(writer, "");
+        } catch (IOException e) {
+            // No need to handle this further as it's just a helpful addition and not needed for program operation
+        }
     }
 }

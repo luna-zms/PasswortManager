@@ -64,7 +64,7 @@ public class LoadSaveControllerTest {
     public void roundTripEmptyTest() throws IOException {
         passwordManager.setRootTag(new Tag("roundTripEmptyTest"));
 
-        roundTrip("roundTripEmptyTest");
+        roundTrip("roundTripEmptyTest.pwds");
 
         assertTrue(passwordManager.getEntries().isEmpty());
         assertTrue(tagEquals(new Tag("roundTripEmptyTest"), passwordManager.getRootTag()));
@@ -83,7 +83,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        roundTrip("roundTripOnlyRootTagAndOneEntry");
+        roundTrip("roundTripOnlyRootTagAndOneEntry.pwds");
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
@@ -105,7 +105,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        roundTrip("roundTripOnlyManyTagsAndOneEntry");
+        roundTrip("roundTripOnlyManyTagsAndOneEntry.pwds");
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
@@ -129,7 +129,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        Path testFile = Paths.get(tempDir.toString(), "testLoadWithExisting");
+        Path testFile = Paths.get(tempDir.toString(), "testLoadWithExisting.pwds");
 
         toTest.save(testFile);
 
@@ -161,7 +161,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        Path testFile = Paths.get(tempDir.toString(), "testLoadOverride");
+        Path testFile = Paths.get(tempDir.toString(), "testLoadOverride.pwds");
 
         toTest.save(testFile);
 

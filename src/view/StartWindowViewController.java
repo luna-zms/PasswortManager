@@ -1,9 +1,9 @@
 package view;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 import controller.PMController;
 import javafx.fxml.FXML;
@@ -46,6 +46,8 @@ public class StartWindowViewController extends GridPane {
 
             e.printStackTrace();
         }
+
+        loadPathFromProps();
 
         initFileChooser();
 
@@ -92,6 +94,20 @@ public class StartWindowViewController extends GridPane {
             stage.close();
         });
 
+    }
+
+    private void loadPathFromProps() {
+        try (FileInputStream fis = new FileInputStream(PMController.configFile);
+             InputStreamReader isr = new InputStreamReader(fis);
+             BufferedReader reader = new BufferedReader(isr)
+        ) {
+            Properties properties = new Properties();
+            properties.load(reader);
+
+            setPath(Paths.get(properties.getProperty("savePath")));
+        } catch (IOException e) {
+            // No need to do anything as it's just a convenience feature
+        }
     }
 
     private void initFileChooser() {

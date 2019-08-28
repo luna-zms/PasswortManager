@@ -84,7 +84,6 @@ public class EntryListViewController extends TableView<Entry> {
         });
 
         // Entry setting and filtering
-        setEntries(FXCollections.emptyObservableList());
         entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
         tag.addListener((obs, oldTag, newTag) -> applyFilter());
 
@@ -135,8 +134,9 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     private void applyFilter() {
-        // Always non-null as it's initialized to an empty list
         ObservableList<Entry> newEntries = entries.getValue();
+        if (newEntries == null) return;
+
         // Always non-null as it's initialized to the root tag
         Tag newTag = tag.getValue();
 
