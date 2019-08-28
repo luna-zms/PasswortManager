@@ -67,7 +67,7 @@
           </children>
       </GridPane>
       <Pane prefWidth="150.0" HBox.hgrow="ALWAYS" />
-        <Label minWidth="30" text="Tags:">
+        <Label minWidth="50" text="Tags:">
          <HBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </HBox.margin>
