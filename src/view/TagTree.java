@@ -1,5 +1,8 @@
 package view;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import controller.PMController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -9,9 +12,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import model.Tag;
 import util.WindowFactory;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
@@ -46,14 +46,14 @@ public class TagTree extends TreeView<Tag> {
     }
 
     private void deleteItem(TreeItem<Tag> item) {
-        if (item == null)
-            return;
+        if (item == null) return;
 
         TreeItem<Tag> parent = item.getParent();
 
         if (parent != null) {  // Cannot delete root node
-            if (item.getValue() != null)
+            if (item.getValue() != null) {
                 pmController.getTagController().removeTag(parent.getValue(), item.getValue());
+            }
             //parent.getChildren().remove(item);
         }
     }
@@ -119,20 +119,18 @@ public class TagTree extends TreeView<Tag> {
         }
 
         void setCheckedIfAny(List<Tag> tags) {
-            if (tags.contains(getValue()))
-                checked = true;
+            if (tags.contains(getValue())) checked = true;
 
             getChildren().forEach(treeItem -> ((TagTreeItem) treeItem).setCheckedIfAny(tags));
         }
 
         List<Tag> getSelectedSubTags() {
-            List<Tag> selectedSubItems = getChildren()
-                    .stream()
-                    .flatMap(treeItem -> ((TagTreeItem) treeItem).getSelectedSubTags().stream())
-                    .collect(Collectors.toList());
+            List<Tag> selectedSubItems = getChildren().stream()
+                                                      .flatMap(treeItem -> ((TagTreeItem) treeItem).getSelectedSubTags()
+                                                                                                   .stream())
+                                                      .collect(Collectors.toList());
 
-            if (isChecked())
-                selectedSubItems.add(getValue());
+            if (isChecked()) selectedSubItems.add(getValue());
 
             return selectedSubItems;
         }
@@ -144,12 +142,14 @@ public class TagTree extends TreeView<Tag> {
                 outer:
                 for (Tag added : change.getAddedSubList()) {
                     for (TreeItem<Tag> item : getChildren()) {
-                        if (item.getValue().getName().equals(added.getName()))
-                            continue outer;
+                        if (item.getValue().getName().equals(added.getName())) continue outer;
                     }
                     getChildren().add(new TagTreeItem(added));
                 }
-                getChildren().removeAll(getChildren().stream().filter(child -> change.getRemoved().contains(child.getValue())).collect(Collectors.toList()));
+                getChildren().removeAll(getChildren().stream()
+                                                     .filter(child -> change.getRemoved()
+                                                                            .contains(child.getValue()))
+                                                     .collect(Collectors.toList()));
             }
         }
     }
@@ -168,12 +168,10 @@ public class TagTree extends TreeView<Tag> {
         private TextField createEditTextField() {
             TextField wtf = new TextField();
 
-            if (getItem() != null)
-                wtf.setText(getItem().getName());
+            if (getItem() != null) wtf.setText(getItem().getName());
 
             final ChangeListener<? super Boolean> focusListener = (observable, oldValue, newValue) -> {
-                if (!newValue)
-                    finishEdit(wtf.getText());
+                if (!newValue) finishEdit(wtf.getText());
             };
 
             wtf.focusedProperty().addListener(focusListener);
@@ -205,13 +203,11 @@ public class TagTree extends TreeView<Tag> {
         }
 
         private void finishEdit(String str) {
-            if (getTreeItem() == null)
-                return;
+            if (getTreeItem() == null) return;
 
             TreeItem<Tag> parentTag = getTreeItem().getParent();
 
-            if (parentTag == null)
-                return;
+            if (parentTag == null) return;
 
             if (str.isEmpty()) {
                 cancelEdit();
@@ -263,7 +259,9 @@ public class TagTree extends TreeView<Tag> {
                 if (tag == null || tag.getName().isEmpty()) {
                     setToTextField();
                 } else {
-                    if (checkbox != null) checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
+                    if (checkbox != null) {
+                        checkbox.setSelected(((TagTreeItem) getTreeItem()).isChecked());
+                    }
 
                     textProperty().bind(tag.nameProperty());
                     setGraphic(checkbox);
@@ -301,11 +299,14 @@ public class TagTree extends TreeView<Tag> {
         }
 
         @Override
-        public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+        public void changed(
+                ObservableValue<? extends Boolean> observableValue,
+                Boolean oldValue,
+                Boolean newValue
+        ) {
             TagTreeItem item = (TagTreeItem) getTreeItem();
 
-            if (item != null)
-                item.setChecked(newValue);
+            if (item != null) item.setChecked(newValue);
         }
     }
 }
