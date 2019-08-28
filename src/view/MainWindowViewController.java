@@ -37,10 +37,15 @@ public class MainWindowViewController extends BorderPane {
             e.printStackTrace();
         }
     }
+
     private Tag getRootTag() {
         return pmController.getPasswordManager().getRootTag();
     }
+
     public void init() {
+        // Init subcomponents
+        entryPreview.init(getRootTag());
+
         // Bind preview to update when table selection changes
         entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
         entryList.tagProperty()
@@ -69,7 +74,6 @@ public class MainWindowViewController extends BorderPane {
 
     private void setPmControllers() {
         entryList.setPmController(pmController);
-        entryPreview.setPmController(pmController);
         mainWindowToolbar.setPmController(pmController);
     }
 }

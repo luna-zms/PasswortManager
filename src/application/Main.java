@@ -1,24 +1,24 @@
 package application;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Optional;
 
 import controller.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import model.Entry;
 import model.PasswordManager;
 import model.Tag;
+import util.CsvException;
 import util.WindowFactory;
 import view.MainWindowViewController;
+import view.SetMasterPasswordViewController;
+import view.StartWindowViewController;
 
 
 public class Main extends Application {
     private PMController pmController;
+    private MainWindowViewController mainWindowViewController;
 
     public static void main(String[] args) {
         launch(args);
@@ -38,27 +38,80 @@ public class Main extends Application {
         pmController.setImportExportController(new ImportExportController(passwordManager));
 
         pmController.getTagController().setPMController(pmController);
-
-        // TODO: Replace with actually loading the data
-        try {
-            pmController.getImportExportController().load(
-                    Paths.get(getClass().getResource("/application/resources/test_entries.csv").toURI())
-            );
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void start(Stage primaryStage) {
         try {
-            MainWindowViewController mainWindowViewController = new MainWindowViewController();
+            mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
-            mainWindowViewController.init();
             primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));
             primaryStage.show();
+
+            boolean successfulInit;
+            do {
+                StartWindowViewController startWindowViewController = new StartWindowViewController();
+                WindowFactory.showDialog("Datenbank öffnen", startWindowViewController);
+
+                Optional<Boolean> tmp = initApplication(startWindowViewController);
+                if (!tmp.isPresent()) {
+                    primaryStage.close();
+                    return;
+                } else {
+                    successfulInit = tmp.get();
+                }
+            } while (!successfulInit);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Optional<Boolean> initApplication(StartWindowViewController startWindowViewController) {
+        // I felt dirty writing this tbh
+        if (startWindowViewController.getPath() == null) return Optional.empty();
+
+        boolean ret = true;
+        Path path = startWindowViewController.getPath();
+        if (startWindowViewController.create()) {
+            pmController.setSavePath(path);
+
+            SetMasterPasswordViewController setMasterPasswordViewController = new SetMasterPasswordViewController();
+            setMasterPasswordViewController.setPmController(pmController);
+            setMasterPasswordViewController.setMode(false);
+            WindowFactory.showDialog("Master-Passwort setzen", setMasterPasswordViewController);
+
+            // User pressed cancel or closed window => go back to start
+            if (!setMasterPasswordViewController.getPasswordSet()) ret = false;
+            // Root tag is null otherwise
+            else pmController.getPasswordManager().setRootTag(getRootTagFromPath(path));
+        } else {
+            pmController.setMasterPassword(startWindowViewController.getPassword());
+
+            try {
+                // Hack to not have to copy `ret = false` into each catch
+                ret = false;
+                pmController.getLoadSaveController().load(path);
+                ret = true;
+            } catch (CsvException e) {
+                WindowFactory.showError("Die Datei ist vermutlich beschädigt.",
+                                        "Aufgrund von internen Formatfehlern konnte die Datei nicht geladen werden.\n\nNähere Informationen:\n" + e
+                                                .getMessage());
+            } catch (IOException e) {
+                WindowFactory.showError("Datei konnte nicht geöffnet werden.",
+                                        "Aufgrund eines unspezifizierten Fehlers ist das Öffnen der Datei fehlgeschlagen.\n\nNähere Informationen:\n" + e
+                                                .getLocalizedMessage());
+            }
+        }
+
+        if (ret) mainWindowViewController.init();
+        return Optional.of(ret);
+    }
+
+    private Tag getRootTagFromPath(Path path) {
+        String fileNameWithExt = path.getFileName().toString();
+        String fileName = fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf(".pwds"));
+        System.out.println(fileName);
+
+        return new Tag(fileName);
     }
 }
