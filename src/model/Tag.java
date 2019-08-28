@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Callback;
 
 
 /**
@@ -17,10 +18,13 @@ import javafx.collections.ObservableList;
  */
 @SuppressWarnings("PMD.ShortClassName")
 public class Tag {
+    public static final Callback<Tag, Observable[]> observableProps = tag -> new Observable[]{
+            tag.nameProperty(),
+            tag.subTagsObservable()
+    };
+
     private StringProperty name = new SimpleStringProperty();
-    private ObservableList<Tag> subTags = FXCollections.observableArrayList(
-            tag -> new Observable[] { tag.nameProperty(), tag.subTagsObservable() }
-    );
+    private ObservableList<Tag> subTags = FXCollections.observableArrayList(observableProps);
 
     public Tag() {
         this("");
@@ -69,11 +73,11 @@ public class Tag {
         mergeWith(tag, unify);
         return unify;
     }
-    
+
     private void mergeWith(Tag tag, Map<Tag, Tag> unify) {
     	tag.subTags.forEach(subtag -> {
     		Tag existing = getSubTagByName(subtag.getName());
-    		
+
     		if (existing != null) {
     			existing.mergeWith(subtag, unify);
     			unify.put(subtag, existing);
