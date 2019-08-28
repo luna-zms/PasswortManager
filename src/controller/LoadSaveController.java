@@ -5,6 +5,7 @@ import model.PasswordManager;
 import model.Tag;
 import org.apache.commons.csv.CSVParser;
 import util.Tuple;
+import util.WindowFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -117,8 +118,8 @@ public class LoadSaveController extends SerializationController {
                 passwordManager.setValidUntil(validUntil);
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
-            e.printStackTrace();
-            System.exit(-1);
+            WindowFactory.showError("Interner Fehler beim Laden", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht geladen werden:\n\n" + e.getLocalizedMessage());
+            throw new RuntimeException(e);
         }
     }
 
@@ -221,16 +222,16 @@ public class LoadSaveController extends SerializationController {
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
             // The java installation does not support AES encryption for some reason
-            e.printStackTrace();
-            System.exit(-1);
+            WindowFactory.showError("Interner Fehler beim Laden", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht geladen werden:\n\n" + e.getLocalizedMessage());
+            throw new RuntimeException(e);
         } catch (InvalidKeyException e) {
             // Internal error: The master password key was invalid, meaning there was an error in the cdf!
-            e.printStackTrace();
-            System.exit(-1);
+            WindowFactory.showError("Interner Fehler beim Laden", "Es ist ein interner Fehler aufgetreten. Möglicherweise war das angegebene Masterpasswort ungültig.\n\n" + e.getLocalizedMessage());
+            throw new RuntimeException(e);
         } catch (IOException e) {
             // Error while accessing the file (path to file didn't exist, missing write permissions, etc)
-            e.printStackTrace();
-            throw e;
+            WindowFactory.showError("Dateifehler", "Die Datei konnte nicht geladen werden.\nÜberprüfen Sie, ob die Datei existiert und Sie die notwendigen Berechtigungen zum Ändern dieser besitzen.");
+            throw new RuntimeException(e);
         }
     }
 
