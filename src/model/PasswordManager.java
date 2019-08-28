@@ -50,7 +50,8 @@ public class PasswordManager {
     public void mergeWith(List<Entry> newEntries, Tag newRootTag) {
         entries.addAll(newEntries);
         Map<Tag, Tag> unify = rootTag.mergeWith(newRootTag);
-        
+        unify.put(newRootTag, rootTag);
+
         for (Entry entry : entries) {
         	ListIterator<Tag> iterator = entry.getTags().listIterator();
         	while (iterator.hasNext()) {

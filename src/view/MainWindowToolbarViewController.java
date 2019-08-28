@@ -71,6 +71,8 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private Consumer<Path> openDatabaseFileAction;
 
+    private Runnable onTreeViewRefresh;
+
     public MainWindowToolbarViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
         loader.setRoot(this);
@@ -184,6 +186,7 @@ public class MainWindowToolbarViewController extends GridPane {
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
             }
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Speichern erfolgreich!");
         });
     }
 
@@ -239,6 +242,9 @@ public class MainWindowToolbarViewController extends GridPane {
                         "Überprüfen Sie, ob die Datei das nötige Format erfüllt. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
             }
+            if( onTreeViewRefresh != null ) onTreeViewRefresh.run();
+
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich importiert!");
         });
     }
 
@@ -261,6 +267,8 @@ public class MainWindowToolbarViewController extends GridPane {
                         "aufgetreten. Starten Sie das Programm erneut, wenn weiterhin Fehler auftreten. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
             }
+
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich exportiert!");
         });
     }
 
@@ -351,5 +359,9 @@ public class MainWindowToolbarViewController extends GridPane {
 
     public void setOpenDatabaseFileAction(Consumer<Path> openDatabaseFileAction) {
         this.openDatabaseFileAction = openDatabaseFileAction;
+    }
+
+    public void setOnTreeViewRefresh(Runnable refreshAction) {
+        this.onTreeViewRefresh = refreshAction;
     }
 }

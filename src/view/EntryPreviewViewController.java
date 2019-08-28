@@ -55,9 +55,11 @@ public class EntryPreviewViewController extends HBox {
         username.textProperty().bind(makeBinding(entry, Entry::getUsername, ""));
         validUntil.textProperty().bind(makeBinding(entry, Entry::getValidUntilString, ""));
 
-        tagList.itemsProperty().bind(makeBinding(entry, e -> e.tagsObservable().sorted((t1, t2) ->
-                pathMap.getValue().get(t1).toLowerCase().compareTo(pathMap.getValue().get(t2).toLowerCase())
-        ), FXCollections.emptyObservableList()));
+        tagList.itemsProperty().bind(makeBinding(entry, e -> e.tagsObservable().sorted((t1, t2) -> {
+            if( pathMap.getValue().get(t1) != null && pathMap.getValue().get(t2) != null )
+                    return pathMap.getValue().get(t1).toLowerCase().compareTo(pathMap.getValue().get(t2).toLowerCase());
+            return 0;
+        }), FXCollections.emptyObservableList()));
     }
 
     public ObjectProperty<Entry> entryProperty() {
