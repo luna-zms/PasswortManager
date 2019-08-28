@@ -21,7 +21,6 @@ import view.StartWindowViewController;
 public class Main extends Application {
     private MainWindowViewController mainWindowViewController;
     private PMController pmController;
-    private Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -45,15 +44,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-
         try {
             mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
             primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));
             primaryStage.show();
 
-            showOpenDialog(null);
+            if (!showOpenDialog(null)) primaryStage.close();
         } catch (Exception e) {
             WindowFactory.showError("Kritischer Fehler",
                                     "Aufgrund eines kritischen Fehlers muss die Anwendung beendet werden.\n\nNähere Informationen:\n" + e
@@ -61,7 +58,7 @@ public class Main extends Application {
         }
     }
 
-    public void showOpenDialog(Path initialPath) {
+    private boolean showOpenDialog(Path initialPath) {
         boolean successfulInit;
         do {
             StartWindowViewController startWindowViewController = new StartWindowViewController();
@@ -71,12 +68,13 @@ public class Main extends Application {
 
             Optional<Boolean> tmp = initApplication(startWindowViewController);
             if (!tmp.isPresent()) {
-                primaryStage.close();
-                return;
+                return false;
             } else {
                 successfulInit = tmp.get();
             }
         } while (!successfulInit);
+
+        return true;
     }
 
     private Optional<Boolean> initApplication(StartWindowViewController startWindowViewController) {
