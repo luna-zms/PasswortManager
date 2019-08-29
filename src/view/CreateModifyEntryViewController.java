@@ -1,6 +1,7 @@
 package view;
 
 import controller.PMController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -245,17 +246,6 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
             return false;
         } else {
-            System.out.println(oldEntry);
-        	System.out.println(entryName.getText());
-        	System.out.println(userName.getText());
-        	System.out.println(password.getText());
-        	System.out.println(repeatPassword.getText());
-        	System.out.println(url.getText());
-        	System.out.println(securityQuestion.getText());
-        	System.out.println(answer.getText());
-        	System.out.println(notes.getText());
-        	System.out.println(tagTree.getCheckedTags());
-
             if (!entryName.getText().equals(oldEntry.getTitle())) return true;
             if (!userName.getText().equals(oldEntry.getUsername())) return true;
             if (!password.getText().equals(oldEntry.getPassword())) return true;
@@ -306,7 +296,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         repeatPassword.setText(entry.getPassword());
         url.setText(entry.getUrlString());
         validDatePicker.setExpirationDate(entry.getValidUntil());
-        validDatePicker.checkExpirationDate();
+        Platform.runLater(() -> validDatePicker.checkExpirationDate());
         SecurityQuestion question = entry.getSecurityQuestion();
         securityQuestion.setText(question.getQuestion());
         answer.setText(question.getAnswer());
