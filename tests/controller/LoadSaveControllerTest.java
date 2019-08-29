@@ -3,6 +3,8 @@ package controller;
 import model.Entry;
 import model.PasswordManager;
 import model.Tag;
+import util.ListUtils;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,10 +66,10 @@ public class LoadSaveControllerTest {
     public void roundTripEmptyTest() throws IOException {
         passwordManager.setRootTag(new Tag("roundTripEmptyTest"));
 
-        roundTrip("roundTripEmptyTest.pwds");
+        roundTrip("roundTripEmptyTest.gate");
 
         assertTrue(passwordManager.getEntries().isEmpty());
-        assertTrue(tagEquals(new Tag("roundTripEmptyTest"), passwordManager.getRootTag()));
+        assertTrue(ListUtils.tagEquals(new Tag("roundTripEmptyTest"), passwordManager.getRootTag()));
     }
 
     /**
@@ -83,11 +85,11 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        roundTrip("roundTripOnlyRootTagAndOneEntry.pwds");
+        roundTrip("roundTripOnlyRootTagAndOneEntry.gate");
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
-        assertTrue(tagEquals(new Tag("roundTripOnlyRootTagAndOneEntry"), passwordManager.getRootTag()));
+        assertTrue(ListUtils.tagEquals(new Tag("roundTripOnlyRootTagAndOneEntry"), passwordManager.getRootTag()));
     }
 
     /**
@@ -105,11 +107,11 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        roundTrip("roundTripOnlyManyTagsAndOneEntry.pwds");
+        roundTrip("roundTripOnlyManyTagsAndOneEntry.gate");
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
-        assertTrue(tagEquals(testTag, passwordManager.getRootTag()));
+        assertTrue(ListUtils.tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     /**
@@ -129,7 +131,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        Path testFile = Paths.get(tempDir.toString(), "testLoadWithExisting.pwds");
+        Path testFile = Paths.get(tempDir.toString(), "testLoadWithExisting.gate");
 
         toTest.save(testFile);
 
@@ -140,7 +142,7 @@ public class LoadSaveControllerTest {
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
-        assertTrue(tagEquals(testTag, passwordManager.getRootTag()));
+        assertTrue(ListUtils.tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     /**
@@ -161,7 +163,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        Path testFile = Paths.get(tempDir.toString(), "testLoadOverride.pwds");
+        Path testFile = Paths.get(tempDir.toString(), "testLoadOverride.gate");
 
         toTest.save(testFile);
 
@@ -172,29 +174,13 @@ public class LoadSaveControllerTest {
 
         assertEquals(1, passwordManager.getEntries().size());
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
-        assertTrue(tagEquals(testTag, passwordManager.getRootTag()));
+        assertTrue(ListUtils.tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     private void roundTrip(String test) throws IOException {
         Path testFile = Paths.get(tempDir.toString(), test);
         toTest.save(testFile);
         toTest.load(testFile);
-    }
-
-    private boolean tagEquals(Tag tag1, Tag tag2) {
-        if(tag1 == tag2) return true;
-        return tag1.getName().equals(tag2.getName()) && tagsEquals(tag1.getSubTags(), tag2.getSubTags());
-    }
-
-    private boolean tagsEquals(List<Tag> l1, List<Tag> l2)  {
-        outer: for (Tag t1: l1) {
-            for(Tag t2: l2) {
-                if(tagEquals(t1, t2))
-                    continue outer;
-            }
-            return false;
-        }
-        return true;
     }
 
     public boolean entryEquals(Entry e1, Entry e2) {
@@ -208,6 +194,6 @@ public class LoadSaveControllerTest {
                 e1.getLastModified().equals(e2.getLastModified()) &&
                 Objects.equals(e1.getValidUntil(), e2.getValidUntil()) &&
                 Objects.equals(e1.getSecurityQuestion(), e2.getSecurityQuestion()) &&
-                tagsEquals(e1.getTags(), e2.getTags());
+                ListUtils.tagsEquals(e1.getTags(), e2.getTags());
     }
 }

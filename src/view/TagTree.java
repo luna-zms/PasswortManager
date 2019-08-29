@@ -73,14 +73,12 @@ public class TagTree extends TreeView<Tag> {
     }
 
     private void openCreateEntryDialog() {
-        CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
-        dialogController.setPmController(pmController);
-        dialogController.init();
         if (getSelectedTag() != null) {
-            dialogController.setCheckedTags(Collections.singletonList(getSelectedTag()));
+            WindowFactory.showCreateModifyEntryView(pmController, Collections.singletonList(getSelectedTag()));
+        } else {
+        	WindowFactory.showCreateModifyEntryView(pmController);
         }
 
-        WindowFactory.showDialog("Eintrag erstellen", dialogController);
     }
 
     public void init(final boolean hasCheckBoxes, PMController controller) {
@@ -119,10 +117,11 @@ public class TagTree extends TreeView<Tag> {
 
         TreeItem<Tag> parent = item.getParent();
 
-        if (parent != null) {  // Cannot delete root node
-            if (item.getValue() != null) {
-                pmController.getTagController().removeTag(parent.getValue(), item.getValue());
-            }
+        // Cannot delete root node
+        if (parent != null && item.getValue() != null) {
+            pmController.getTagController().removeTag(parent.getValue(), item.getValue());
+            // Hack until I (read: if I ever) get around to finding/fixing the root cause
+            parent.getChildren().remove(item);
         }
     }
 

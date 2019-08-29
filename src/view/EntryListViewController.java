@@ -2,31 +2,42 @@ package view;
 
 import java.awt.Desktop;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import controller.PMController;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.collections.transformation.TransformationList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
 import javafx.scene.layout.Region;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import model.Entry;
 import model.Tag;
 import util.BindingUtil;
@@ -38,6 +49,10 @@ public class EntryListViewController extends TableView<Entry> {
     private ObservableList<Entry> entries;
     private ObjectProperty<Tag> tag = new SimpleObjectProperty<>();
     private PMController pmController;
+
+    private static final int GHOST_CHANCE = 33;
+
+    Media sound;
 
     public EntryListViewController() {
         TableColumn<Entry, String> titleColumn = new TableColumn<>("Titel");
@@ -57,6 +72,14 @@ public class EntryListViewController extends TableView<Entry> {
         urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
         validUntilColumn.setCellFactory(col -> new EntryListCell<>(DateFormatUtil::formatDate));
         validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntil"));
+
+        try {
+            URI musicFile = getClass().getResource("/util/resources/ghostChasing.dict").toURI();
+            sound = new Media(musicFile.toString());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            sound = null;
+        }
 
         // Make password column unsortable as it contains just static data anyway
         passwordColumn.setSortable(false);
@@ -85,6 +108,8 @@ public class EntryListViewController extends TableView<Entry> {
         getSelectionModel().selectedItemProperty().addListener((obs, oldEntry, newEntry) -> {
             if (newEntry != null && newEntry.isExpired()) {
                 setStyle("-fx-selection-bar: red;");
+            } else if( getSelectionModel().getSelectedItem() != newEntry && newEntry.getTags().isEmpty() ) {
+                setStyle("-fx-selection-bar: white;");
             } else {
                 setStyle("");
             }
@@ -97,6 +122,8 @@ public class EntryListViewController extends TableView<Entry> {
             row.styleProperty().bind(BindingUtil.makeBinding(row.itemProperty(), entry -> {
                 if (getSelectionModel().getSelectedItem() != entry && entry.isExpired()) {
                     return "-fx-background-color: darkred";
+                } else if( getSelectionModel().getSelectedItem() != entry && entry.getTags().isEmpty() ) {
+                    return "-fx-effect: innershadow( gaussian , gray, 10, 0.5 , 0, 0 ); -fx-background-color: lightgray;";
                 } else {
                     return "";
                 }
@@ -115,6 +142,9 @@ public class EntryListViewController extends TableView<Entry> {
         tag.addListener((obs, oldTag, newTag) -> applyFilter());
 
         setOnMouseClicked(event -> {
+            Entry entry = getSelectionModel().getSelectedItem();
+            easterEgg(entry);
+
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
                 modifyEntry(tag);
             }
@@ -129,16 +159,30 @@ public class EntryListViewController extends TableView<Entry> {
         });
     }
 
-    private void modifyEntry(ObjectProperty<Tag> tag) {
-        CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-        Entry entry = getSelectionModel().getSelectedItem();
-        if (entry != null) {
-            createModifyEntryViewController.setOldEntry(entry);
-        } else {
-            createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
+    private boolean easterEgg(Entry entry) {
+        if( entry != null && entry.getTags().isEmpty() && sound != null ) {
+            ((GhostTransformationList) getItems()).remove(entry);
+            try {
+                MediaPlayer mediaPlayer = new MediaPlayer(sound);
+                mediaPlayer.play();
+            } catch (Exception e) {
+                // Ignore
+            }
+            getSelectionModel().clearSelection();
+            return true;
         }
+        return false;
+    }
 
-        WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
+    private void modifyEntry(ObjectProperty<Tag> tag) {
+        Entry entry = getSelectionModel().getSelectedItem();
+        if( easterEgg(entry) ) return;
+        if (entry != null) {
+            WindowFactory.showCreateModifyEntryView(pmController, entry);
+        } else {
+            WindowFactory.showCreateModifyEntryView(pmController, Collections.singletonList(tag.getValue()));
+
+        }
     }
 
     private static MenuItem createMenuItem(
@@ -173,6 +217,88 @@ public class EntryListViewController extends TableView<Entry> {
         setItems(entries);
     }
 
+    class GhostTransformationList extends TransformationList<Entry, Entry> {
+        private Entry phantom = null;
+        private int phantomIndex;
+
+        private final String[] GHOST_NAMES = new String[] {
+                "Vigo",
+                "Slimer",
+                "Torb",
+                "Library ghost",
+                "Rowan North",
+                "Nearly Neckless Nick",
+                "The Bloody Baron",
+                "Hui Buh"
+        };
+        private final int MINIMUM_LIST_SIZE = 5;
+
+        GhostTransformationList(ObservableList<? extends Entry> observableList) {
+            super(observableList);
+
+            Timeline oneSecondWonder = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+                if (phantom == null ) return;
+                if( (new Random()).nextInt(6) == 0 ) {
+                    phantom = null;
+                    phantomIndex = 0;
+                } else {
+                    phantomIndex = (new Random()).nextInt(getSource().size());
+                }
+                refresh();
+            }));
+            oneSecondWonder.setCycleCount(Animation.INDEFINITE);
+            oneSecondWonder.play();
+
+            sourceChanged(null);
+        }
+
+        protected void sourceChanged(ListChangeListener.Change<? extends Entry> change) {
+            if( (new Random()).nextInt(100) < GHOST_CHANCE && getSource().size() > MINIMUM_LIST_SIZE ) {
+                phantom = new Entry("Ghost", "secret");
+                try {
+                    phantom.setUrl(new URL("https://www.youtube.com/watch?v=m9We2XsVZfc"));
+                } catch (MalformedURLException e) {
+                    // Ignore
+                }
+                phantom.setUsername(GHOST_NAMES[(new Random()).nextInt(GHOST_NAMES.length)]);
+                phantomIndex = (new Random()).nextInt(getSource().size());
+            } else {
+                phantom = null;
+                phantomIndex = 0;
+            }
+
+            if(change != null) fireChange(change);
+        }
+
+        public void remove(Entry element) {
+            if( element == null ) return;
+            if( element.getTags().isEmpty() ) {
+                phantom = null;
+                phantomIndex = 0;
+                refresh();
+            } else super.remove(element);
+        }
+
+        public int getSourceIndex(int index) {
+            if( phantom == null || index < phantomIndex ) return index;
+            else return index-1;
+        }
+
+        public int getViewIndex(int index) {
+            return index;
+        }
+
+        public Entry get(int index) {
+            if( phantom != null && index == phantomIndex ) return phantom;
+            return getSource().get(getSourceIndex(index));
+        }
+
+        public int size() {
+            int actualSize = getSource().size();
+            return phantom == null ? actualSize : actualSize+1;
+        }
+    }
+
     private void applyFilter() {
         // Always non-null as it's initialized to the root tag
         Tag newTag = tag.getValue();
@@ -184,7 +310,8 @@ public class EntryListViewController extends TableView<Entry> {
         // Necessary if manually passing a SortedList to setItems
         sortedList.comparatorProperty().bind(comparatorProperty());
 
-        setItems(sortedList);
+        GhostTransformationList observableList = new GhostTransformationList(sortedList);
+        setItems(observableList);
     }
 
     private ContextMenu buildContextMenu() {
@@ -240,10 +367,15 @@ public class EntryListViewController extends TableView<Entry> {
             ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
     ) {
 
-        return createMenuItem("Passwort kopieren",
-                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getPassword),
-                              entryIsNull,
-                              new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
+        return createMenuItem("Passwort kopieren", event -> {
+            ClipboardUtil.copyToClipboard(entry, Entry::getPassword);
+            // Clear clipboard
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(20),
+                                                          innerEv -> ClipboardUtil.copyToClipboard("")));
+            timeline.setCycleCount(1);
+            timeline.play();
+
+        }, entryIsNull, new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
     }
 
     private MenuItem createCopyUsername(ObservableValue<Entry> entry) {
@@ -260,8 +392,7 @@ public class EntryListViewController extends TableView<Entry> {
 
     private MenuItem createAddEntry() {
         return createMenuItem("Eintrag erstellen",
-                              event -> WindowFactory.showDialog("Eintrag erstellen",
-                                                                createCreateModifyEntryViewController()),
+                              event -> WindowFactory.showCreateModifyEntryView(pmController),
                               new ReadOnlyBooleanWrapper(false),
                               new KeyCharacterCombination("I", KeyCombination.CONTROL_DOWN));
     }
@@ -270,11 +401,8 @@ public class EntryListViewController extends TableView<Entry> {
             ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
     ) {
         return createMenuItem("Eintrag bearbeiten", event -> {
-            CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-            createModifyEntryViewController.setOldEntry(entry.getValue());
-
-            WindowFactory.showDialog("Eintrag bearbeiten", createModifyEntryViewController);
-
+            if( easterEgg(entry.getValue()) ) return;
+            WindowFactory.showCreateModifyEntryView(pmController, entry.getValue());
             // TODO: Maybe update displayed entry if necessary
         }, entryIsNull, new KeyCodeCombination(KeyCode.ENTER));
     }
@@ -295,14 +423,6 @@ public class EntryListViewController extends TableView<Entry> {
                  .filter(type -> type == ButtonType.OK)
                  .ifPresent(res -> pmController.getEntryController().removeEntry(entryValue));
         }, entryIsNull, new KeyCodeCombination(KeyCode.DELETE));
-    }
-
-    private CreateModifyEntryViewController createCreateModifyEntryViewController() {
-        CreateModifyEntryViewController createModifyEntryViewController = new CreateModifyEntryViewController();
-        createModifyEntryViewController.setPmController(pmController);
-        createModifyEntryViewController.init();
-
-        return createModifyEntryViewController;
     }
 
     private class EntryListCell<T> extends TableCell<Entry, T> {

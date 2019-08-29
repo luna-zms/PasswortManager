@@ -63,7 +63,7 @@ public class StartWindowViewController extends GridPane {
                 return;
         	}
 
-        	if (!file.getPath().endsWith(".pwds")) {
+            if (!file.getPath().endsWith(".gate")) {
         		WindowFactory.showError("Fehler beim Öffnen", "Die gewählte Datei ist kein Passwort-Archiv!");
                 return;
         	}
@@ -82,14 +82,14 @@ public class StartWindowViewController extends GridPane {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             fileChooser.setTitle("Erstelle neues Passwort-Archiv");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Gatekeeper-Dateien", "*.gate");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog(dialog);
             if (file == null) return;
             path = file.toPath();
-            if(!file.getPath().endsWith(".pwds")) {
-            	path = Paths.get(path.toString() + ".pwds");
+            if(!file.getPath().endsWith(".gate")) {
+                path = Paths.get(path.toString() + ".gate");
             }
             Stage stage = (Stage) getScene().getWindow();
             createNew = true;
@@ -126,7 +126,7 @@ public class StartWindowViewController extends GridPane {
             	}
             }
             fileChooser.setTitle("Wähle Passwort-Archiv");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Gatekeeper-Dateien", "*.gate");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog(dialog);

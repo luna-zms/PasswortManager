@@ -46,6 +46,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
+            primaryStage.setTitle("Gatekeeper");
             mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
             primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));
@@ -65,7 +66,7 @@ public class Main extends Application {
             StartWindowViewController startWindowViewController = new StartWindowViewController();
             if (initialPath != null) startWindowViewController.setPath(initialPath);
 
-            WindowFactory.showDialog("Datenbank öffnen", startWindowViewController);
+            WindowFactory.showDialog("Datenbank öffnen", startWindowViewController, false);
 
             Optional<Boolean> tmp = initApplication(startWindowViewController);
             if (!tmp.isPresent()) {
@@ -98,6 +99,17 @@ public class Main extends Application {
             passwordManager.getEntries().clear();
             passwordManager.setRootTag(getRootTagFromPath(path));
             pmController.setPasswordManager(passwordManager);
+            try {
+                pmController.getLoadSaveController().save(path);
+            } catch (IOException exc) {
+                Alert alert = WindowFactory.createAlert(Alert.AlertType.WARNING,
+                                                        "Konnte Datei nicht speichern. Bitte manuell speichern.\n\nNähere Informationen:\n" +
+                                                        exc.getLocalizedMessage());
+
+                alert.setHeaderText("Dateifehler");
+
+                alert.showAndWait();
+            }
         }
 
         return ret;
@@ -170,7 +182,7 @@ public class Main extends Application {
 
     private Tag getRootTagFromPath(Path path) {
         String fileNameWithExt = path.getFileName().toString();
-        String fileName = fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf(".pwds"));
+        String fileName = fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf(".gate"));
 
         return new Tag(fileName);
     }
