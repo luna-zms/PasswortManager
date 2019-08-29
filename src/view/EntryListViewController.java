@@ -370,10 +370,15 @@ public class EntryListViewController extends TableView<Entry> {
             ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
     ) {
 
-        return createMenuItem("Passwort kopieren",
-                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getPassword),
-                              entryIsNull,
-                              new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
+        return createMenuItem("Passwort kopieren", event -> {
+            ClipboardUtil.copyToClipboard(entry, Entry::getPassword);
+            // Clear clipboard
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(20),
+                                                          innerEv -> ClipboardUtil.copyToClipboard("")));
+            timeline.setCycleCount(1);
+            timeline.play();
+
+        }, entryIsNull, new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
     }
 
     private MenuItem createCopyUsername(ObservableValue<Entry> entry) {
