@@ -18,7 +18,7 @@ public class DateFormatUtil {
 
     public static String formatDate(LocalDateTime dateTime) {
         return dateTime != null ?
-               dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.GERMAN)) :
+               dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT).withLocale(Locale.GERMAN)) :
                "";
     }
 }
