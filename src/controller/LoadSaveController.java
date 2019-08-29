@@ -128,6 +128,9 @@ public class LoadSaveController extends SerializationController {
                 passwordManager.setEntries(entries);
                 passwordManager.setLastModified(lastModified);
                 passwordManager.setValidUntil(validUntil);
+
+                // If we got here, loading worked
+                pmController.setDirty(false);
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
