@@ -3,10 +3,13 @@ package view;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import controller.PMController;
@@ -30,6 +33,7 @@ import model.Entry;
 import model.Tag;
 import util.BindingUtils;
 import util.ClipboardUtils;
+import util.DateFormatUtil;
 import util.WindowFactory;
 
 public class EntryListViewController extends TableView<Entry> {
@@ -41,16 +45,20 @@ public class EntryListViewController extends TableView<Entry> {
         TableColumn<Entry, String> titleColumn = new TableColumn<>("Titel");
         TableColumn<Entry, String> usernameColumn = new TableColumn<>("Nutzername");
         TableColumn<Entry, String> passwordColumn = new TableColumn<>("Passwort");
-        TableColumn<Entry, String> urlColumn = new TableColumn<>("URL");
-        TableColumn<Entry, String> validUntilColumn = new TableColumn<>("Gültig bis");
+        TableColumn<Entry, URL> urlColumn = new TableColumn<>("URL");
+        TableColumn<Entry, LocalDate> validUntilColumn = new TableColumn<>("Gültig bis");
 
         // Bind columns to getters of Entry
+        titleColumn.setCellFactory(col -> new EntryListCell<>());
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        usernameColumn.setCellFactory(col -> new EntryListCell<>());
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+        passwordColumn.setCellFactory(col -> new EntryListCell<>());
         passwordColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper("*****"));
-        urlColumn.setCellValueFactory(new PropertyValueFactory<>("urlString"));
-        // Use getter with specific string formatting
-        validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntilString"));
+        urlColumn.setCellFactory(col -> new EntryListCell<>());
+        urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
+        validUntilColumn.setCellFactory(col -> new EntryListCell<>(DateFormatUtil::formatDate));
+        validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntil"));
 
         // Make password column unsortable as it contains just static data anyway
         passwordColumn.setSortable(false);
@@ -65,7 +73,7 @@ public class EntryListViewController extends TableView<Entry> {
         setPlaceholder(new Label("Keine Einträge gefunden."));
 
         // Make Java happy by specifying the exact types
-        List<TableColumn<Entry, String>> columns = new ArrayList<>();
+        List<TableColumn<Entry, ?>> columns = new ArrayList<>();
         columns.add(titleColumn);
         columns.add(usernameColumn);
         columns.add(passwordColumn);
@@ -76,7 +84,6 @@ public class EntryListViewController extends TableView<Entry> {
         setContextMenu(buildContextMenu());
 
         // Highlight expired tags
-        columns.forEach(col -> col.setCellFactory(innerCol -> new EntryListCell()));
         getSelectionModel().selectedItemProperty().addListener((obs, oldEntry, newEntry) -> {
             if (newEntry != null && newEntry.getValidUntil() != null &&
                 newEntry.getValidUntil().isBefore(LocalDate.now())) {
@@ -302,18 +309,28 @@ public class EntryListViewController extends TableView<Entry> {
         return createModifyEntryViewController;
     }
 
-    private class EntryListCell extends TableCell<Entry, String> {
+    private class EntryListCell<T> extends TableCell<Entry, T> {
+        private Function<T, String> stringifier;
+
+        EntryListCell() {
+            stringifier = Objects::toString;
+        }
+
+        EntryListCell(Function<T, String> stringifier) {
+            this.stringifier = stringifier;
+        }
+
         @Override
-        protected void updateItem(String item, boolean empty) {
+        protected void updateItem(T item, boolean empty) {
             TableRow<Entry> row = (TableRow<Entry>) getTableRow();
             Entry entry = row.getItem();
 
             super.updateItem(item, empty);
 
-            if (empty || item == null || item.isEmpty()) {
+            if (empty || item == null) {
                 setText(null);
             } else {
-                setText(item);
+                setText(stringifier.apply(item));
             }
 
             textFillProperty().unbind();

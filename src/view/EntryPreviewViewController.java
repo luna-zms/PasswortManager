@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import controller.PMController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,11 +11,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import model.Entry;
 import model.Tag;
+import util.DateFormatUtil;
 
 import static util.BindingUtils.makeBinding;
 
@@ -53,7 +52,7 @@ public class EntryPreviewViewController extends HBox {
         title.textProperty().bind(makeBinding(entry, Entry::getTitle, ""));
         url.textProperty().bind(makeBinding(entry, Entry::getUrlString, ""));
         username.textProperty().bind(makeBinding(entry, Entry::getUsername, ""));
-        validUntil.textProperty().bind(makeBinding(entry, Entry::getValidUntilString, ""));
+        validUntil.textProperty().bind(makeBinding(entry, e -> DateFormatUtil.formatDate(e.getValidUntil()), ""));
 
         tagList.itemsProperty().bind(makeBinding(entry, e -> e.tagsObservable().sorted((t1, t2) -> {
             if( pathMap.getValue().get(t1) != null && pathMap.getValue().get(t2) != null )
