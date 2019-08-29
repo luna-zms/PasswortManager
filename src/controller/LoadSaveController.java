@@ -38,10 +38,81 @@ import java.util.zip.ZipOutputStream;
 public class LoadSaveController extends SerializationController {
     private final PMController pmController;
 
+    private static final String MAGIC_WORD = "siroD";
+
     public LoadSaveController(PMController pmController) {
         super(pmController.getPasswordManager());
 
         this.pmController = pmController;
+    }
+
+    /**
+     * Loads the first zip entry containing the magic number as well as administrative functionality,
+     * namely the lastModified and the validUntil date.
+     *
+     * @param cipher Contains the given cipher to create a cipher input stream with.
+     * @param zipInputStream Contains the overall zip input stream from where to read the first entry from.
+     *
+     * @return A tuple containing the lastModified date and the validUntil date (last one may be null), respectively.
+     * @throws IOException When something with the streams goes badly wrong.
+     * @throws BadPasswordException When the zip entry can not be decrypted.
+     */
+    private Tuple<LocalDateTime, LocalDateTime> loadMagicZipEntry(Cipher cipher, ZipInputStream zipInputStream)
+            throws IOException, BadPasswordException {
+        LocalDateTime lastModified, validUntil = null;
+        try (CipherInputStream cis = readEncryptedZipEntry(zipInputStream, cipher, "MAGIC");
+             InputStreamReader isr = new InputStreamReader(cis);
+             BufferedReader bur = new BufferedReader(isr)) {
+
+            String magicLine;
+            try {
+                magicLine = bur.readLine();
+            } catch (IOException ioc) {
+                ioc.printStackTrace();
+                throw new BadPasswordException(ioc.getMessage());
+            }
+
+            if (!MAGIC_WORD.equals(magicLine))
+                throw new BadPasswordException("Mismatch in Magic Bytes, is the password correct? Read: " + magicLine);
+
+            lastModified = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_TIME_FORMAT);
+            String validUntilLine = bur.readLine();
+            if (validUntilLine != null)
+                validUntil = LocalDateTime.parse(validUntilLine, SerializationController.DATE_TIME_FORMAT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return new Tuple<>(lastModified, validUntil);
+    }
+
+    /**
+     * Load the saved tag tree from the last zip entry.
+     *
+     * @param cipher Contains the given cipher to create a cipher input stream with.
+     * @param zipInputStream Contains the overall zip input stream from where to read the last entry from.
+     * @param readRootTag Contains the later root tag to save all read tags in.
+     *
+     * @throws IOException When something goes wrong when handling with the input streams.
+     */
+    private void loadTagTreeZipEntry(Cipher cipher, ZipInputStream zipInputStream, Tag readRootTag)
+            throws IOException {
+        try (CipherInputStream cis = readEncryptedZipEntry(zipInputStream, cipher, "TAGS");
+             InputStreamReader isr = new InputStreamReader(cis);
+             BufferedReader bur = new BufferedReader(isr)) {
+
+            String nextLine;
+
+            while ((nextLine = bur.readLine()) != null) {
+                if (nextLine.isEmpty())
+                    throw new IOException("Invalid Tag read from save file.");
+
+                if (readRootTag == null)
+                    readRootTag = new Tag(nextLine.split("\\\\")[0]);
+
+                createTagFromPath(readRootTag, nextLine.split("\\\\"));
+            }
+        }
     }
 
     /**
@@ -53,89 +124,97 @@ public class LoadSaveController extends SerializationController {
      * @param path The file to load from
      */
     public void load(Path path) throws IOException, BadPasswordException {
-        try {
+        try (InputStream fis = Files.newInputStream(path);
+             ZipInputStream zis = new ZipInputStream(fis)) {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, passwordManager.getMasterPasswordKey());
 
-            try (InputStream fis = Files.newInputStream(path);
-                 ZipInputStream zis = new ZipInputStream(fis)) {
-                LocalDateTime lastModified;
-                LocalDateTime validUntil = null;
+            List<Entry> entries;
+            Tag readRootTag;
 
-                List<Entry> entries;
-                Tag readRootTag;
+            Tuple<LocalDateTime, LocalDateTime> gotDates = loadMagicZipEntry(cipher, zis);
+            LocalDateTime lastModified = gotDates.first(), validUntil = gotDates.second();
 
-                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "MAGIC");
-                     InputStreamReader isr = new InputStreamReader(cis);
-                     BufferedReader bur = new BufferedReader(isr)) {
+            try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "ENTRIES");
+                 InputStreamReader isr = new InputStreamReader(cis)) {
+                Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(isr, entryParseFormat));
 
-                    String magicLine;
-                    try {
-                        magicLine = bur.readLine();
-                    } catch( IOException ioc ) {
-                        ioc.printStackTrace();
-                        throw new BadPasswordException(ioc.getMessage());
-                    }
-
-                    if (!"siroD".equals(magicLine))
-                        throw new BadPasswordException("Mismatch in Magic Bytes, is the password correct? Read: " + magicLine);
-
-                    lastModified = LocalDateTime.parse(bur.readLine(), SerializationController.DATE_TIME_FORMAT);
-                    String validUntilLine = bur.readLine();
-                    if( validUntilLine != null )
-                        validUntil = LocalDateTime.parse(validUntilLine, SerializationController.DATE_TIME_FORMAT);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw e;
-                }
-
-                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "ENTRIES");
-                     InputStreamReader isr = new InputStreamReader(cis)) {
-                    Tuple<List<Entry>, Tag> tup = parseEntries(new CSVParser(isr, entryParseFormat));
-
-                    entries = tup.first();
-                    readRootTag = tup.second();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw e;
-                }
-
-                try (CipherInputStream cis = readEncryptedZipEntry(zis, cipher, "TAGS");
-                     InputStreamReader isr = new InputStreamReader(cis);
-                     BufferedReader bur = new BufferedReader(isr)) {
-
-                    String nextLine;
-
-                    while ((nextLine = bur.readLine()) != null) {
-                        if (nextLine.isEmpty())
-                            throw new IOException("Invalid Tag read from save file.");
-
-                        if (readRootTag == null)
-                            readRootTag = new Tag(nextLine.split("\\\\")[0]);
-
-                        createTagFromPath(readRootTag, nextLine.split("\\\\"));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw e;
-                }
-
-                String fileName = path.getFileName().toString();
-
-                readRootTag.setName(fileName.substring(0, fileName.lastIndexOf(".gate")));
-
-                passwordManager.setRootTag(readRootTag);
-                passwordManager.setEntries(entries);
-                passwordManager.setLastModified(lastModified);
-                passwordManager.setValidUntil(validUntil);
-
-                // If we got here, loading worked
-                pmController.setDirty(false);
+                entries = tup.first();
+                readRootTag = tup.second();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw e;
             }
+
+            loadTagTreeZipEntry(cipher, zis, readRootTag);
+
+            String fileName = path.getFileName().toString();
+
+            readRootTag.setName(fileName.substring(0, fileName.lastIndexOf(".gate")));
+
+            passwordManager.setRootTag(readRootTag);
+            passwordManager.setEntries(entries);
+            passwordManager.setLastModified(lastModified);
+            passwordManager.setValidUntil(validUntil);
+
+            // If we got here, loading worked
+            pmController.setDirty(false);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }
+
+    private static class UnclosableInputStream extends InputStream {
+        ZipInputStream zipInputStream;
+        UnclosableInputStream(ZipInputStream zipInputStream) {
+            super();
+            this.zipInputStream = zipInputStream;
+        }
+
+        @Override
+        public int read(byte[] bytes) throws IOException {
+            return zipInputStream.read(bytes);
+        }
+
+        @Override
+        public int read(byte[] bytes, int off, int len) throws IOException {
+            return zipInputStream.read(bytes, off, len);
+        }
+
+        @Override
+        public long skip(long longInteger) throws IOException {
+            return zipInputStream.skip(longInteger);
+        }
+
+        @Override
+        public int available() throws IOException {
+            return zipInputStream.available();
+        }
+
+        @Override
+        public void close() throws IOException {
+        }
+
+        @Override
+        public synchronized void mark(int readlimit) {
+            zipInputStream.mark(readlimit);
+        }
+
+        @Override
+        public synchronized void reset() throws IOException {
+            zipInputStream.reset();
+        }
+
+        @Override
+        public boolean markSupported() {
+            return zipInputStream.markSupported();
+        }
+
+        @Override
+        public int read() throws IOException {
+            return zipInputStream.read();
+        }
+    };
 
     private CipherInputStream readEncryptedZipEntry(ZipInputStream zis, Cipher cipher, String expectedName) throws IOException {
         ZipEntry entry = zis.getNextEntry();
@@ -148,51 +227,7 @@ public class LoadSaveController extends SerializationController {
 
         // CipherInputStream does the same bullshit CipherOutputStream does (see createEncryptedZipEntry())
 
-        InputStream unclosableStream = new InputStream() {
-            @Override
-            public int read(byte[] bytes) throws IOException {
-                return zis.read(bytes);
-            }
-
-            @Override
-            public int read(byte[] bytes, int off, int len) throws IOException {
-                return zis.read(bytes, off, len);
-            }
-
-            @Override
-            public long skip(long longInteger) throws IOException {
-                return zis.skip(longInteger);
-            }
-
-            @Override
-            public int available() throws IOException {
-                return zis.available();
-            }
-
-            @Override
-            public void close() throws IOException {
-            }
-
-            @Override
-            public synchronized void mark(int readlimit) {
-                zis.mark(readlimit);
-            }
-
-            @Override
-            public synchronized void reset() throws IOException {
-                zis.reset();
-            }
-
-            @Override
-            public boolean markSupported() {
-                return zis.markSupported();
-            }
-
-            @Override
-            public int read() throws IOException {
-                return zis.read();
-            }
-        };
+        InputStream unclosableStream = new UnclosableInputStream(zis);
 
         return new CipherInputStream(unclosableStream, cipher);
     }
@@ -210,30 +245,18 @@ public class LoadSaveController extends SerializationController {
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "MAGIC"); PrintWriter writer = new PrintWriter(cos)) {
                 writer.println("siroD");
                 writer.println(passwordManager.getLastModified().format(SerializationController.DATE_TIME_FORMAT));
-                if( passwordManager.getValidUntil() != null )
+                if (passwordManager.getValidUntil() != null)
                     writer.println(passwordManager.getValidUntil().format(SerializationController.DATE_TIME_FORMAT));
-            } catch (IOException exception) {
-                // Error creating/writing new ZipEntry for metadata/magic header
-                exception.printStackTrace();
-                throw exception;
             }
 
             Tag rootTag = passwordManager.getRootTag();
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "ENTRIES")) {
                 writeEntriesToStream(cos, passwordManager.getEntries(), rootTag);
-            } catch (IOException exception) {
-                // Error creating/writing new ZipEntry for entries section
-                exception.printStackTrace();
-                throw exception;
             }
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "TAGS"); PrintWriter writer = new PrintWriter(cos)) {
                 rootTag.createPathMap().values().forEach(writer::println);
-            } catch (IOException exception) {
-                // Error creating/writing new ZipEntry for tags section
-                exception.printStackTrace();
-                throw exception;
             }
 
             // If we got here, the file got save so we can safely reset the dirty flag
@@ -243,6 +266,38 @@ public class LoadSaveController extends SerializationController {
             throw new RuntimeException(exception);
         }
     }
+
+    private static class UnclosableOutputStream extends OutputStream {
+        ZipOutputStream zipOutputStream;
+
+        UnclosableOutputStream(ZipOutputStream zipOutputStream) {
+            this.zipOutputStream = zipOutputStream;
+        }
+
+        @Override
+        public void write(byte[] bytes) throws IOException {
+            zipOutputStream.write(bytes);
+        }
+
+        @Override
+        public void write(byte[] bytes, int off, int len) throws IOException {
+            zipOutputStream.write(bytes, off, len);
+        }
+
+        @Override
+        public void flush() throws IOException {
+            zipOutputStream.flush();
+        }
+
+        @Override
+        public void close() throws IOException {
+        }
+
+        @Override
+        public void write(int integer) throws IOException {
+            zipOutputStream.write(integer);
+        }
+    };
 
     private CipherOutputStream createEncryptedZipEntry(ZipOutputStream zos, Cipher cipher, String entryName) throws IOException {
         ZipEntry zipEntry = new ZipEntry(entryName);
@@ -257,33 +312,8 @@ public class LoadSaveController extends SerializationController {
         // or we wrap out ZipOutputStream into a OutputStream that ignores the CipherOutputStream closing it.
         // Which is what is done below
 
-        OutputStream unclosableStream = new OutputStream() {
-            @Override
-            public void write(byte[] bytes) throws IOException {
-                zos.write(bytes);
-            }
-
-            @Override
-            public void write(byte[] bytes, int off, int len) throws IOException {
-                zos.write(bytes, off, len);
-            }
-
-            @Override
-            public void flush() throws IOException {
-                zos.flush();
-            }
-
-            @Override
-            public void close() throws IOException {
-            }
-
-            @Override
-            public void write(int integer) throws IOException {
-                zos.write(integer);
-            }
-        };
+        OutputStream unclosableStream = new UnclosableOutputStream(zos);
 
         return new CipherOutputStream(unclosableStream, cipher);
     }
-
 }
