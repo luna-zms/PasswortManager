@@ -48,10 +48,10 @@ public class StartWindowViewController extends GridPane {
 
             e.printStackTrace();
         }
-        
+
         loadPathFromProps();
         initFileChooser();
-        
+
         openButton.setOnAction(event -> {
         	if(choosePasswordAchivePath.getText().isEmpty()) {
         		WindowFactory.showError("Pfad nicht gesetzt", "Bitte geben Sie einen Pfad zu einem Archiv an oder erstellen Sie ein neues Archiv");
@@ -80,7 +80,7 @@ public class StartWindowViewController extends GridPane {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             fileChooser.setTitle("Erstelle neues Passwort-Archiv");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Gatekeeper-Dateien", "*.gate");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("GateKeeper-Dateien", "*.gate");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog((Stage) getScene().getWindow());
@@ -95,7 +95,7 @@ public class StartWindowViewController extends GridPane {
         });
 
     }
-    
+
     public void initialize() {
     	Platform.runLater(() -> {
     		customPasswordField.requestFocus();
@@ -132,7 +132,7 @@ public class StartWindowViewController extends GridPane {
                 }
             }
             fileChooser.setTitle("Wähle Passwort-Archiv");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Gatekeeper-Dateien", "*.gate");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("GateKeeper-Dateien", "*.gate");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showOpenDialog((Stage) getScene().getWindow());

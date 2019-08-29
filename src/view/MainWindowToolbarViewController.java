@@ -231,7 +231,7 @@ public class MainWindowToolbarViewController extends GridPane {
         saveAsDatabaseToolbar.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Speichere Kopie als");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Gatekeeper-Dateien", "*.gate");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("GateKeeper-Dateien", "*.gate");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog((Stage) getScene().getWindow());
