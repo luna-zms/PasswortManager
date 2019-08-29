@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +20,7 @@ import controller.PMController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -26,9 +28,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.collections.transformation.TransformationList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -50,9 +54,11 @@ public class EntryListViewController extends TableView<Entry> {
     private ObjectProperty<Tag> tag = new SimpleObjectProperty<>();
     private PMController pmController;
 
-    private static final int GHOST_CHANCE = 33;
+    private static final int GHOST_CHANCE = 80;
+    private boolean ghostsActivated = false;
 
     Media sound;
+    private GhostTransformationList ghostList;
 
     public EntryListViewController() {
         TableColumn<Entry, String> titleColumn = new TableColumn<>("Titel");
@@ -60,6 +66,7 @@ public class EntryListViewController extends TableView<Entry> {
         TableColumn<Entry, String> passwordColumn = new TableColumn<>("Passwort");
         TableColumn<Entry, URL> urlColumn = new TableColumn<>("URL");
         TableColumn<Entry, LocalDate> validUntilColumn = new TableColumn<>("Gültig bis");
+        TableColumn<Entry, LocalDateTime> lastModifiedColumn = new TableColumn<>("Zuletzt geändert");
 
         // Bind columns to getters of Entry
         titleColumn.setCellFactory(col -> new EntryListCell<>());
@@ -72,6 +79,8 @@ public class EntryListViewController extends TableView<Entry> {
         urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
         validUntilColumn.setCellFactory(col -> new EntryListCell<>(DateFormatUtil::formatDate));
         validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntil"));
+        lastModifiedColumn.setCellFactory(col -> new EntryListCell<>(DateFormatUtil::formatDate));
+        lastModifiedColumn.setCellValueFactory(new PropertyValueFactory<>("lastModified"));
 
         try {
             URI musicFile = getClass().getResource("/util/resources/ghostChasing.dict").toURI();
@@ -86,6 +95,7 @@ public class EntryListViewController extends TableView<Entry> {
 
         // Right-align date column
         validUntilColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        lastModifiedColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
 
         // Ensure columns use available width
         setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
@@ -100,6 +110,7 @@ public class EntryListViewController extends TableView<Entry> {
         columns.add(passwordColumn);
         columns.add(urlColumn);
         columns.add(validUntilColumn);
+        columns.add(lastModifiedColumn);
         getColumns().setAll(columns);
 
         setContextMenu(buildContextMenu());
@@ -108,7 +119,7 @@ public class EntryListViewController extends TableView<Entry> {
         getSelectionModel().selectedItemProperty().addListener((obs, oldEntry, newEntry) -> {
             if (newEntry != null && newEntry.isExpired()) {
                 setStyle("-fx-selection-bar: red;");
-            } else if( getSelectionModel().getSelectedItem() != newEntry && newEntry.getTags().isEmpty() ) {
+            } else if( newEntry != null && getSelectionModel().getSelectedItem() != newEntry && newEntry.getTags().isEmpty() ) {
                 setStyle("-fx-selection-bar: white;");
             } else {
                 setStyle("");
@@ -160,8 +171,8 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     private boolean easterEgg(Entry entry) {
-        if( entry != null && entry.getTags().isEmpty() && sound != null ) {
-            ((GhostTransformationList) getItems()).remove(entry);
+        if( ghostsActivated && entry != null && entry.getTags().isEmpty() && sound != null ) {
+            ghostList.remove(entry);
             try {
                 MediaPlayer mediaPlayer = new MediaPlayer(sound);
                 mediaPlayer.play();
@@ -237,7 +248,13 @@ public class EntryListViewController extends TableView<Entry> {
             super(observableList);
 
             Timeline oneSecondWonder = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-                if (phantom == null ) return;
+                if( !ghostsActivated ) return;
+                if (phantom == null && (new Random()).nextInt(30) > 0 ) return;
+                else if( phantom == null ) {
+                    sourceChanged(null);
+                    return;
+                }
+
                 if( (new Random()).nextInt(6) == 0 ) {
                     phantom = null;
                     phantomIndex = 0;
@@ -305,13 +322,21 @@ public class EntryListViewController extends TableView<Entry> {
 
         // De-inlined because it gets massacred by autoformat otherwise
         Predicate<Entry> predicate = entry -> entry.getTags().contains(newTag);
-        // FilteredList cannot be sorted => wrap in SortedList
-        SortedList<Entry> sortedList = new SortedList<>(entries.filtered(predicate));
-        // Necessary if manually passing a SortedList to setItems
-        sortedList.comparatorProperty().bind(comparatorProperty());
+        FilteredList<Entry> filtered = entries.filtered(predicate);
 
-        GhostTransformationList observableList = new GhostTransformationList(sortedList);
-        setItems(observableList);
+        if( ghostsActivated ) {
+            ghostList = new GhostTransformationList(filtered);
+
+            setItems(ghostList);
+        } else {
+            SortedList<Entry> sortedList = new SortedList<>(filtered);
+            // FilteredList cannot be sorted => wrap in SortedList
+            // Necessary if manually passing a SortedList to setItems
+            sortedList.comparatorProperty().bind(comparatorProperty());
+
+            setItems(sortedList);
+            ghostList = null;
+        }
     }
 
     private ContextMenu buildContextMenu() {
@@ -460,5 +485,13 @@ public class EntryListViewController extends TableView<Entry> {
                 }, Color.BLACK));
             }
         }
+    }
+
+    boolean setGhostsActivated(boolean ghostsActivated) {
+        boolean changed = false;
+        if( ghostsActivated != this.ghostsActivated ) changed = true;
+        this.ghostsActivated = ghostsActivated;
+        if( changed ) applyFilter();
+        return changed;
     }
 }

@@ -59,11 +59,12 @@ public class MainWindowViewController extends BorderPane {
         entryList.tagProperty()
                  .bind(BindingUtil.makeBinding(tagTree.getSelectionModel().selectedItemProperty(),
                                                 TreeItem::getValue, getRootTag()));
-        mainWindowToolbar.setOnSearchRefreshAction((filter, searchEverywhere) -> {
-            if (!searchEverywhere) {
+        mainWindowToolbar.setOnSearchRefreshAction((filter, searchBooleans) -> {
+            if (!searchBooleans.first()) {
                 filter = filter.and(entry -> entry.getTags().contains(entryList.tagProperty().getValue()));
             }
-            entryList.filterOnce(filter);
+            boolean changed = entryList.setGhostsActivated(searchBooleans.second());
+            if( !changed ) entryList.filterOnce(filter);
         });
         mainWindowToolbar.setOnTreeViewRefresh(() -> tagTree.init(false, pmController));
 
