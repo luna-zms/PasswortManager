@@ -177,8 +177,6 @@ public class EntryListViewController extends TableView<Entry> {
     private void modifyEntry(ObjectProperty<Tag> tag) {
         Entry entry = getSelectionModel().getSelectedItem();
         if( easterEgg(entry) ) return;
-
-        CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
         if (entry != null) {
             WindowFactory.showCreateModifyEntryView(pmController, entry);
         } else {
@@ -427,17 +425,6 @@ public class EntryListViewController extends TableView<Entry> {
         }, entryIsNull, new KeyCodeCombination(KeyCode.DELETE));
     }
 
-<<<<<<< HEAD
-    private class EntryListCell extends TableCell<Entry, String> {
-=======
-    private CreateModifyEntryViewController createCreateModifyEntryViewController() {
-        CreateModifyEntryViewController createModifyEntryViewController = new CreateModifyEntryViewController();
-        createModifyEntryViewController.setPmController(pmController);
-        createModifyEntryViewController.init();
-
-        return createModifyEntryViewController;
-    }
-
     private class EntryListCell<T> extends TableCell<Entry, T> {
         private Function<T, String> stringifier;
 
@@ -449,7 +436,6 @@ public class EntryListViewController extends TableView<Entry> {
             this.stringifier = stringifier;
         }
 
->>>>>>> 5186ae9f6629d6ec55d25882cbd2fc77790aaf7f
         @Override
         protected void updateItem(T item, boolean empty) {
             TableRow<Entry> row = (TableRow<Entry>) getTableRow();
