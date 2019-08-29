@@ -2,6 +2,7 @@ package view;
 
 import controller.PMController;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -83,6 +84,8 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
     private PMController pmController = null;
 
+    private boolean alreadyCancelled = false;
+
     public CreateModifyEntryViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CreateModifyEntryView.fxml"));
         loader.setRoot(this);
@@ -107,6 +110,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         passwordQualityBar.setQuality(0);
 
         cancelButton.setOnAction(event -> {
+            if( alreadyCancelled ) return;
             Stage stage = (Stage) getScene().getWindow();
 
             if (isModified()) {
@@ -122,6 +126,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
                     return;
                 }
             }
+            alreadyCancelled = true;
 
             stage.close();
         });
@@ -129,7 +134,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         KeyCombination keyCombination = new KeyCodeCombination(KeyCode.ESCAPE);
 
         Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
-                () -> cancelButton.getOnAction().handle(null)));
+                () -> cancelButton.fireEvent(new ActionEvent())));
 
         okButton.setOnAction(event -> {
             String entryNameString = entryName.getText();
