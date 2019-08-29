@@ -83,8 +83,7 @@ public class EntryListViewController extends TableView<Entry> {
 
         // Highlight expired tags
         getSelectionModel().selectedItemProperty().addListener((obs, oldEntry, newEntry) -> {
-            if (newEntry != null && newEntry.getValidUntil() != null &&
-                newEntry.getValidUntil().isBefore(LocalDate.now())) {
+            if (newEntry != null && newEntry.isExpired()) {
                 setStyle("-fx-selection-bar: red;");
             } else {
                 setStyle("");
@@ -96,8 +95,7 @@ public class EntryListViewController extends TableView<Entry> {
 
             // Cursed bind
             row.styleProperty().bind(BindingUtil.makeBinding(row.itemProperty(), entry -> {
-                if (getSelectionModel().getSelectedItem() != entry && entry.getValidUntil() != null &&
-                    entry.getValidUntil().isBefore(LocalDate.now())) {
+                if (getSelectionModel().getSelectedItem() != entry && entry.isExpired()) {
                     return "-fx-background-color: darkred";
                 } else {
                     return "";
@@ -332,7 +330,7 @@ public class EntryListViewController extends TableView<Entry> {
             }
 
             textFillProperty().unbind();
-            if (entry != null && entry.getValidUntil() != null && entry.getValidUntil().isBefore(LocalDate.now())) {
+            if (entry != null && entry.isExpired()) {
                 setTextFill(Color.WHITE);
             } else {
                 // Necessary for highlighting to have the proper font color

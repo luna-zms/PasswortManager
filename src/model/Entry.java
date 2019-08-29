@@ -145,6 +145,10 @@ public class Entry {
         return tags;
     }
 
+    public boolean isExpired() {
+        return validUntil != null && validUntil.isBefore(LocalDate.now().plusDays(1));
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
