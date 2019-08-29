@@ -118,20 +118,24 @@ public class CreateModifyEntryViewController extends AnchorPane {
         });
 
         cancelButton.setOnAction(event -> {
+            Stage stage = (Stage) getScene().getWindow();
+
             if (isModified()) {
-                Alert alert = new Alert(AlertType.CONFIRMATION);
+                Alert alert = WindowFactory.createAlert(AlertType.CONFIRMATION,
+                                        "Alle ihre Änderungen gehen verloren!");
+
+                alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
                 alert.setTitle("Abbrechen bestätigen");
                 alert.setHeaderText("Wollen Sie wirklich abbrechen?");
-                alert.setContentText("Alle ihre Änderungen gehen verloren!");
                 Optional<ButtonType> result = alert.showAndWait();
 
-                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
-                	return;
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    stage.close();
+                    return;
                 }
             }
 
-            Stage stage = (Stage) getScene().getWindow();
-            stage.close();
+            event.consume();
         });
 
         okButton.setOnAction(event -> {
