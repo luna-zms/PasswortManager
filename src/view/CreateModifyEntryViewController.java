@@ -14,7 +14,7 @@ import javafx.stage.WindowEvent;
 import model.Entry;
 import model.SecurityQuestion;
 import model.Tag;
-import util.ListUtils;
+import util.ListUtil;
 import util.PasswordQualityUtil;
 import factory.WindowFactory;
 
@@ -268,7 +268,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
             if (!answer.getText().equals(question.getAnswer())) return true;
             if (!notes.getText().equals(oldEntry.getNote())) return true;
 
-            if (!ListUtils.compare(tagTree.getCheckedTags(), oldEntry.getTags())) return true;
+            if (!ListUtil.compare(tagTree.getCheckedTags(), oldEntry.getTags())) return true;
 
             return false;
         }
