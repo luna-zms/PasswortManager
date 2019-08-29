@@ -3,7 +3,7 @@ package controller;
 import model.Entry;
 import model.PasswordManager;
 import model.Tag;
-import util.ListUtils;
+import util.ListUtil;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 import static junit.framework.TestCase.assertEquals;
@@ -71,7 +70,7 @@ public class LoadSaveControllerTest {
         roundTrip("roundTripEmptyTest.gate");
 
         assertTrue(passwordManager.getEntries().isEmpty());
-        assertTrue(ListUtils.tagEquals(new Tag("roundTripEmptyTest"), passwordManager.getRootTag()));
+        assertTrue(ListUtil.tagEquals(new Tag("roundTripEmptyTest"), passwordManager.getRootTag()));
     }
 
     /**
@@ -91,7 +90,7 @@ public class LoadSaveControllerTest {
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
-        assertTrue(ListUtils.tagEquals(new Tag("roundTripOnlyRootTagAndOneEntry"), passwordManager.getRootTag()));
+        assertTrue(ListUtil.tagEquals(new Tag("roundTripOnlyRootTagAndOneEntry"), passwordManager.getRootTag()));
     }
 
     /**
@@ -113,7 +112,7 @@ public class LoadSaveControllerTest {
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
-        assertTrue(ListUtils.tagEquals(testTag, passwordManager.getRootTag()));
+        assertTrue(ListUtil.tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     /**
@@ -144,7 +143,7 @@ public class LoadSaveControllerTest {
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
-        assertTrue(ListUtils.tagEquals(testTag, passwordManager.getRootTag()));
+        assertTrue(ListUtil.tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     /**
@@ -176,7 +175,7 @@ public class LoadSaveControllerTest {
 
         assertEquals(1, passwordManager.getEntries().size());
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
-        assertTrue(ListUtils.tagEquals(testTag, passwordManager.getRootTag()));
+        assertTrue(ListUtil.tagEquals(testTag, passwordManager.getRootTag()));
     }
 
     private void roundTrip(String test) throws IOException {
@@ -188,14 +187,14 @@ public class LoadSaveControllerTest {
     public boolean entryEquals(Entry e1, Entry e2) {
         if (e1 == e2) return true;
         return e1.getTitle().equals(e2.getTitle()) &&
-                e1.getUsername().equals(e2.getUsername() )&&
-                e1.getPassword().equals(e2.getPassword()) &&
-                e1.getNote().equals(e2.getNote()) &&
-                Objects.equals(e1.getUrl(), e2.getUrl()) &&
-                e1.getCreatedAt().equals(e2.getCreatedAt()) &&
-                e1.getLastModified().equals(e2.getLastModified()) &&
-                Objects.equals(e1.getValidUntil(), e2.getValidUntil()) &&
-                Objects.equals(e1.getSecurityQuestion(), e2.getSecurityQuestion()) &&
-                ListUtils.tagsEquals(e1.getTags(), e2.getTags());
+               e1.getUsername().equals(e2.getUsername() ) &&
+               e1.getPassword().equals(e2.getPassword()) &&
+               e1.getNote().equals(e2.getNote()) &&
+               Objects.equals(e1.getUrl(), e2.getUrl()) &&
+               e1.getCreatedAt().equals(e2.getCreatedAt()) &&
+               e1.getLastModified().equals(e2.getLastModified()) &&
+               Objects.equals(e1.getValidUntil(), e2.getValidUntil()) &&
+               Objects.equals(e1.getSecurityQuestion(), e2.getSecurityQuestion()) &&
+               ListUtil.tagsEquals(e1.getTags(), e2.getTags());
     }
 }

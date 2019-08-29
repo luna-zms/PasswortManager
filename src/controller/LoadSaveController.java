@@ -35,7 +35,6 @@ import java.util.zip.ZipOutputStream;
  * De-/Encryption is done using standard AES. Each entry of the `.zip` file will be encrypted individually, the file as
  * a whole will not be encrypted
  */
-@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.CyclomaticComplexity"})
 public class LoadSaveController extends SerializationController {
     private final PMController pmController;
 
@@ -228,15 +227,15 @@ public class LoadSaveController extends SerializationController {
 
             try (CipherOutputStream cos = createEncryptedZipEntry(zos, cipher, "TAGS"); PrintWriter writer = new PrintWriter(cos)) {
                 rootTag.createPathMap().values().forEach(writer::println);
-            } catch (IOException e) {
+            } catch (IOException exception) {
                 // Error creating/writing new ZipEntry for tags section
-                e.printStackTrace();
-                throw e;
+                exception.printStackTrace();
+                throw exception;
             }
 
             // If we got here, the file got save so we can safely reset the dirty flag
             pmController.setDirty(false);
-        } catch (NoSuchPaddingException | InvalidKeyException | IOException | NoSuchAlgorithmException exception) {
+        } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException exception) {
             // The java installation does not support AES encryption for some reason
             throw new RuntimeException(exception);
         }

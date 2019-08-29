@@ -84,10 +84,6 @@ public abstract class SerializationController {
      * @throws IOException if an I/O Exception occurs
      */
     protected void writeEntriesToStream(OutputStream outputStream, List<Entry> entries, Tag root) throws IOException {
-        assert (outputStream != null);
-        assert (entries != null);
-        assert (root != null);
-
         Map<Tag, String> pathMap = root.getSubTags().stream().map(Tag::createPathMap)
                 .flatMap(map -> map.entrySet().stream()).collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -124,20 +120,14 @@ public abstract class SerializationController {
      * @return Tuple of entry list and tag tree
      * @throws CsvException Throws a CsvException if a csv record is malformed or contains invalid data
      */
-    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.CyclomaticComplexity"})
     protected Tuple<List<Entry>, Tag> parseEntries(Iterable<CSVRecord> csvEntries) throws CsvException, DateTimeParseException {
-        assert (csvEntries != null);
-
         List<Entry> entries = new ArrayList<>();
         Tag root = new Tag("root");
 
-
         for (CSVRecord record : csvEntries) {
-
             if (!record.isConsistent()) {
                 throw new CsvException("Ungültiges CSV: Inkonsistente Anzahl Felder in Zeile");
             }
-
             // null values are written and read as empty Strings
 
             // String attributes
@@ -145,70 +135,84 @@ public abstract class SerializationController {
             Entry entry = new Entry(record.get(EntryTableHeader.title), record.get(EntryTableHeader.password));
             entry.setUsername(record.get(EntryTableHeader.username));
             entry.setNote(record.get(EntryTableHeader.note));
-
-            String question = record.get(EntryTableHeader.securityQuestion);
-            String answer = record.get(EntryTableHeader.securityQuestionAnswer);
-            SecurityQuestion securityQuestion = new SecurityQuestion(question, answer);
-            entry.setSecurityQuestion(securityQuestion);
+            setSecurityQuestion(record, entry);
 
             // Non String attributes
             // After initialization these attributes have a non empty string representation.
             // Such, if we read an empty string we keep the default value, otherwise we parse the string into
             // an object
-
-            String createdAt = record.get(EntryTableHeader.createdAt);
-            if (!createdAt.isEmpty()) {
-                try {
-                    entry.setCreatedAt(LocalDateTime.parse(createdAt, DATE_TIME_FORMAT));
-                } catch (DateTimeParseException exc) {
-                    throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
-                }
-            }
-
-            String lastModified = record.get(EntryTableHeader.lastModified);
-            if (!createdAt.isEmpty()) {
-                try {
-                    entry.setLastModified(LocalDateTime.parse(lastModified, DATE_TIME_FORMAT));
-                } catch (DateTimeParseException exc) {
-                    throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
-                }
-            }
-
-            String validUntil = record.get(EntryTableHeader.validUntil);
-            if (!validUntil.isEmpty()) {
-                try {
-                    entry.setValidUntil(LocalDate.parse(validUntil, DATE_FORMAT));
-                } catch (DateTimeParseException exc) {
-                    throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
-                }
-            }
-
-            String url = record.get(EntryTableHeader.url);
-            if (!url.isEmpty()) {
-                try {
-                    entry.setUrl(new URL(url));
-                } catch (MalformedURLException exc) {
-                    throw new CsvException("Ungültiges CSV: Ungültige URL");
-                }
-            }
-
-            String tagPaths = record.get(EntryTableHeader.tagPaths)+";";
-            String[] paths = tagPaths.split(";", -42);
-
-            entry.getTags().addAll(
-                    Arrays.stream(paths)
-                            .map("root\\"::concat)
-                            .map(path -> path.split("\\\\"))
-                            .map(path -> createTagFromPath(root, path))
-                            .collect(Collectors.toSet())
-            );
+            setDates(record, entry);
+            setValidUntil(record, entry);
+            setUrl(record, entry);
+            setTags(root, record, entry);
 
             entries.add(entry);
         }
 
         checkModelInvariants(entries);
-
         return new Tuple<>(entries, root);
+    }
+
+    private void setTags(Tag root, CSVRecord record, Entry entry) {
+        String tagPaths = record.get(EntryTableHeader.tagPaths) + ";";
+        String[] paths = tagPaths.split(";", -42);
+
+        entry.getTags().addAll(
+                Arrays.stream(paths)
+                      .map("root\\"::concat)
+                      .map(path -> path.split("\\\\"))
+                      .map(path -> createTagFromPath(root, path))
+                      .collect(Collectors.toSet())
+        );
+    }
+
+    private void setSecurityQuestion(CSVRecord record, Entry entry) {
+        String question = record.get(EntryTableHeader.securityQuestion);
+        String answer = record.get(EntryTableHeader.securityQuestionAnswer);
+        SecurityQuestion securityQuestion = new SecurityQuestion(question, answer);
+        entry.setSecurityQuestion(securityQuestion);
+    }
+
+    private void setDates(CSVRecord record, Entry entry) {
+        String createdAt = record.get(EntryTableHeader.createdAt);
+        if (!createdAt.isEmpty()) {
+            try {
+                entry.setCreatedAt(LocalDateTime.parse(createdAt, DATE_TIME_FORMAT));
+            } catch (DateTimeParseException exc) {
+                throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
+            }
+        }
+
+        String lastModified = record.get(EntryTableHeader.lastModified);
+        if (!createdAt.isEmpty()) {
+            try {
+                entry.setLastModified(LocalDateTime.parse(lastModified, DATE_TIME_FORMAT));
+            } catch (DateTimeParseException exc) {
+                throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
+            }
+        }
+    }
+
+    private void setValidUntil(CSVRecord record, Entry entry) {
+        String validUntil = record.get(EntryTableHeader.validUntil);
+        if (!validUntil.isEmpty()) {
+            try {
+                entry.setValidUntil(LocalDate.parse(validUntil, DATE_FORMAT));
+            } catch (DateTimeParseException exc) {
+                throw new CsvException("Ungültiges CSV: Ungültiges Datumsformat");
+            }
+        }
+    }
+
+    private void setUrl(CSVRecord record, Entry entry) {
+        String url = record.get(EntryTableHeader.url);
+        if (!url.isEmpty()) {
+            try {
+                entry.setUrl(new URL(url));
+            } catch (MalformedURLException exc) {
+                throw new CsvException("Ungültiges CSV: Ungültige URL");
+            }
+        }
     }
 
     private void checkModelInvariants(List<Entry> entries) throws CsvException {
