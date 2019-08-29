@@ -76,6 +76,8 @@ public class PMController {
         }
 
         passwordManager.setMasterPasswordKey(aesKey);
+
+        dirty = true;
     }
 
     /**
@@ -192,7 +194,7 @@ public class PMController {
         return dirty;
     }
 
-    public void setDirty(boolean dirty) {
+    void setDirty(boolean dirty) {
         this.dirty = dirty;
     }
 }
