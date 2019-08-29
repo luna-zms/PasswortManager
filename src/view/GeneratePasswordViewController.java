@@ -202,6 +202,12 @@ public class GeneratePasswordViewController extends GridPane {
             if (actualNode.isSelected()) pwGenSettings.selectCharGroup(NAME_TO_CHAR_GROUP.get(actualNode.getText()));
         }
 
+        if (pwGenSettings.getCharGroups().size() == 0) {
+            WindowFactory.showError("Zeichegruppen können nicht leer sein",
+                                    "Sie müssen mindestens eine Zeichengruppe auswählen, um ein Passwort zu generieren.");
+            return;
+        }
+
         pwField.setText(pwController.generatePassword(pwGenSettings));
     }
 

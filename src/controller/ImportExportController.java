@@ -15,8 +15,11 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class ImportExportController extends SerializationController {
-    public ImportExportController(PasswordManager passwordManager) {
-        super(passwordManager);
+    private PMController pmController;
+
+    public ImportExportController(PMController pmController) {
+        super(pmController.getPasswordManager());
+        this.pmController = pmController;
     }
 
     /**
@@ -36,6 +39,8 @@ public class ImportExportController extends SerializationController {
             ioe.printStackTrace();
             System.exit(1);
         }
+
+        pmController.setDirty(true);
     }
 
     /**

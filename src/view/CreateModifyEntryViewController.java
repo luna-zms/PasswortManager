@@ -115,13 +115,12 @@ public class CreateModifyEntryViewController extends AnchorPane {
                 alert.setHeaderText("Wollen Sie wirklich abbrechen?");
                 Optional<ButtonType> result = alert.showAndWait();
 
-                if (result.isPresent() && result.get() == ButtonType.YES) {
-                    stage.close();
+                if (!result.isPresent() || result.get() != ButtonType.YES) {
                     return;
                 }
-
-                event.consume();
             }
+
+            stage.close();
         });
 
         okButton.setOnAction(event -> {

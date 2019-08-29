@@ -29,6 +29,7 @@ import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import javafx.util.converter.FormatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import util.DateFormatUtil;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -75,7 +76,7 @@ public class CustomExpirationDateViewController extends GridPane {
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Achtung: Neues Ablaufdatum");
             alert.setHeaderText("Ihr aktuelles Ablaufdatum liegt in der Vergangenheit");
-            alert.setContentText("Wollen Sie Ihr Ablaufdatum auf den " + LocalDate.now().plusDays(30).toString() + " setzen?");
+            alert.setContentText("Wollen Sie Ihr Ablaufdatum auf den " + DateFormatUtil.formatDate(LocalDate.now().plusDays(30)) + " setzen?");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) setExpirationDate(LocalDate.now().plusDays(30));
             else {

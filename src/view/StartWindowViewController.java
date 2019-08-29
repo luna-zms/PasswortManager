@@ -123,9 +123,13 @@ public class StartWindowViewController extends GridPane {
 
             if(!choosePasswordAchivePath.getText().isEmpty()) {
             	Path path = Paths.get(choosePasswordAchivePath.getText());
-            	if(path.toFile().exists()) {
-            		fileChooser.setInitialDirectory(path.getParent().toFile());
-            	}
+                File file = path.toFile();
+                File parentFile = file.getParentFile();
+                if(file.exists()) {
+                    fileChooser.setInitialDirectory(parentFile);
+                } else if (parentFile != null && parentFile.exists()) {
+                    fileChooser.setInitialDirectory(parentFile);
+                }
             }
             fileChooser.setTitle("Wähle Passwort-Archiv");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Gatekeeper-Dateien", "*.gate");
