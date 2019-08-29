@@ -47,7 +47,7 @@ public class EntryListViewController extends TableView<Entry> {
     private ObjectProperty<Tag> tag = new SimpleObjectProperty<>();
     private PMController pmController;
 
-    private static final int GHOST_CHANCE = 10;
+    private static final int GHOST_CHANCE = 33;
 
     Media sound;
 
