@@ -37,7 +37,9 @@ public class LoadSaveControllerTest {
         passwordManager.setLastModified(LocalDateTime.now());
         passwordManager.setValidUntil(LocalDateTime.now());
 
-        toTest = new LoadSaveController(passwordManager);
+        PMController pmController = new PMController();
+        pmController.setPasswordManager(passwordManager);
+        toTest = new LoadSaveController(pmController);
 
         tempDir = Files.createTempDirectory("PMLoadSaveControllerTest");
     }

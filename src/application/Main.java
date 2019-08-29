@@ -37,7 +37,7 @@ public class Main extends Application {
         pmController.setPasswordController(new PasswordController());
         pmController.setEntryController(new EntryController(pmController));
         pmController.setTagController(new TagController());
-        pmController.setLoadSaveController(new LoadSaveController(passwordManager));
+        pmController.setLoadSaveController(new LoadSaveController(pmController));
         pmController.setImportExportController(new ImportExportController(passwordManager));
 
         pmController.getTagController().setPMController(pmController);
