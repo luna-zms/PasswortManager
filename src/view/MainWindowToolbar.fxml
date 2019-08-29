@@ -104,6 +104,13 @@
 						<Tooltip text="Passwort generieren" />
 					</tooltip>
 				</Button>
+				<Button fx:id="showExpiredEntriesToolbar" managed="false" visible="false" contentDisplay="GRAPHIC_ONLY"
+						maxHeight="50.0" maxWidth="50.0" mnemonicParsing="false"
+						prefHeight="50.0" prefWidth="50.0" style="-fx-effect: innershadow( gaussian , darkred, 10, 0.5 , 0, 0 );">
+					<tooltip>
+						<Tooltip text="Zeige abgelaufene Einträge" />
+					</tooltip>
+				</Button>
 			</items>
 			<GridPane.margin>
 				<Insets />

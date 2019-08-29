@@ -16,6 +16,7 @@ import java.util.function.Predicate;
 import controller.PMController;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -59,6 +60,9 @@ public class MainWindowToolbarViewController extends GridPane {
 
     @FXML
     private Button generatePasswordToolbar;
+
+    @FXML
+    private Button showExpiredEntriesToolbar;
 
     @FXML
     private Button searchButtonSearchbar;
@@ -106,6 +110,7 @@ public class MainWindowToolbarViewController extends GridPane {
         Image generatePasswordImage;
         Image searchButtonImage;
         Image filterButtonImage;
+        Image showExpiredEntriesImage;
         try {
             addEntryImage = new Image(getClass().getResourceAsStream("/view/resources/add_entry_toolbar_icon.png"));
             saveDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_toolbar_icon.png"));
@@ -115,6 +120,7 @@ public class MainWindowToolbarViewController extends GridPane {
             importImage = new Image(getClass().getResourceAsStream("/view/resources/import_toolbar_icon.png"));
             exportImage = new Image(getClass().getResourceAsStream("/view/resources/export_toolbar_icon.png"));
             generatePasswordImage = new Image(getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon.png"));
+            showExpiredEntriesImage = new Image(getClass().getResourceAsStream("/view/resources/entries_expired_toolbar_icon.png"));
             searchButtonImage = new Image(getClass().getResourceAsStream("/view/resources/search_icon_15px.png"));
             filterButtonImage = new Image(getClass().getResourceAsStream("/view/resources/filter_icon_20px.png"));
         } catch( Exception e ) {
@@ -146,6 +152,8 @@ public class MainWindowToolbarViewController extends GridPane {
 
         generatePasswordToolbar.setGraphic(new ImageView(generatePasswordImage));
         initializeActionsGeneratePassword();
+
+        showExpiredEntriesToolbar.setGraphic(new ImageView(showExpiredEntriesImage));
 
         searchButtonSearchbar.setGraphic(new ImageView(searchButtonImage));
         initializeActionsSearchButton();
@@ -314,6 +322,29 @@ public class MainWindowToolbarViewController extends GridPane {
         });
     }
 
+    private void checkExpiredExisting() {
+        if( !pmController.getEntryController().filter(Entry::isExpired).isEmpty() ) {
+            showExpiredEntriesToolbar.setManaged(true);
+            showExpiredEntriesToolbar.setVisible(true);
+        } else {
+            showExpiredEntriesToolbar.setManaged(false);
+            showExpiredEntriesToolbar.setVisible(false);
+        }
+    }
+
+    private void initializeActionsShowExpiredEntries() {
+        Predicate<Entry> filterExpired = Entry::isExpired;
+        showExpiredEntriesToolbar.setOnAction(event -> {
+            onSearchRefreshAction.accept(filterExpired, new Tuple<>(true, false));
+        });
+
+        checkExpiredExisting();
+
+        pmController.getPasswordManager().entriesObservable().addListener(
+                (InvalidationListener) event -> checkExpiredExisting()
+        );
+    }
+
     private void initializeActionsSearchButton() {
         searchButtonSearchbar.setOnAction(event -> {
             String searchQuery = searchFieldSearchbar.getText().toLowerCase();
@@ -390,6 +421,8 @@ public class MainWindowToolbarViewController extends GridPane {
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
+
+        initializeActionsShowExpiredEntries();
     }
 
     public void setOnSearchRefreshAction(BiConsumer<Predicate<Entry>, Tuple<Boolean,Boolean>> onSearchRefreshAction) {
