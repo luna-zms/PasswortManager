@@ -127,15 +127,13 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     private void modifyEntry(ObjectProperty<Tag> tag) {
-        CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
         Entry entry = getSelectionModel().getSelectedItem();
         if (entry != null) {
-            createModifyEntryViewController.setOldEntry(entry);
+            WindowFactory.showCreateModifyEntryView(pmController, entry);
         } else {
-            createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
-        }
+            WindowFactory.showCreateModifyEntryView(pmController, Collections.singletonList(tag.getValue()));
 
-        WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
+        }
     }
 
     private static MenuItem createMenuItem(
@@ -257,8 +255,7 @@ public class EntryListViewController extends TableView<Entry> {
 
     private MenuItem createAddEntry() {
         return createMenuItem("Eintrag erstellen",
-                              event -> WindowFactory.showDialog("Eintrag erstellen",
-                                                                createCreateModifyEntryViewController()),
+                              event -> WindowFactory.showCreateModifyEntryView(pmController),
                               new ReadOnlyBooleanWrapper(false),
                               new KeyCharacterCombination("I", KeyCombination.CONTROL_DOWN));
     }
@@ -267,11 +264,7 @@ public class EntryListViewController extends TableView<Entry> {
             ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
     ) {
         return createMenuItem("Eintrag bearbeiten", event -> {
-            CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-            createModifyEntryViewController.setOldEntry(entry.getValue());
-
-            WindowFactory.showDialog("Eintrag bearbeiten", createModifyEntryViewController);
-
+            WindowFactory.showCreateModifyEntryView(pmController, entry.getValue());
             // TODO: Maybe update displayed entry if necessary
         }, entryIsNull, new KeyCodeCombination(KeyCode.ENTER));
     }
@@ -292,14 +285,6 @@ public class EntryListViewController extends TableView<Entry> {
                  .filter(type -> type == ButtonType.OK)
                  .ifPresent(res -> pmController.getEntryController().removeEntry(entryValue));
         }, entryIsNull, new KeyCodeCombination(KeyCode.DELETE));
-    }
-
-    private CreateModifyEntryViewController createCreateModifyEntryViewController() {
-        CreateModifyEntryViewController createModifyEntryViewController = new CreateModifyEntryViewController();
-        createModifyEntryViewController.setPmController(pmController);
-        createModifyEntryViewController.init();
-
-        return createModifyEntryViewController;
     }
 
     private class EntryListCell extends TableCell<Entry, String> {

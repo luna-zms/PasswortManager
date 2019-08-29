@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import model.Entry;
 import model.SecurityQuestion;
 import model.Tag;
@@ -100,6 +101,21 @@ public class CreateModifyEntryViewController extends AnchorPane {
         String errorTitle = "Fehler: Eintrag erstellen";
 
         passwordQualityBar.setQuality(0);
+        
+        this.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, evt -> {
+        	System.out.println("Test");
+            if (isModified()) {
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Abbrechen bestätigen");
+                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
+                alert.setContentText("Alle ihre Änderungen gehen verloren!");
+                Optional<ButtonType> result = alert.showAndWait();
+                
+                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+                	evt.consume();
+                }
+            }
+        });
 
         cancelButton.setOnAction(event -> {
             if (isModified()) {
@@ -199,6 +215,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         heightProperty().addListener((observable, oldHeight, newHeight) ->
                 tagTreePaneWithButtons.setMaxHeight(newHeight.doubleValue() - 60));
     }
+    
 
     /**
      * Helper method to show an Alert dialog.
@@ -211,7 +228,11 @@ public class CreateModifyEntryViewController extends AnchorPane {
         WindowFactory.showError(header, content, title);
     }
 
-    private boolean isModified() {
+    /**
+     * isModified() is true if the values entered into the Gui differ from those in the set oldEntry
+     * @return
+     */
+    public boolean isModified() {
         if (oldEntry == null) {
             if (!entryName.getText().isEmpty()) return true;
             if (!userName.getText().isEmpty()) return true;

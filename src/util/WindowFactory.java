@@ -1,12 +1,20 @@
 package util;
 
+import java.util.List;import java.util.Optional;
+
 import application.Main;
+import controller.PMController;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Entry;
+import model.Tag;
+import view.CreateModifyEntryViewController;
 
 public class WindowFactory {
     private WindowFactory() {
@@ -37,10 +45,15 @@ public class WindowFactory {
     }
 
     public static void showDialog(String title, Parent content, boolean resizable) {
+        Stage stage = prepareDialog(title, content, resizable);
+        stage.showAndWait();
+    }
+    
+    public static Stage prepareDialog(String title, Parent content, boolean resizable) {
         Stage stage = createStage(title);
         stage.setScene(createScene(content));
         stage.setResizable(resizable);
-        stage.showAndWait();
+        return stage;
     }
 
     public static void showError(String header, String content) {
@@ -73,5 +86,79 @@ public class WindowFactory {
         alert.setHeaderText(null);
 
         return alert;
+    }
+    
+    public static void showCreateModifyEntryView(PMController pmController, Entry oldEntry) {
+    	CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
+    	controller.setPmController(pmController);
+    	controller.init();
+    	controller.setOldEntry(oldEntry);
+
+    	
+    	Stage stage = prepareDialog("Eintrag bearbeiten", controller, false);
+    	stage.setOnCloseRequest(evt -> {
+    		if (controller.isModified()) {
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Abbrechen bestätigen");
+                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
+                alert.setContentText("Alle ihre Änderungen gehen verloren!");
+                Optional<ButtonType> result = alert.showAndWait();
+                
+                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+                	evt.consume();
+                	return;
+                }
+            }
+            stage.close();
+    	});
+    	stage.showAndWait();
+    }
+    
+    public static void showCreateModifyEntryView(PMController pmController, List<Tag> checkedTags) {
+    	CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
+    	controller.setPmController(pmController);
+    	controller.init();
+    	controller.setCheckedTags(checkedTags);
+
+    	
+    	Stage stage = prepareDialog("Eintrag erstellen", controller, false);
+    	stage.setOnCloseRequest(evt -> {
+    		if (controller.isModified()) {
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Abbrechen bestätigen");
+                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
+                alert.setContentText("Alle ihre Änderungen gehen verloren!");
+                Optional<ButtonType> result = alert.showAndWait();
+                
+                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+                	return;
+                }
+            }
+            stage.close();
+    	});
+    	stage.showAndWait();
+    }
+    
+    public static void showCreateModifyEntryView(PMController pmController) {
+    	CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
+    	controller.setPmController(pmController);
+    	controller.init();
+    	
+    	Stage stage = prepareDialog("Eintrag erstellen", controller, false);
+    	stage.setOnCloseRequest(evt -> {
+    		if (controller.isModified()) {
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Abbrechen bestätigen");
+                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
+                alert.setContentText("Alle ihre Änderungen gehen verloren!");
+                Optional<ButtonType> result = alert.showAndWait();
+                
+                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+                	return;
+                }
+            }
+            stage.close();
+    	});
+    	stage.showAndWait();
     }
 }
