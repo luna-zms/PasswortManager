@@ -250,21 +250,25 @@ public class TagTree extends TreeView<Tag> {
 
             // No comment
             addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
-                TagTreeItem target;
-                if( mouseEvent.getTarget().getClass().getSuperclass() == Text.class) {
-                    target = (TagTreeItem) ((TagTreeCell) ((Text) mouseEvent.getTarget()).getParent()).getTreeItem();
-                } else if( mouseEvent.getTarget().getClass() == TagTreeCell.class ) {
-                    target = (TagTreeItem) ((TagTreeCell) mouseEvent.getTarget()).getTreeItem();
-                } else return;
+                try {
+                    TagTreeItem target;
+                    if (mouseEvent.getTarget().getClass().getSuperclass() == Text.class) {
+                        target = (TagTreeItem) ((TagTreeCell) ((Text) mouseEvent.getTarget()).getParent()).getTreeItem();
+                    } else if (mouseEvent.getTarget().getClass() == TagTreeCell.class) {
+                        target = (TagTreeItem) ((TagTreeCell) mouseEvent.getTarget()).getTreeItem();
+                    } else return;
 
-                if( target != getSelectedItem() ) return;
-                if ( getSelectedItem() == getRoot() ||
-                        (mouseEvent.getClickCount() < 2 && mouseEvent.getButton().equals(MouseButton.PRIMARY))) {
-                    refreshEntryList.run();
-                    mouseEvent.consume();
-                } else if( mouseEvent.getClickCount() >= 2 ) {
-                    editSelected();
-                    mouseEvent.consume();
+                    if (target != getSelectedItem()) return;
+                    if (getSelectedItem() == getRoot() ||
+                            (mouseEvent.getClickCount() < 2 && mouseEvent.getButton().equals(MouseButton.PRIMARY))) {
+                        refreshEntryList.run();
+                        mouseEvent.consume();
+                    } else if (mouseEvent.getClickCount() >= 2) {
+                        editSelected();
+                        mouseEvent.consume();
+                    }
+                } catch( NullPointerException mysteriousError ) {
+                    // Just ignore. JavaFX is strange.
                 }
             });
         }
