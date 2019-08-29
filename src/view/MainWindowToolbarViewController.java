@@ -39,6 +39,8 @@ import util.CsvException;
 import factory.WindowFactory;
 import util.Tuple;
 
+import javax.crypto.SecretKey;
+
 public class MainWindowToolbarViewController extends GridPane {
 
     @FXML
@@ -90,6 +92,8 @@ public class MainWindowToolbarViewController extends GridPane {
     private Consumer<Path> openDatabaseFileAction;
 
     private Runnable onTreeViewRefresh;
+
+    private boolean dirtyProblemSignal = true;
 
     public MainWindowToolbarViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
@@ -218,6 +222,7 @@ public class MainWindowToolbarViewController extends GridPane {
                     Duration.millis(2000),
                     ae -> saveDatabaseToolbar.setEffect(null)));
             timeline.play();
+            dirtyProblemSignal = false;
         });
 
         KeyCombination keyCombination = new KeyCodeCombination(KeyCode.S,
@@ -290,10 +295,27 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsSetMasterPassword() {
         setMasterPasswordToolbar.setOnAction(event -> {
+            SecretKey oldKey = pmController.getPasswordManager().getMasterPasswordKey();
             SetMasterPasswordViewController dialogController = new SetMasterPasswordViewController();
             dialogController.setPmController(pmController);
             dialogController.setMode(true);
             WindowFactory.showDialog("Einstellungen: Master-Passwort setzen", dialogController);
+            if( dialogController.getPasswordSet() ) {
+                saveDatabaseToolbar.getOnAction().handle(null);
+                if( !dirtyProblemSignal ) {
+                    // Make sure to don't show the information alert, even though the "save" task
+                    // did fail
+                    dirtyProblemSignal = true;
+                    WindowFactory.createAlert(Alert.AlertType.INFORMATION,
+                            "Ihr Passwort wurde erfolgreich gesetzt!").showAndWait();
+                } else {
+                    errorMessage("Fehlgeschlagen", "Ihr Passwort konnte nicht gespeichert werden!");
+                    pmController.getPasswordManager().setMasterPasswordKey(oldKey);
+                    // If something failed when trying to save reset the password, so
+                    // the user doesn't have to worry, which of his passwords is now
+                    // in the system.
+                }
+            }
         });
 
         KeyCombination keyCombination = new KeyCodeCombination(KeyCode.S,
