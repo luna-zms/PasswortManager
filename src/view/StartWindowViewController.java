@@ -99,7 +99,7 @@ public class StartWindowViewController extends GridPane {
     }
 
     private void loadPathFromProps() {
-        try (FileInputStream fis = new FileInputStream(PMController.configFile);
+        try (FileInputStream fis = new FileInputStream(PMController.CONFIG_FILE);
              InputStreamReader isr = new InputStreamReader(fis);
              BufferedReader reader = new BufferedReader(isr)
         ) {
