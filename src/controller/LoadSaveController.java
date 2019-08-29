@@ -238,7 +238,7 @@ public class LoadSaveController extends SerializationController {
             throw new RuntimeException(e);
         } catch (InvalidKeyException e) {
             // Internal error: The master password key was invalid, meaning there was an error in the cdf!
-            WindowFactory.showError("Interner Fehler beim Laden", "Es ist ein interner Fehler aufgetreten. Möglicherweise war das angegebene Masterpasswort ungültig.\n\n" + e.getLocalizedMessage());
+            WindowFactory.showError("Interner Fehler beim Laden", "Es ist ein interner Fehler aufgetreten. Möglicherweise war das angegebene Master-Passwort ungültig.\n\n" + e.getLocalizedMessage());
             throw new RuntimeException(e);
         } catch (IOException e) {
             // Error while accessing the file (path to file didn't exist, missing write permissions, etc)

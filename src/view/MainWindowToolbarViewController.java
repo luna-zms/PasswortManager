@@ -198,7 +198,7 @@ public class MainWindowToolbarViewController extends GridPane {
                 pmController.getLoadSaveController().save(file.toPath());
             } catch (CsvException exc) {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines internen Fehler ist das Speichern" +
-                        "fehlgeschlagen. Versuchen Sie es später erneut und starten sie eventuell Ihren Computer neu. " +
+                        "fehlgeschlagen. Versuchen Sie es später erneut und starten Sie eventuell Ihren Computer neu. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
             } catch (IOException ioExc) {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines Ausgabefehlers ist das Speichern " +
