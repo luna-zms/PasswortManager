@@ -66,7 +66,7 @@ public class LoadSaveControllerTest {
     public void roundTripEmptyTest() throws IOException {
         passwordManager.setRootTag(new Tag("roundTripEmptyTest"));
 
-        roundTrip("roundTripEmptyTest.pwds");
+        roundTrip("roundTripEmptyTest.gate");
 
         assertTrue(passwordManager.getEntries().isEmpty());
         assertTrue(ListUtils.tagEquals(new Tag("roundTripEmptyTest"), passwordManager.getRootTag()));
@@ -85,7 +85,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        roundTrip("roundTripOnlyRootTagAndOneEntry.pwds");
+        roundTrip("roundTripOnlyRootTagAndOneEntry.gate");
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
@@ -107,7 +107,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        roundTrip("roundTripOnlyManyTagsAndOneEntry.pwds");
+        roundTrip("roundTripOnlyManyTagsAndOneEntry.gate");
 
         assertEquals(passwordManager.getEntries().size(), 1);
         assertTrue("Left: " + entry + "\nRight: " + passwordManager.getEntries().get(0), entryEquals(entry, passwordManager.getEntries().get(0)));
@@ -131,7 +131,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        Path testFile = Paths.get(tempDir.toString(), "testLoadWithExisting.pwds");
+        Path testFile = Paths.get(tempDir.toString(), "testLoadWithExisting.gate");
 
         toTest.save(testFile);
 
@@ -163,7 +163,7 @@ public class LoadSaveControllerTest {
         passwordManager.setRootTag(testTag);
         passwordManager.getEntries().add(entry);
 
-        Path testFile = Paths.get(tempDir.toString(), "testLoadOverride.pwds");
+        Path testFile = Paths.get(tempDir.toString(), "testLoadOverride.gate");
 
         toTest.save(testFile);
 

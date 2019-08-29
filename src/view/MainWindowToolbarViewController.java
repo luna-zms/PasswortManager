@@ -197,7 +197,7 @@ public class MainWindowToolbarViewController extends GridPane {
             dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Speichere Kopie als");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Gatekeeper-Dateien", "*.gate");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
             File file = fileChooser.showSaveDialog(dialog);
