@@ -11,14 +11,20 @@ public class DateFormatUtil {
     }
 
     public static String formatDate(LocalDate date) {
-        return date != null ?
-               date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.GERMAN)) :
-               "";
+        return formatDate(date, DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.GERMAN));
     }
 
     public static String formatDate(LocalDateTime dateTime) {
-        return dateTime != null ?
-               dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT).withLocale(Locale.GERMAN)) :
-               "";
+        return formatDate(dateTime,
+                          DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+                                           .withLocale(Locale.GERMAN));
+    }
+
+    public static String formatDate(LocalDate date, DateTimeFormatter format) {
+        return date != null ? date.format(format) : "";
+    }
+
+    public static String formatDate(LocalDateTime dateTime, DateTimeFormatter format) {
+        return dateTime != null ? dateTime.format(format) : "";
     }
 }
