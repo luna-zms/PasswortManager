@@ -26,7 +26,9 @@ import java.util.Collections;
 
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
-    
+
+    private Runnable refreshEntryList;
+
     private boolean addingTag;
 
     public BorderPane createPaneWithButtons() {
@@ -133,7 +135,7 @@ public class TagTree extends TreeView<Tag> {
 
     public void createBelowSelected() {
     	if (addingTag) return;
-    	
+
     	addingTag = true;
         TreeItem<Tag> selected = getSelectedItem();
         TagTreeItem newItem = new TagTreeItem(null);
@@ -256,9 +258,10 @@ public class TagTree extends TreeView<Tag> {
 
                 if( target != getSelectedItem() ) return;
                 if ( getSelectedItem() == getRoot() ||
-                        (mouseEvent.getClickCount() < 2 && mouseEvent.getButton().equals(MouseButton.PRIMARY)))
+                        (mouseEvent.getClickCount() < 2 && mouseEvent.getButton().equals(MouseButton.PRIMARY))) {
+                    refreshEntryList.run();
                     mouseEvent.consume();
-                else if( mouseEvent.getClickCount() >= 2 ) {
+                } else if( mouseEvent.getClickCount() >= 2 ) {
                     editSelected();
                     mouseEvent.consume();
                 }
@@ -305,7 +308,7 @@ public class TagTree extends TreeView<Tag> {
 
         private void finishEdit(String str) {
             if (getTreeItem() == null) return;
-            
+
 
             TreeItem<Tag> parentTag = getTreeItem().getParent();
 
@@ -411,5 +414,9 @@ public class TagTree extends TreeView<Tag> {
 
             if (item != null) item.setChecked(newValue);
         }
+    }
+
+    public void setRefreshEntryList(Runnable refreshEntryList) {
+        this.refreshEntryList = refreshEntryList;
     }
 }

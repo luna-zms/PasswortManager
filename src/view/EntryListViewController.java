@@ -316,7 +316,7 @@ public class EntryListViewController extends TableView<Entry> {
         }
     }
 
-    private void applyFilter() {
+    void applyFilter() {
         // Always non-null as it's initialized to the root tag
         Tag newTag = tag.getValue();
 
