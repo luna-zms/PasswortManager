@@ -99,6 +99,17 @@ public class Main extends Application {
             passwordManager.getEntries().clear();
             passwordManager.setRootTag(getRootTagFromPath(path));
             pmController.setPasswordManager(passwordManager);
+            try {
+                pmController.getLoadSaveController().save(path);
+            } catch (IOException exc) {
+                Alert alert = WindowFactory.createAlert(Alert.AlertType.WARNING,
+                                                        "Konnte Datei nicht speichern. Bitte manuell speichern.\n\nNähere Informationen:\n" +
+                                                        exc.getLocalizedMessage());
+
+                alert.setHeaderText("Dateifehler");
+
+                alert.showAndWait();
+            }
         }
 
         return ret;
