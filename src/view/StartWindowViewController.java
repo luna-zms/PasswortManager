@@ -77,15 +77,13 @@ public class StartWindowViewController extends GridPane {
         });
 
         createArchiveButton.setOnAction(event -> {
-        	Stage dialog = WindowFactory.createStage();
-        	dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             fileChooser.setTitle("Erstelle neues Passwort-Archiv");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
-            File file = fileChooser.showSaveDialog(dialog);
+            File file = fileChooser.showSaveDialog((Stage) getScene().getWindow());
             if (file == null) return;
             path = file.toPath();
             if(!file.getPath().endsWith(".pwds")) {
@@ -114,8 +112,6 @@ public class StartWindowViewController extends GridPane {
 
     private void initFileChooser() {
         fileButton.setOnAction(event -> {
-        	Stage dialog = WindowFactory.createStage();
-        	dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
@@ -129,7 +125,7 @@ public class StartWindowViewController extends GridPane {
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
-            File file = fileChooser.showOpenDialog(dialog);
+            File file = fileChooser.showOpenDialog((Stage) getScene().getWindow());
 
             if (file == null) return;
             choosePasswordAchivePath.setText(file.toString());

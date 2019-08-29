@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import model.Entry;
 import util.CsvException;
 import factory.WindowFactory;
+import util.Tuple;
 
 public class MainWindowToolbarViewController extends GridPane {
 
@@ -68,7 +69,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private PMController pmController;
 
-    private BiConsumer<Predicate<Entry>, Boolean> onSearchRefreshAction;
+    private BiConsumer<Predicate<Entry>, Tuple<Boolean,Boolean>> onSearchRefreshAction;
 
     private Consumer<Path> openDatabaseFileAction;
 
@@ -180,14 +181,12 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsSaveAsDatabase() {
         saveAsDatabaseToolbar.setOnAction(event -> {
-            Stage dialog = WindowFactory.createStage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Speichere Kopie als");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
-            File file = fileChooser.showSaveDialog(dialog);
+            File file = fileChooser.showSaveDialog((Stage) getScene().getWindow());
 
             if (file == null) return;
 
@@ -224,14 +223,12 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsImportDatabase() {
         importDatabaseToolbar.setOnAction(event -> {
-            Stage dialog = WindowFactory.createStage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Importiere Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
-            File file = fileChooser.showOpenDialog(dialog);
+            File file = fileChooser.showOpenDialog((Stage) getScene().getWindow());
 
             if (file == null) return;
             if (!file.exists()) {
@@ -256,14 +253,12 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsExportDatabase() {
         exportDatabaseToolbar.setOnAction(event -> {
-            Stage dialog = WindowFactory.createStage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exportiere Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
             fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setSelectedExtensionFilter(extFilter);
-            File file = fileChooser.showSaveDialog(dialog);
+            File file = fileChooser.showSaveDialog((Stage) getScene().getWindow());
 
             if (file == null) return;
 
@@ -307,6 +302,7 @@ public class MainWindowToolbarViewController extends GridPane {
             LocalDate expiredUntil = filterExpiringSearchbar.getValue();
 
             boolean searchEverywhere = searchEverywhereSearchbar.isSelected();
+            boolean ghostsActivated = searchQuery.matches("^who you gonna call[?]?[!]?$");
 
             onSearchRefreshAction.accept((entry -> {
                 LocalDate validUntil = entry.getValidUntil();
@@ -357,7 +353,7 @@ public class MainWindowToolbarViewController extends GridPane {
                 }
 
                 return notYetFound.isEmpty();
-            }), searchEverywhere);
+            }), new Tuple<>(searchEverywhere, ghostsActivated));
         });
     }
 
@@ -365,7 +361,7 @@ public class MainWindowToolbarViewController extends GridPane {
         this.pmController = pmController;
     }
 
-    public void setOnSearchRefreshAction(BiConsumer<Predicate<Entry>, Boolean> onSearchRefreshAction) {
+    public void setOnSearchRefreshAction(BiConsumer<Predicate<Entry>, Tuple<Boolean,Boolean>> onSearchRefreshAction) {
         this.onSearchRefreshAction = onSearchRefreshAction;
     }
 

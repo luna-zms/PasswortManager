@@ -101,7 +101,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         String errorTitle = "Fehler: Eintrag erstellen";
 
         passwordQualityBar.setQuality(0);
-        
+
         this.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, evt -> {
         	System.out.println("Test");
             if (isModified()) {
@@ -110,7 +110,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
                 alert.setHeaderText("Wollen Sie wirklich abbrechen?");
                 alert.setContentText("Alle ihre Änderungen gehen verloren!");
                 Optional<ButtonType> result = alert.showAndWait();
-                
+
                 if (result.isPresent() && result.get() == ButtonType.CANCEL) {
                 	evt.consume();
                 }
@@ -124,12 +124,12 @@ public class CreateModifyEntryViewController extends AnchorPane {
                 alert.setHeaderText("Wollen Sie wirklich abbrechen?");
                 alert.setContentText("Alle ihre Änderungen gehen verloren!");
                 Optional<ButtonType> result = alert.showAndWait();
-                
+
                 if (result.isPresent() && result.get() == ButtonType.CANCEL) {
                 	return;
                 }
             }
-            
+
             Stage stage = (Stage) getScene().getWindow();
             stage.close();
         });
@@ -215,7 +215,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         heightProperty().addListener((observable, oldHeight, newHeight) ->
                 tagTreePaneWithButtons.setMaxHeight(newHeight.doubleValue() - 60));
     }
-    
+
 
     /**
      * Helper method to show an Alert dialog.
@@ -255,7 +255,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         	System.out.println(answer.getText());
         	System.out.println(notes.getText());
         	System.out.println(tagTree.getCheckedTags());
-        	
+
             if (!entryName.getText().equals(oldEntry.getTitle())) return true;
             if (!userName.getText().equals(oldEntry.getUsername())) return true;
             if (!password.getText().equals(oldEntry.getPassword())) return true;
@@ -267,9 +267,9 @@ public class CreateModifyEntryViewController extends AnchorPane {
             if (!securityQuestion.getText().equals(question.getQuestion())) return true;
             if (!answer.getText().equals(question.getAnswer())) return true;
             if (!notes.getText().equals(oldEntry.getNote())) return true;
-            
+
             if (!ListUtils.compare(tagTree.getCheckedTags(), oldEntry.getTags())) return true;
-            
+
             return false;
         }
     }
