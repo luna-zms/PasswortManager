@@ -224,8 +224,8 @@ public class MainWindowToolbarViewController extends GridPane {
                 Alert alert = WindowFactory.createAlert(Alert.AlertType.CONFIRMATION, "Sie haben ungespeicherte Änderungen. Alle ihre Änderungen gehen verloren!");
 
                 alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-                alert.setTitle("Überschreiben bestätigen");
-                alert.setHeaderText("Möchten Sie ihre Änderungen wirklich überschreiben?");
+                alert.setTitle("Verwerfen bestätigen");
+                alert.setHeaderText("Möchten Sie ihre Änderungen wirklich verwerfen?");
 
                 Optional<ButtonType> result = alert.showAndWait();
 
