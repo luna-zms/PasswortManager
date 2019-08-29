@@ -50,6 +50,7 @@ public class SerializationControllerTest extends SerializationController {
     private static final String[] PATH_COMPONENTS = new String[]{"foo", "bar", "baz", "blub", "test", "test2"};
     private static final int MAX_PATH_LENGTH = 25;
     private static final int MAX_PATH_LIST_LENGTH = 100;
+    private static final int MAX_RANDOM_FUZZING_LENGTH = 1000;
 
     public SerializationControllerTest() {
         super(null);
@@ -159,6 +160,7 @@ public class SerializationControllerTest extends SerializationController {
      */
     @Test
     public void parseEntriesFuzzer() {
+    	System.out.println("Starting CSV fuzzing");
     	for (int i = 0; i < FUZZER_RUNS; i ++) {
     		System.out.print("Fuzzing Run: " + (i + 1));
     		String csv = generateRandomCSV();
@@ -174,6 +176,29 @@ public class SerializationControllerTest extends SerializationController {
     			System.out.println(exp.getMessage());
     			System.out.println("CSV file is:");
     			System.out.println(csv);
+    			fail();
+    		}
+    	}
+    }
+    
+    @Test
+    public void parseEntriesRandomFuzzer() {
+    	System.out.println("Starting Random String fuzzing");
+    	for(int i = 0; i < FUZZER_RUNS; i++) {
+    		System.out.print("Fuzzing Run: " + (i + 1));
+    		String str = randomString(ThreadLocalRandom.current().nextInt(MAX_RANDOM_FUZZING_LENGTH));
+    		try {
+    			parseCSVString(str);
+    			System.out.println("    Successful");
+    		}
+    		catch (CsvException exp) {
+    			System.out.println("    " + exp.getMessage());
+    		}
+    		catch (Exception exp) {
+    			System.out.println("Fuzzing failed. Got Exception:");
+    			System.out.println(exp.getMessage());
+    			System.out.println("Fuzzing Data is:");
+    			System.out.println(str);
     			fail();
     		}
     	}
