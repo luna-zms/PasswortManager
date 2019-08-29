@@ -57,10 +57,6 @@ public class Entry {
         validUntil = null;
     }
 
-    private static String stringFromDateTime(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : "";
-    }
-
     public String getTitle() {
         return title;
     }
