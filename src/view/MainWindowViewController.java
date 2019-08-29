@@ -70,8 +70,6 @@ public class MainWindowViewController extends BorderPane {
         mainWindowToolbar.setOnTreeViewRefresh(() -> tagTree.init(false, pmController));
 
         tagTree.init(false, pmController);
-        // Prevent limbo state of no tag being selected
-        tagTree.getSelectionModel().selectFirst();
     }
 
     public void setPmController(PMController pmController) {

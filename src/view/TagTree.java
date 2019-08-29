@@ -92,6 +92,7 @@ public class TagTree extends TreeView<Tag> {
         setCellFactory(treeView -> new TagTreeCell(hasCheckBoxes));
 
         setRoot(new TagTreeItem(controller.getPasswordManager().getRootTag()));
+        getSelectionModel().select(getRoot());
     }
 
     private TreeItem<Tag> getSelectedItem() {
