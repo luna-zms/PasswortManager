@@ -2,9 +2,13 @@ package view;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.Format;
+import java.text.NumberFormat;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
+import factory.WindowFactory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,7 +22,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextFormatter.Change;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.util.StringConverter;
+import javafx.util.converter.FormatStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -88,58 +98,33 @@ public class CustomExpirationDateViewController extends GridPane {
 
             e.printStackTrace();
         }
-
+    
         daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,2147483647-1));//LocalDate.now().until(LocalDate.MAX).getDays())
-        
+      
     }
-    /*
-    private String getNumber(String value) {
-        String n = "";
-        try {
-            return String.valueOf(Integer.parseInt(value));
-        } catch (Exception e) {
-            String[] array = value.split("");
-            for (String tab : array) {
-                try {
-                    //System.out.println(tab);
-                    n = n.concat(String.valueOf(Integer.parseInt(String.valueOf(tab))));
-                } catch (Exception ex) {
-                    //System.out.println("not nomber");
-                }
-            }
-            return n;
-        }
-    }
-     */   
     @FXML
     void initialize() {
         checkBoxExpirationDate.setSelected(false);
         datePickerExpirationDate.setDisable(true);
         daysUntilExpiration.setDisable(true);
-        /*
-        daysUntilExpiration.getEditor().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.isEmpty()) {
-                    try {
-                        long pointI = Integer.parseInt(newValue);
-                        daysUntilExpiration.getEditor().setText(String.valueOf(pointI));
-                        daysUntilExpiration.increment(0);
-                        
-                    } catch (Exception e) {
-                    	daysUntilExpiration.getEditor().clear();
-                    	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
-                    	daysUntilExpiration.increment(0);
-                    	
-                    }
-                } else {
-                	daysUntilExpiration.getEditor().setText("1");
-                	daysUntilExpiration.increment(0);
-                	
-                }
+        
+        UnaryOperator<Change> integerFilter = change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("([1-9][0-9]*)?")) { 
+                return change;
             }
+            return null;
+        };
+        /*
+        daysUntilExpiration.getEditor().textProperty().addListener((obs , old , newVal) -> {
+        	if (obs.equals(KeyCode.ENTER)){
+        		if (newVal.equals("")) daysUntilExpiration.getValueFactory().setValue(1);
+        	}
         });
         */
+        daysUntilExpiration.getEditor().setTextFormatter(
+        	    new TextFormatter<Integer>(new IntegerStringConverter(), 1, integerFilter));
+        
         datePickerExpirationDate.setOnAction(event -> {
             LocalDate date = datePickerExpirationDate.getValue();
             if(date != null){
@@ -154,7 +139,11 @@ public class CustomExpirationDateViewController extends GridPane {
         });
 
         daysUntilExpiration.valueProperty().addListener((obs, oldValue, newValue) -> {
-            datePickerExpirationDate.setValue(LocalDate.now().plusDays(newValue));
+        	if (newValue != null) {
+        		datePickerExpirationDate.setValue(LocalDate.now().plusDays(newValue));
+        	} else {
+        		daysUntilExpiration.getValueFactory().setValue(1);
+        	}
         });
 
         checkBoxExpirationDate.setOnAction(event -> {
