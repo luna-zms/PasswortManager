@@ -6,7 +6,7 @@ In diesem Repository entsteht euer erstes Projekt im Sopra. Für Planung, Modell
 
 Wenn programmiert wird, vergesst nicht, regelmäßig den PMD-Bericht hier oder direkt in Eclipse zu überprüfen.
 
-[PMD-Bericht](https://sopra.cs.tu-dortmund.de/bin/pmd.py?XXY=19B&GROUPNUMBER=1&PROJECT=1)
+[PMD-Bericht](https://sopra.cs.tu-dortmund.de/bin/pmd-experimental.py?XXY=19B&GROUPNUMBER=1&PROJECT=1)
 
 ## Setting up Intellij
 

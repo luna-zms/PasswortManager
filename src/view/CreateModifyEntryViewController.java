@@ -16,7 +16,7 @@ import model.SecurityQuestion;
 import model.Tag;
 import util.ListUtils;
 import util.PasswordQualityUtil;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

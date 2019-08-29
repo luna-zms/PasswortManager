@@ -20,7 +20,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
 import model.Tag;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 import java.util.Collections;
 

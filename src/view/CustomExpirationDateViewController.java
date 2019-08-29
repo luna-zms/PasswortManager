@@ -54,7 +54,8 @@ public class CustomExpirationDateViewController extends GridPane {
             datePickerExpirationDate.setValue(date);
             datePickerExpirationDate.setDisable(false);
             daysUntilExpiration.setDisable(false);
-            datePickerExpirationDate.fireEvent(new ActionEvent());
+            //checkExpirationDate();
+            //datePickerExpirationDate.fireEvent(new ActionEvent());
         }
     }
 
@@ -73,6 +74,7 @@ public class CustomExpirationDateViewController extends GridPane {
                 daysUntilExpiration.setDisable(true);
             }
         }
+        datePickerExpirationDate.fireEvent(new ActionEvent());
     }
 
     public CustomExpirationDateViewController() {
@@ -90,7 +92,7 @@ public class CustomExpirationDateViewController extends GridPane {
         daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,2147483647-1));//LocalDate.now().until(LocalDate.MAX).getDays())
         
     }
-    
+    /*
     private String getNumber(String value) {
         String n = "";
         try {
@@ -108,13 +110,13 @@ public class CustomExpirationDateViewController extends GridPane {
             return n;
         }
     }
-        
+     */   
     @FXML
     void initialize() {
         checkBoxExpirationDate.setSelected(false);
         datePickerExpirationDate.setDisable(true);
         daysUntilExpiration.setDisable(true);
-        
+        /*
         daysUntilExpiration.getEditor().textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -137,7 +139,7 @@ public class CustomExpirationDateViewController extends GridPane {
                 }
             }
         });
-        
+        */
         datePickerExpirationDate.setOnAction(event -> {
             LocalDate date = datePickerExpirationDate.getValue();
             if(date != null){

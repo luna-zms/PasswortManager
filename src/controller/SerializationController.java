@@ -205,13 +205,13 @@ public abstract class SerializationController {
 
             entries.add(entry);
         }
-        
-        checkModelInvariants(entries, root);
+
+        checkModelInvariants(entries);
 
         return new Tuple<>(entries, root);
     }
-    
-    private void checkModelInvariants(List<Entry> entries, Tag root) throws CsvException {
+
+    private void checkModelInvariants(List<Entry> entries) throws CsvException {
     	// 1. Make sure lastModified and validUntil are after dateCreated
     	for (Entry entry : entries) {
     		if (entry.getLastModified().isBefore(entry.getCreatedAt())) {
@@ -219,7 +219,6 @@ public abstract class SerializationController {
     		}
     		// TODO: Compare dateCreated and validUntil
     	}
-    	
     }
 
     protected enum EntryTableHeader {
