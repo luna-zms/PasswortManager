@@ -156,12 +156,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsAddEntry() {
         addEntryToolbar.setOnAction(event -> {
-            CreateModifyEntryViewController dialogController = new CreateModifyEntryViewController();
-            dialogController.setPmController(pmController);
-            Stage stage = WindowFactory.createStage("Eintrag erstellen");
-            stage.show();
-            stage.setScene(WindowFactory.createScene(dialogController));
-            dialogController.init();
+            WindowFactory.showCreateModifyEntryView(pmController);
         });
     }
 

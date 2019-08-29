@@ -46,6 +46,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
+            primaryStage.setTitle("Gatekeeper");
             mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
             primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));

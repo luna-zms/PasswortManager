@@ -180,12 +180,11 @@ public class EntryListViewController extends TableView<Entry> {
 
         CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
         if (entry != null) {
-            createModifyEntryViewController.setOldEntry(entry);
+            WindowFactory.showCreateModifyEntryView(pmController, entry);
         } else {
-            createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
-        }
+            WindowFactory.showCreateModifyEntryView(pmController, Collections.singletonList(tag.getValue()));
 
-        WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
+        }
     }
 
     private static MenuItem createMenuItem(
@@ -370,10 +369,15 @@ public class EntryListViewController extends TableView<Entry> {
             ObservableValue<Entry> entry, ObservableValue<Boolean> entryIsNull
     ) {
 
-        return createMenuItem("Passwort kopieren",
-                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getPassword),
-                              entryIsNull,
-                              new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
+        return createMenuItem("Passwort kopieren", event -> {
+            ClipboardUtil.copyToClipboard(entry, Entry::getPassword);
+            // Clear clipboard
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(20),
+                                                          innerEv -> ClipboardUtil.copyToClipboard("")));
+            timeline.setCycleCount(1);
+            timeline.play();
+
+        }, entryIsNull, new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
     }
 
     private MenuItem createCopyUsername(ObservableValue<Entry> entry) {
@@ -390,8 +394,7 @@ public class EntryListViewController extends TableView<Entry> {
 
     private MenuItem createAddEntry() {
         return createMenuItem("Eintrag erstellen",
-                              event -> WindowFactory.showDialog("Eintrag erstellen",
-                                                                createCreateModifyEntryViewController()),
+                              event -> WindowFactory.showCreateModifyEntryView(pmController),
                               new ReadOnlyBooleanWrapper(false),
                               new KeyCharacterCombination("I", KeyCombination.CONTROL_DOWN));
     }
@@ -401,11 +404,7 @@ public class EntryListViewController extends TableView<Entry> {
     ) {
         return createMenuItem("Eintrag bearbeiten", event -> {
             if( easterEgg(entry.getValue()) ) return;
-            CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-            createModifyEntryViewController.setOldEntry(entry.getValue());
-
-            WindowFactory.showDialog("Eintrag bearbeiten", createModifyEntryViewController);
-
+            WindowFactory.showCreateModifyEntryView(pmController, entry.getValue());
             // TODO: Maybe update displayed entry if necessary
         }, entryIsNull, new KeyCodeCombination(KeyCode.ENTER));
     }
@@ -428,6 +427,9 @@ public class EntryListViewController extends TableView<Entry> {
         }, entryIsNull, new KeyCodeCombination(KeyCode.DELETE));
     }
 
+<<<<<<< HEAD
+    private class EntryListCell extends TableCell<Entry, String> {
+=======
     private CreateModifyEntryViewController createCreateModifyEntryViewController() {
         CreateModifyEntryViewController createModifyEntryViewController = new CreateModifyEntryViewController();
         createModifyEntryViewController.setPmController(pmController);
@@ -447,6 +449,7 @@ public class EntryListViewController extends TableView<Entry> {
             this.stringifier = stringifier;
         }
 
+>>>>>>> 5186ae9f6629d6ec55d25882cbd2fc77790aaf7f
         @Override
         protected void updateItem(T item, boolean empty) {
             TableRow<Entry> row = (TableRow<Entry>) getTableRow();

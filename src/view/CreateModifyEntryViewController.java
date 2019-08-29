@@ -10,9 +10,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import model.Entry;
 import model.SecurityQuestion;
 import model.Tag;
+import util.ListUtils;
 import util.PasswordQualityUtil;
 import factory.WindowFactory;
 
@@ -99,22 +101,37 @@ public class CreateModifyEntryViewController extends AnchorPane {
         String errorTitle = "Fehler: Eintrag erstellen";
 
         passwordQualityBar.setQuality(0);
-
-        cancelButton.setOnAction(event -> {
-            boolean cancel = !isModified();
-            // Modified:
-            if (!cancel) {
+        
+        this.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, evt -> {
+        	System.out.println("Test");
+            if (isModified()) {
                 Alert alert = new Alert(AlertType.CONFIRMATION);
                 alert.setTitle("Abbrechen bestätigen");
                 alert.setHeaderText("Wollen Sie wirklich abbrechen?");
                 alert.setContentText("Alle ihre Änderungen gehen verloren!");
                 Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) cancel = true;
+                
+                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+                	evt.consume();
+                }
             }
-            if (cancel) {
-                Stage stage = (Stage) getScene().getWindow();
-                stage.close();
+        });
+
+        cancelButton.setOnAction(event -> {
+            if (isModified()) {
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Abbrechen bestätigen");
+                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
+                alert.setContentText("Alle ihre Änderungen gehen verloren!");
+                Optional<ButtonType> result = alert.showAndWait();
+                
+                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+                	return;
+                }
             }
+            
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
         });
 
         okButton.setOnAction(event -> {
@@ -198,6 +215,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
         heightProperty().addListener((observable, oldHeight, newHeight) ->
                 tagTreePaneWithButtons.setMaxHeight(newHeight.doubleValue() - 60));
     }
+    
 
     /**
      * Helper method to show an Alert dialog.
@@ -210,7 +228,11 @@ public class CreateModifyEntryViewController extends AnchorPane {
         WindowFactory.showError(header, content, title);
     }
 
-    private boolean isModified() {
+    /**
+     * isModified() is true if the values entered into the Gui differ from those in the set oldEntry
+     * @return
+     */
+    public boolean isModified() {
         if (oldEntry == null) {
             if (!entryName.getText().isEmpty()) return true;
             if (!userName.getText().isEmpty()) return true;
@@ -223,18 +245,31 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
             return false;
         } else {
-            if (!entryName.equals(oldEntry.getTitle())) return true;
-            if (!userName.equals(oldEntry.getUsername())) return true;
-            if (!password.equals(oldEntry.getPassword())) return true;
-            if (!repeatPassword.equals(oldEntry.getPassword())) return true;
-            if (!url.equals(oldEntry.getUrlString())) return true;
+            System.out.println(oldEntry);
+        	System.out.println(entryName.getText());
+        	System.out.println(userName.getText());
+        	System.out.println(password.getText());
+        	System.out.println(repeatPassword.getText());
+        	System.out.println(url.getText());
+        	System.out.println(securityQuestion.getText());
+        	System.out.println(answer.getText());
+        	System.out.println(notes.getText());
+        	System.out.println(tagTree.getCheckedTags());
+        	
+            if (!entryName.getText().equals(oldEntry.getTitle())) return true;
+            if (!userName.getText().equals(oldEntry.getUsername())) return true;
+            if (!password.getText().equals(oldEntry.getPassword())) return true;
+            if (!repeatPassword.getText().equals(oldEntry.getPassword())) return true;
+            if (!url.getText().equals(oldEntry.getUrlString())) return true;
 
             SecurityQuestion question = oldEntry.getSecurityQuestion();
 
-            if (!securityQuestion.equals(question.getQuestion())) return true;
-            if (!answer.equals(question.getAnswer())) return true;
-            if (!notes.equals(oldEntry.getNote())) return true;
-
+            if (!securityQuestion.getText().equals(question.getQuestion())) return true;
+            if (!answer.getText().equals(question.getAnswer())) return true;
+            if (!notes.getText().equals(oldEntry.getNote())) return true;
+            
+            if (!ListUtils.compare(tagTree.getCheckedTags(), oldEntry.getTags())) return true;
+            
             return false;
         }
     }
