@@ -117,10 +117,11 @@ public class TagTree extends TreeView<Tag> {
 
         TreeItem<Tag> parent = item.getParent();
 
-        if (parent != null) {  // Cannot delete root node
-            if (item.getValue() != null) {
-                pmController.getTagController().removeTag(parent.getValue(), item.getValue());
-            }
+        // Cannot delete root node
+        if (parent != null && item.getValue() != null) {
+            pmController.getTagController().removeTag(parent.getValue(), item.getValue());
+            // Hack until I (read: if I ever) get around to finding/fixing the root cause
+            parent.getChildren().remove(item);
         }
     }
 
