@@ -54,7 +54,7 @@ public class StartWindowViewController extends GridPane {
 
         openButton.setOnAction(event -> {
         	if(choosePasswordAchivePath.getText().isEmpty()) {
-        		WindowFactory.showError("Pfad nicht gesetzt", "Bitte geben sie einen Pfad zu einem Archiv an oder erstellen Sie ein neues Archiv");
+        		WindowFactory.showError("Pfad nicht gesetzt", "Bitte geben Sie einen Pfad zu einem Archiv an oder erstellen Sie ein neues Archiv");
         		return;
         	}
         	File file = new File(choosePasswordAchivePath.getText());
@@ -68,7 +68,7 @@ public class StartWindowViewController extends GridPane {
                 return;
         	}
         	if(customPasswordField.getText().isEmpty()) {
-        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben sie das Paswort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
+        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben Sie das Paswort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
         		return;
         	}
         	path = file.toPath();
