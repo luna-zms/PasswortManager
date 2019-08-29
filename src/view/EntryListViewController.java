@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import controller.PMController;
@@ -38,9 +40,10 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import model.Entry;
 import model.Tag;
-import util.BindingUtils;
-import util.ClipboardUtils;
-import util.WindowFactory;
+import util.BindingUtil;
+import util.ClipboardUtil;
+import util.DateFormatUtil;
+import factory.WindowFactory;
 
 public class EntryListViewController extends TableView<Entry> {
     private ObservableList<Entry> entries;
@@ -55,16 +58,20 @@ public class EntryListViewController extends TableView<Entry> {
         TableColumn<Entry, String> titleColumn = new TableColumn<>("Titel");
         TableColumn<Entry, String> usernameColumn = new TableColumn<>("Nutzername");
         TableColumn<Entry, String> passwordColumn = new TableColumn<>("Passwort");
-        TableColumn<Entry, String> urlColumn = new TableColumn<>("URL");
-        TableColumn<Entry, String> validUntilColumn = new TableColumn<>("Gültig bis");
+        TableColumn<Entry, URL> urlColumn = new TableColumn<>("URL");
+        TableColumn<Entry, LocalDate> validUntilColumn = new TableColumn<>("Gültig bis");
 
         // Bind columns to getters of Entry
+        titleColumn.setCellFactory(col -> new EntryListCell<>());
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        usernameColumn.setCellFactory(col -> new EntryListCell<>());
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+        passwordColumn.setCellFactory(col -> new EntryListCell<>());
         passwordColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper("*****"));
-        urlColumn.setCellValueFactory(new PropertyValueFactory<>("urlString"));
-        // Use getter with specific string formatting
-        validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntilString"));
+        urlColumn.setCellFactory(col -> new EntryListCell<>());
+        urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
+        validUntilColumn.setCellFactory(col -> new EntryListCell<>(DateFormatUtil::formatDate));
+        validUntilColumn.setCellValueFactory(new PropertyValueFactory<>("validUntil"));
 
         try {
             URI musicFile = getClass().getResource("/util/resources/ghostChasing.dict").toURI();
@@ -87,7 +94,7 @@ public class EntryListViewController extends TableView<Entry> {
         setPlaceholder(new Label("Keine Einträge gefunden."));
 
         // Make Java happy by specifying the exact types
-        List<TableColumn<Entry, String>> columns = new ArrayList<>();
+        List<TableColumn<Entry, ?>> columns = new ArrayList<>();
         columns.add(titleColumn);
         columns.add(usernameColumn);
         columns.add(passwordColumn);
@@ -98,10 +105,8 @@ public class EntryListViewController extends TableView<Entry> {
         setContextMenu(buildContextMenu());
 
         // Highlight expired tags
-        columns.forEach(col -> col.setCellFactory(innerCol -> new EntryListCell()));
         getSelectionModel().selectedItemProperty().addListener((obs, oldEntry, newEntry) -> {
-            if (newEntry != null && newEntry.getValidUntil() != null &&
-                newEntry.getValidUntil().isBefore(LocalDate.now())) {
+            if (newEntry != null && newEntry.isExpired()) {
                 setStyle("-fx-selection-bar: red;");
             } else if( getSelectionModel().getSelectedItem() != newEntry && newEntry.getTags().isEmpty() ) {
                 setStyle("-fx-selection-bar: white;");
@@ -114,10 +119,9 @@ public class EntryListViewController extends TableView<Entry> {
             TableRow<Entry> row = new TableRow<>();
 
             // Cursed bind
-            row.styleProperty().bind(BindingUtils.makeBinding(row.itemProperty(), entry -> {
-                if (getSelectionModel().getSelectedItem() != entry && entry.getValidUntil() != null &&
-                    entry.getValidUntil().isBefore(LocalDate.now())) {
-                    return "-fx-background-color: darkred;";
+            row.styleProperty().bind(BindingUtil.makeBinding(row.itemProperty(), entry -> {
+                if (getSelectionModel().getSelectedItem() != entry && entry.isExpired()) {
+                    return "-fx-background-color: darkred";
                 } else if( getSelectionModel().getSelectedItem() != entry && entry.getTags().isEmpty() ) {
                     return "-fx-effect: innershadow( gaussian , gray, 10, 0.5 , 0, 0 ); -fx-background-color: lightgray;";
                 } else {
@@ -315,7 +319,7 @@ public class EntryListViewController extends TableView<Entry> {
 
     private ContextMenu buildContextMenu() {
         ObservableValue<Entry> entry = getSelectionModel().selectedItemProperty();
-        ObservableValue<Boolean> entryIsNull = BindingUtils.makeStaticBinding(entry, false, true);
+        ObservableValue<Boolean> entryIsNull = BindingUtil.makeStaticBinding(entry, false, true);
 
         // Totally didn't steal the accelerators for these from KeePass
         // TODO: Maybe deduplicate the clipboard code a bit more
@@ -336,7 +340,7 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     private List<MenuItem> createUrlItems(ObservableValue<Entry> entry) {
-        ObservableValue<Boolean> urlIsNull = BindingUtils.makeBinding(entry,
+        ObservableValue<Boolean> urlIsNull = BindingUtil.makeBinding(entry,
                                                                       currEntry -> currEntry.getUrl() == null,
                                                                       true);
         List<MenuItem> menuItems = new ArrayList<>();
@@ -346,14 +350,14 @@ public class EntryListViewController extends TableView<Entry> {
                 Desktop.getDesktop().browse(entry.getValue().getUrl().toURI());  // Yikes
             } catch (IOException | URISyntaxException e) {
                 WindowFactory.showError("Fehler: URL öffnen",
-                                        "Der Link konnte nicht geöffnet werden. Bitte öffnen Sie ihn manuell indem Sie den Link in ihren Browser kopieren.");
+                                        "Der Link konnte nicht geöffnet werden. Bitte öffnen Sie ihn manuell indem Sie den Link in Ihren Browser kopieren.");
             }
         }, urlIsNull, new KeyCharacterCombination("U", KeyCombination.CONTROL_DOWN)));
 
         // For some reason, IntelliJ wants to break this one into multiple lines but not the others
         // ¯\_(ツ)_/¯
         menuItems.add(createMenuItem("URL kopieren",
-                                     event -> ClipboardUtils.copyToClipboard(entry, Entry::getUrlString),
+                                     event -> ClipboardUtil.copyToClipboard(entry, Entry::getUrlString),
                                      urlIsNull,
                                      new KeyCharacterCombination("U",
                                                                  KeyCombination.CONTROL_DOWN,
@@ -367,19 +371,19 @@ public class EntryListViewController extends TableView<Entry> {
     ) {
 
         return createMenuItem("Passwort kopieren",
-                              event -> ClipboardUtils.copyToClipboard(entry, Entry::getPassword),
+                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getPassword),
                               entryIsNull,
                               new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
     }
 
     private MenuItem createCopyUsername(ObservableValue<Entry> entry) {
 
-        ObservableValue<Boolean> usernameIsNull = BindingUtils.makeBinding(entry,
+        ObservableValue<Boolean> usernameIsNull = BindingUtil.makeBinding(entry,
                                                                            currEntry -> currEntry.getUsername() == null,
                                                                            true);
 
         return createMenuItem("Nutzername kopieren",
-                              event -> ClipboardUtils.copyToClipboard(entry, Entry::getUsername),
+                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getUsername),
                               usernameIsNull,
                               new KeyCharacterCombination("B", KeyCombination.CONTROL_DOWN));
     }
@@ -432,26 +436,36 @@ public class EntryListViewController extends TableView<Entry> {
         return createModifyEntryViewController;
     }
 
-    private class EntryListCell extends TableCell<Entry, String> {
+    private class EntryListCell<T> extends TableCell<Entry, T> {
+        private Function<T, String> stringifier;
+
+        EntryListCell() {
+            stringifier = Objects::toString;
+        }
+
+        EntryListCell(Function<T, String> stringifier) {
+            this.stringifier = stringifier;
+        }
+
         @Override
-        protected void updateItem(String item, boolean empty) {
+        protected void updateItem(T item, boolean empty) {
             TableRow<Entry> row = (TableRow<Entry>) getTableRow();
             Entry entry = row.getItem();
 
             super.updateItem(item, empty);
 
-            if (empty || item == null || item.isEmpty()) {
+            if (empty || item == null) {
                 setText(null);
             } else {
-                setText(item);
+                setText(stringifier.apply(item));
             }
 
             textFillProperty().unbind();
-            if (entry != null && entry.getValidUntil() != null && entry.getValidUntil().isBefore(LocalDate.now())) {
+            if (entry != null && entry.isExpired()) {
                 setTextFill(Color.WHITE);
             } else {
                 // Necessary for highlighting to have the proper font color
-                textFillProperty().bind(BindingUtils.makeBinding(getSelectionModel().selectedItemProperty(), newEntry -> {
+                textFillProperty().bind(BindingUtil.makeBinding(getSelectionModel().selectedItemProperty(), newEntry -> {
                     if (newEntry == entry) return Color.WHITE;
                     else return Color.BLACK;
                 }, Color.BLACK));

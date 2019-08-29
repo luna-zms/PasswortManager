@@ -38,7 +38,7 @@
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Datei: " GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 <TextField fx:id="choosePasswordAchivePath" maxWidth="300.0" promptText="Passwort-Archiv" GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <tooltip>
-                        <Tooltip text="Pfad es Passwort-Archives wählen" />
+                        <Tooltip text="Pfad des Passwort-Archives wählen" />
                     </tooltip>
                 </TextField>
                 <Button fx:id="fileButton" mnemonicParsing="false" text="..." GridPane.columnIndex="4" GridPane.rowIndex="1">

@@ -2,19 +2,19 @@ package util;
 
 public class Tuple<A, B> {
 
-    private A a;
-    private B b;
+    private A firstElement;
+    private B secondElement;
 
-    public Tuple(A a, B b) {
-        this.a = a;
-        this.b = b;
+    public Tuple(A firstElement, B secondElement) {
+        this.firstElement = firstElement;
+        this.secondElement = secondElement;
     }
 
     public A first() {
-        return this.a;
+        return this.firstElement;
     }
 
     public B second() {
-        return this.b;
+        return this.secondElement;
     }
 }

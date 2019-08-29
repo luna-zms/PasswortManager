@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -15,6 +14,7 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
+import util.DateFormatUtil;
 
 
 /**
@@ -23,7 +23,7 @@ import javafx.util.Callback;
  *
  */
 public class Entry {
-    public static final Callback<Entry, Observable[]> observableProps = entry -> new Observable[]{
+    public static final Callback<Entry, Observable[]> OBSERVABLE_PROPS = entry -> new Observable[]{
             entry.tagsObservable()
     };
 
@@ -32,7 +32,7 @@ public class Entry {
     private LocalDateTime createdAt, lastModified;
     private LocalDate validUntil;
     private SecurityQuestion securityQuestion;
-    private ObservableList<Tag> tags = FXCollections.observableArrayList(Tag.observableProps);
+    private ObservableList<Tag> tags = FXCollections.observableArrayList(Tag.OBSERVABLE_PROPS);
 
 
     /**
@@ -55,10 +55,6 @@ public class Entry {
 
         url = null;
         validUntil = null;
-    }
-
-    private static String stringFromDateTime(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : "";
     }
 
     public String getTitle() {
@@ -106,7 +102,7 @@ public class Entry {
     }
 
     public String getCreatedAtString() {
-        return stringFromDateTime(createdAt);
+        return DateFormatUtil.formatDate(createdAt);
     }
 
     public LocalDateTime getLastModified() {
@@ -118,7 +114,7 @@ public class Entry {
     }
 
     public String getLastModifiedString() {
-        return stringFromDateTime(lastModified);
+        return DateFormatUtil.formatDate(lastModified);
     }
 
     public LocalDate getValidUntil() {
@@ -127,12 +123,6 @@ public class Entry {
 
     public void setValidUntil(LocalDate validUntil) {
         this.validUntil = validUntil;
-    }
-
-    public String getValidUntilString() {
-        return validUntil != null ? validUntil.format(
-                DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.GERMAN)
-        ) : "";
     }
 
     public SecurityQuestion getSecurityQuestion() {
@@ -149,6 +139,10 @@ public class Entry {
 
     public ObservableList<Tag> tagsObservable() {
         return tags;
+    }
+
+    public boolean isExpired() {
+        return validUntil != null && validUntil.isBefore(LocalDate.now().plusDays(1));
     }
 
     @Override

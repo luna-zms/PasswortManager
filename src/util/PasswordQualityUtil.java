@@ -1,5 +1,7 @@
 package util;
 
+import factory.WindowFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +14,9 @@ import java.util.ArrayList;
  * @author sopr011, sopr012
  */
 public class PasswordQualityUtil {
+    public static final int MAX_SCORE = 200;
+    public static final int TWO = 2;
+    public static final int THREE = 3;
     private static PasswordQualityUtil passwordQualityUtil;
 
     private ArrayList<String> dict;
@@ -83,7 +88,7 @@ public class PasswordQualityUtil {
 
         // The score cannot be less than 0 or more than 200
         if (score < 0) return 0;
-        if (score > 200) return 200;
+        if (score > MAX_SCORE) return MAX_SCORE;
         else return score;
     }
 
@@ -137,20 +142,20 @@ public class PasswordQualityUtil {
         Character lastChar = null;
         int repeatCounter = 1;
 
-        for (char c : pwd.toCharArray()) {
-            if (lastChar != null && c == lastChar) {
+        for (char iChar : pwd.toCharArray()) {
+            if (lastChar != null && iChar == lastChar) {
                 repeatCounter += 1;
             } else {
-                if (repeatCounter >= 2) {
+                if (repeatCounter >= TWO) {
                     score += CharGroup.getCharGroupOf(lastChar).getBonusFactor()*(repeatCounter-1);
                 }
                 repeatCounter = 1;
             }
 
-            lastChar = c;
+            lastChar = iChar;
         }
 
-        if (repeatCounter >= 2) score += CharGroup.getCharGroupOf(lastChar).getBonusFactor()*(repeatCounter-1);
+        if (repeatCounter >= TWO) score += CharGroup.getCharGroupOf(lastChar).getBonusFactor()*(repeatCounter-1);
 
         return -(int)score;
     }
@@ -167,17 +172,17 @@ public class PasswordQualityUtil {
         CharGroup lastCharGroup = null;
         int sameCharGroupCounter = 1;
 
-        for (char c : pwd.toCharArray()) {
-            if (CharGroup.getCharGroupOf(c) == lastCharGroup) {
+        for (char iChar : pwd.toCharArray()) {
+            if (CharGroup.getCharGroupOf(iChar) == lastCharGroup) {
                 sameCharGroupCounter += 1;
             } else {
-                if (sameCharGroupCounter >= 2) score += sameCharGroupCounter*2;
-                lastCharGroup = CharGroup.getCharGroupOf(c);
+                if (sameCharGroupCounter >= TWO) score += sameCharGroupCounter*2;
+                lastCharGroup = CharGroup.getCharGroupOf(iChar);
                 sameCharGroupCounter = 1;
             }
         }
 
-        if (sameCharGroupCounter >= 2) score += sameCharGroupCounter*2;
+        if (sameCharGroupCounter >= TWO) score += sameCharGroupCounter*2;
 
         return -score;
     }
@@ -194,20 +199,20 @@ public class PasswordQualityUtil {
         Character lastChar = null;
         int sequenceCounter = 1;
 
-        for (char c : pwd.toCharArray()) {
+        for (char iChar : pwd.toCharArray()) {
             if (lastChar != null &&
-                    CharGroup.getCharGroupOf(c) == CharGroup.getCharGroupOf(lastChar) &&
-                    CharGroup.getIndexOfCharInGroup(c) == CharGroup.getIndexOfCharInGroup(lastChar)+1) {
+                    CharGroup.getCharGroupOf(iChar) == CharGroup.getCharGroupOf(lastChar) &&
+                    CharGroup.getIndexOfCharInGroup(iChar) == CharGroup.getIndexOfCharInGroup(lastChar)+1) {
                 sequenceCounter += 1;
             } else {
-                if (sequenceCounter >= 3) score += sequenceCounter*3;
+                if (sequenceCounter >= THREE) score += sequenceCounter*3;
                 sequenceCounter = 1;
             }
 
-            lastChar = c;
+            lastChar = iChar;
         }
 
-        if (sequenceCounter >= 3) score += sequenceCounter*3;
+        if (sequenceCounter >= THREE) score += sequenceCounter*3;
 
         return -score;
     }

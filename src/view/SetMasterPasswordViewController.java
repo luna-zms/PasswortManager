@@ -118,7 +118,7 @@ public class SetMasterPasswordViewController extends GridPane {
         okButton.setOnAction(event -> {
             if (mode) {
                 if (!checkOldPassword(customPasswordFieldOldPassword.getText())) {
-                    errorMessage("Passwort-Fehler", "Altes Passwort ist falsch!");
+                    if (!customPasswordFieldOldPassword.getText().isEmpty())errorMessage("Passwort-Fehler", "Altes Passwort ist falsch!");
                 } else if (setNewPassword(customPasswordFieldBase.getText(), customPasswordFieldRepeat.getText())) {
                     passwordSet = true;
                     Stage stage = (Stage) getScene().getWindow();

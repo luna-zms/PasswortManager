@@ -3,7 +3,6 @@ package view;
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 
@@ -12,7 +11,7 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import model.Tag;
-import util.BindingUtils;
+import util.BindingUtil;
 
 public class MainWindowViewController extends BorderPane {
     private PMController pmController;
@@ -58,7 +57,7 @@ public class MainWindowViewController extends BorderPane {
         // Bind preview to update when table selection changes
         entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
         entryList.tagProperty()
-                 .bind(BindingUtils.makeBinding(tagTree.getSelectionModel().selectedItemProperty(),
+                 .bind(BindingUtil.makeBinding(tagTree.getSelectionModel().selectedItemProperty(),
                                                 TreeItem::getValue, getRootTag()));
         mainWindowToolbar.setOnSearchRefreshAction((filter, searchEverywhere) -> {
             if (!searchEverywhere) {
