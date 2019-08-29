@@ -26,6 +26,8 @@ import java.util.Collections;
 
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
+    
+    private boolean addingTag;
 
     public BorderPane createPaneWithButtons() {
         BorderPane outer = new BorderPane();
@@ -130,6 +132,9 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public void createBelowSelected() {
+    	if (addingTag) return;
+    	
+    	addingTag = true;
         TreeItem<Tag> selected = getSelectedItem();
         TagTreeItem newItem = new TagTreeItem(null);
 
@@ -300,6 +305,7 @@ public class TagTree extends TreeView<Tag> {
 
         private void finishEdit(String str) {
             if (getTreeItem() == null) return;
+            
 
             TreeItem<Tag> parentTag = getTreeItem().getParent();
 
@@ -329,6 +335,7 @@ public class TagTree extends TreeView<Tag> {
                     tag = getItem();
                     pmController.getTagController().renameTag(tag, str);
                 }
+                addingTag = false;
 
                 commitEdit(tag);
             }
