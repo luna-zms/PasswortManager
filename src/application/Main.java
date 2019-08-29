@@ -66,7 +66,7 @@ public class Main extends Application {
             StartWindowViewController startWindowViewController = new StartWindowViewController();
             if (initialPath != null) startWindowViewController.setPath(initialPath);
 
-            WindowFactory.showDialog("Datenbank öffnen", startWindowViewController);
+            WindowFactory.showDialog("Datenbank öffnen", startWindowViewController, false);
 
             Optional<Boolean> tmp = initApplication(startWindowViewController);
             if (!tmp.isPresent()) {
