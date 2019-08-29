@@ -67,7 +67,7 @@
 					maxHeight="50.0" maxWidth="50.0" mnemonicParsing="false"
 					prefHeight="50.0" prefWidth="50.0">
 					<tooltip>
-						<Tooltip text="Öffnen" />
+						<Tooltip text="Öffnen/Erstellen" />
 					</tooltip>
 				</Button>
 				<Button fx:id="setMasterPasswordToolbar" contentDisplay="GRAPHIC_ONLY"

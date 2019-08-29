@@ -14,6 +14,7 @@ import java.util.Objects;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Callback;
 
 
 /**
@@ -22,14 +23,16 @@ import javafx.collections.ObservableList;
  *
  */
 public class Entry {
+    public static final Callback<Entry, Observable[]> observableProps = entry -> new Observable[]{
+            entry.tagsObservable()
+    };
+
     private String title, username, password, note;
     private URL url;
     private LocalDateTime createdAt, lastModified;
     private LocalDate validUntil;
     private SecurityQuestion securityQuestion;
-    private ObservableList<Tag> tags = FXCollections.observableArrayList(
-            tag -> new Observable[] { tag.nameProperty(), tag.subTagsObservable() }
-    );
+    private ObservableList<Tag> tags = FXCollections.observableArrayList(Tag.observableProps);
 
 
     /**

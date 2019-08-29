@@ -87,7 +87,7 @@ public class CustomExpirationDateViewController extends GridPane {
             e.printStackTrace();
         }
 
-        daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE));
+        daysUntilExpiration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,2147483647-1));//LocalDate.now().until(LocalDate.MAX).getDays())
         
     }
     
@@ -122,26 +122,33 @@ public class CustomExpirationDateViewController extends GridPane {
                     try {
                         long pointI = Integer.parseInt(newValue);
                         daysUntilExpiration.getEditor().setText(String.valueOf(pointI));
+                        daysUntilExpiration.increment(0);
+                        
                     } catch (Exception e) {
                     	daysUntilExpiration.getEditor().clear();
                     	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
+                    	daysUntilExpiration.increment(0);
+                    	
                     }
                 } else {
-                	daysUntilExpiration.getEditor().clear();
-                	daysUntilExpiration.getEditor().setText(getNumber(oldValue));
+                	daysUntilExpiration.getEditor().setText("1");
+                	daysUntilExpiration.increment(0);
+                	
                 }
             }
         });
         
         datePickerExpirationDate.setOnAction(event -> {
             LocalDate date = datePickerExpirationDate.getValue();
-            if (LocalDate.now().isBefore(date)) {
-                int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
-                SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
-                temp.setValue(noOfDaysBetween);
-            } else {
-                datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
-            }
+            if(date != null){
+                if (LocalDate.now().isBefore(date)) {
+                    int noOfDaysBetween = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
+                    SpinnerValueFactory<Integer> temp = daysUntilExpiration.getValueFactory();
+                    temp.setValue(noOfDaysBetween);
+                } else {
+                    datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
+                } 
+            } else datePickerExpirationDate.setValue(LocalDate.now().plusDays(1));
         });
 
         daysUntilExpiration.valueProperty().addListener((obs, oldValue, newValue) -> {

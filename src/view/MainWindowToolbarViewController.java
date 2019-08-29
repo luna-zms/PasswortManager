@@ -19,10 +19,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Entry;
 import util.CsvException;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 public class MainWindowToolbarViewController extends GridPane {
 
@@ -71,6 +72,8 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private Consumer<Path> openDatabaseFileAction;
 
+    private Runnable onTreeViewRefresh;
+
     public MainWindowToolbarViewController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowToolbar.fxml"));
         loader.setRoot(this);
@@ -84,43 +87,60 @@ public class MainWindowToolbarViewController extends GridPane {
     }
 
     public void initialize() {
-        Image addEntryImage = new Image(getClass().getResourceAsStream("/view/resources/add_entry_toolbar_icon.png"));
+        Image addEntryImage;
+        Image saveDatabaseImage;
+        Image openDatabaseImage;
+        Image saveAsDatabaseImage;
+        Image setMasterPwImage;
+        Image importImage;
+        Image exportImage;
+        Image generatePasswordImage;
+        Image searchButtonImage;
+        Image filterButtonImage;
+        try {
+            addEntryImage = new Image(getClass().getResourceAsStream("/view/resources/add_entry_toolbar_icon.png"));
+            saveDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_toolbar_icon.png"));
+            openDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/open_toolbar_icon.png"));
+            saveAsDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_as_toolbar_icon.png"));
+            setMasterPwImage = new Image(getClass().getResourceAsStream("/view/resources/change_master_password_toolbar_icon.png"));
+            importImage = new Image(getClass().getResourceAsStream("/view/resources/import_toolbar_icon.png"));
+            exportImage = new Image(getClass().getResourceAsStream("/view/resources/export_toolbar_icon.png"));
+            generatePasswordImage = new Image(getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon.png"));
+            searchButtonImage = new Image(getClass().getResourceAsStream("/view/resources/search_icon_15px.png"));
+            filterButtonImage = new Image(getClass().getResourceAsStream("/view/resources/filter_icon_20px.png"));
+        } catch( Exception e ) {
+            errorMessage("Kritischer Fehler", "Beim Laden der Programmdaten ist ein Fehler aufgetreten! Vergewissern Sie sich, dass Sie das Programm korrekt installiert haben! Das Programm schließt sich nach dieser Meldung.");
+            System.exit(1);
+            return;
+        }
+
         addEntryToolbar.setGraphic(new ImageView(addEntryImage));
         initializeActionsAddEntry();
 
-        Image saveDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_toolbar_icon.png"));
         saveDatabaseToolbar.setGraphic(new ImageView(saveDatabaseImage));
         initializeActionsSaveDatabase();
 
-        Image openDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/open_toolbar_icon.png"));
         openDatabaseToolbar.setGraphic(new ImageView(openDatabaseImage));
         initializeActionsOpenDatabase();
 
-        Image saveAsDatabaseImage = new Image(getClass().getResourceAsStream("/view/resources/save_as_toolbar_icon.png"));
         saveAsDatabaseToolbar.setGraphic(new ImageView(saveAsDatabaseImage));
         initializeActionsSaveAsDatabase();
 
-        Image setMasterPwImage = new Image(getClass().getResourceAsStream("/view/resources/change_master_password_toolbar_icon.png"));
         setMasterPasswordToolbar.setGraphic(new ImageView(setMasterPwImage));
         initializeActionsSetMasterPassword();
 
-        Image importImage = new Image(getClass().getResourceAsStream("/view/resources/import_toolbar_icon.png"));
         importDatabaseToolbar.setGraphic(new ImageView(importImage));
         initializeActionsImportDatabase();
 
-        Image exportImage = new Image(getClass().getResourceAsStream("/view/resources/export_toolbar_icon.png"));
         exportDatabaseToolbar.setGraphic(new ImageView(exportImage));
         initializeActionsExportDatabase();
 
-        Image generatePasswordImage = new Image(getClass().getResourceAsStream("/view/resources/generate_password_toolbar_icon.png"));
         generatePasswordToolbar.setGraphic(new ImageView(generatePasswordImage));
         initializeActionsGeneratePassword();
 
-        Image searchButtonImage = new Image(getClass().getResourceAsStream("/view/resources/search_icon_15px.png"));
         searchButtonSearchbar.setGraphic(new ImageView(searchButtonImage));
         initializeActionsSearchButton();
 
-        Image filterButtonImage = new Image(getClass().getResourceAsStream("/view/resources/filter_icon_20px.png"));
         selectedColumnsSearchbar.setGraphic(new ImageView(filterButtonImage));
     }
 
@@ -157,6 +177,8 @@ public class MainWindowToolbarViewController extends GridPane {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines Ausgabefehlers ist das Speichern " +
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
+            } catch (RuntimeException exception) {
+                WindowFactory.showError("Interner Fehler beim Speichern", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht gespeichert werden:\n\n" + exception.getLocalizedMessage());
             }
         });
     }
@@ -164,6 +186,7 @@ public class MainWindowToolbarViewController extends GridPane {
     private void initializeActionsSaveAsDatabase() {
         saveAsDatabaseToolbar.setOnAction(event -> {
             Stage dialog = WindowFactory.createStage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Speichere Kopie als");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
@@ -184,26 +207,14 @@ public class MainWindowToolbarViewController extends GridPane {
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
             }
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Speichern erfolgreich!")
+                    .showAndWait();
         });
     }
 
     private void initializeActionsOpenDatabase() {
         openDatabaseToolbar.setOnAction(event -> {
-            Stage dialog = WindowFactory.createStage();
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Öffne Datei");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-Dateien", "*.pwds");
-            fileChooser.getExtensionFilters().add(extFilter);
-            fileChooser.setSelectedExtensionFilter(extFilter);
-            File file = fileChooser.showOpenDialog(dialog);
-
-            if (file == null) return;
-            if (!file.exists()) {
-                errorMessage("Fehler beim Öffnen", "Die gewählte Datei existiert nicht!");
-                return;
-            }
-
-            openDatabaseFileAction.accept(file.toPath());
+            openDatabaseFileAction.accept(pmController.getSavePath());
         });
     }
 
@@ -219,6 +230,7 @@ public class MainWindowToolbarViewController extends GridPane {
     private void initializeActionsImportDatabase() {
         importDatabaseToolbar.setOnAction(event -> {
             Stage dialog = WindowFactory.createStage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Importiere Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
@@ -239,12 +251,18 @@ public class MainWindowToolbarViewController extends GridPane {
                         "Überprüfen Sie, ob die Datei das nötige Format erfüllt. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
             }
+            if( onTreeViewRefresh != null ) onTreeViewRefresh.run();
+            // if( on)
+
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich importiert!")
+                    .showAndWait();
         });
     }
 
     private void initializeActionsExportDatabase() {
         exportDatabaseToolbar.setOnAction(event -> {
             Stage dialog = WindowFactory.createStage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exportiere Datei");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PasswortManager-CSV-Dateien", "*.csv");
@@ -261,6 +279,9 @@ public class MainWindowToolbarViewController extends GridPane {
                         "aufgetreten. Starten Sie das Programm erneut, wenn weiterhin Fehler auftreten. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
             }
+
+            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich exportiert!")
+                    .showAndWait();
         });
     }
 
@@ -274,7 +295,7 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsSearchButton() {
         searchButtonSearchbar.setOnAction(event -> {
-            String searchQuery = searchFieldSearchbar.getText();
+            String searchQuery = searchFieldSearchbar.getText().toLowerCase();
 
             if (
                     selectedColumnsSearchbar
@@ -298,6 +319,8 @@ public class MainWindowToolbarViewController extends GridPane {
                         expiredUntil.isAfter(validUntil) || expiredUntil.isEqual(validUntil)
                 ))
                 	return false;
+                else if (expiredUntil != null && validUntil == null)
+                    return false; // Don't show dates without expiration date when expiredUntil is selected
 
                 List<String> queryParts = Arrays.asList(searchQuery.split(" "));
                 List<String> notYetFound = new ArrayList<>(queryParts);
@@ -327,6 +350,8 @@ public class MainWindowToolbarViewController extends GridPane {
                     }
                     if (value == null) continue;
 
+                    value = value.toLowerCase();
+
                     for (String queriedValue : queryParts) {
                         if (value.contains(queriedValue)) {
                             notYetFound.remove(queriedValue);
@@ -351,5 +376,9 @@ public class MainWindowToolbarViewController extends GridPane {
 
     public void setOpenDatabaseFileAction(Consumer<Path> openDatabaseFileAction) {
         this.openDatabaseFileAction = openDatabaseFileAction;
+    }
+
+    public void setOnTreeViewRefresh(Runnable refreshAction) {
+        this.onTreeViewRefresh = refreshAction;
     }
 }

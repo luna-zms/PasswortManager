@@ -14,10 +14,13 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.text.Text;
 import model.Tag;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 import java.util.Collections;
 
@@ -46,20 +49,25 @@ public class TagTree extends TreeView<Tag> {
         outer.setCenter(this);
         outer.setBottom(inner);
 
-        ImageView addCategoryimage = new ImageView(new Image(
-            getClass().getResourceAsStream("/view/resources/add_category_toolbar_icon.png")));
-        addCategoryimage.setFitHeight(24);
-        addCategoryimage.setFitWidth(24);
-        add.setGraphic(addCategoryimage);
+        try {
+            ImageView addCategoryImage = new ImageView(new Image(
+                    getClass().getResourceAsStream("/view/resources/add_category_toolbar_icon.png")));
+            addCategoryImage.setFitHeight(24);
+            addCategoryImage.setFitWidth(24);
+            add.setGraphic(addCategoryImage);
 
-        ImageView deleteCategoryimage = new ImageView(new Image(
-            getClass().getResourceAsStream("/view/resources/delete_category_icon.png")));
-        deleteCategoryimage.setFitHeight(24);
-        deleteCategoryimage.setFitWidth(24);
-        remove.setGraphic(deleteCategoryimage);
+            ImageView deleteCategoryImage = new ImageView(new Image(
+                    getClass().getResourceAsStream("/view/resources/delete_category_icon.png")));
+            deleteCategoryImage.setFitHeight(24);
+            deleteCategoryImage.setFitWidth(24);
+            remove.setGraphic(deleteCategoryImage);
+        } catch( Exception e ) {
+            WindowFactory.showError("Kritischer Fehler", "Beim Laden der Programmdaten ist ein Fehler aufgetreten! Vergewissern Sie sich, dass Sie das Programm korrekt installiert haben! Das Programm schließt sich nach dieser Meldung.");
+            System.exit(1);
+        }
 
-        remove.setOnMouseClicked(event -> deleteSelected());
-        add.setOnMouseClicked(event -> createBelowSelected());
+        remove.setOnAction(event -> deleteSelected());
+        add.setOnAction(event -> createBelowSelected());
 
         return outer;
     }
@@ -78,9 +86,9 @@ public class TagTree extends TreeView<Tag> {
     public void init(final boolean hasCheckBoxes, PMController controller) {
         pmController = controller;
 
+        setEditable(true);
         setCellFactory(treeView -> new TagTreeCell(hasCheckBoxes));
 
-        setEditable(true);
         setRoot(new TagTreeItem(controller.getPasswordManager().getRootTag()));
     }
 
@@ -126,25 +134,41 @@ public class TagTree extends TreeView<Tag> {
         TreeItem<Tag> selected = getSelectedItem();
         TagTreeItem newItem = new TagTreeItem(null);
 
+        if( selected == null )
+            selected = getRoot();
         selected.getChildren().add(newItem);
+
+        TreeItem<Tag> finalSelected = selected;
+        setOnMouseClicked(event -> {
+            if( newItem.getValue() == null )
+                finalSelected.getChildren().remove(newItem);
+        });
     }
 
-    private ContextMenu createContextMenu() {
+    private ContextMenu createContextMenu(boolean selectorDialog) {
         ContextMenu menu = new ContextMenu();
 
         MenuItem createTag = new MenuItem("Neues Schlagwort");
-        MenuItem createEntry = new MenuItem("Neuer Eintrag");
+        MenuItem createEntry = null;
         MenuItem edit = new MenuItem("Bearbeiten");
         MenuItem delete = new MenuItem("Löschen");
 
         createTag.setOnAction(event -> createBelowSelected());
-        createEntry.setOnAction(event -> openCreateEntryDialog());
         edit.setOnAction(event -> editSelected());
         delete.setOnAction(event -> deleteSelected());
 
-        menu.getItems().addAll(createEntry, createTag, new SeparatorMenuItem(), edit, delete);
 
-        menu.setOnShowing(event -> delete.setDisable(getSelectedItem() == getRoot()));
+        if( !selectorDialog ) {
+            createEntry = new MenuItem("Neuer Eintrag");
+            createEntry.setOnAction(event -> openCreateEntryDialog());
+            menu.getItems().addAll(createEntry, createTag, new SeparatorMenuItem(), edit, delete);
+        } else
+            menu.getItems().addAll(createTag, new SeparatorMenuItem(), edit, delete);
+
+        menu.setOnShowing(event -> {
+            delete.setDisable(getSelectedItem() == getRoot());
+            edit.setDisable(getSelectedItem() == getRoot());
+        });
 
         return menu;
     }
@@ -215,7 +239,26 @@ public class TagTree extends TreeView<Tag> {
                 checkbox = new CheckBox();
                 checkbox.selectedProperty().addListener(this);
             }
-            setContextMenu(createContextMenu());
+            setContextMenu(createContextMenu(hasCheckBox));
+
+            // No comment
+            addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+                TagTreeItem target;
+                if( mouseEvent.getTarget().getClass().getSuperclass() == Text.class) {
+                    target = (TagTreeItem) ((TagTreeCell) ((Text) mouseEvent.getTarget()).getParent()).getTreeItem();
+                } else if( mouseEvent.getTarget().getClass() == TagTreeCell.class ) {
+                    target = (TagTreeItem) ((TagTreeCell) mouseEvent.getTarget()).getTreeItem();
+                } else return;
+
+                if( target != getSelectedItem() ) return;
+                if ( getSelectedItem() == getRoot() ||
+                        (mouseEvent.getClickCount() < 2 && mouseEvent.getButton().equals(MouseButton.PRIMARY)))
+                    mouseEvent.consume();
+                else if( mouseEvent.getClickCount() >= 2 ) {
+                    editSelected();
+                    mouseEvent.consume();
+                }
+            });
         }
 
         private TextField createEditTextField() {
@@ -247,8 +290,9 @@ public class TagTree extends TreeView<Tag> {
             });
 
             wtf.setTextFormatter(new TextFormatter<>(change -> {
-                String text = change.getControlNewText();
-                if (text.contains("\\") || text.contains(";")) return null;
+                String text = change.getText();
+                if (text.contains("\\") || text.contains(";"))
+                    change.setText(text.replace("\\", "﹨").replace(";", ";"));
                 return change;
             }));
 

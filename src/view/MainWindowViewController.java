@@ -3,7 +3,6 @@ package view;
 import controller.PMController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 
@@ -12,7 +11,7 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import model.Tag;
-import util.BindingUtils;
+import util.BindingUtil;
 
 public class MainWindowViewController extends BorderPane {
     private PMController pmController;
@@ -40,6 +39,9 @@ public class MainWindowViewController extends BorderPane {
         }
         setLeft(tagTree.createPaneWithButtons());
         //System.out.println(this.getLeft());
+        widthProperty().addListener((observable, oldWidth, newWidth) ->
+                ((BorderPane) getLeft()).setMaxWidth( newWidth.doubleValue() <= 1000 ? newWidth.doubleValue()/5 : 200 )
+        );
     }
 
     private Tag getRootTag() {
@@ -48,13 +50,14 @@ public class MainWindowViewController extends BorderPane {
 
     public void init(Consumer<Path> showOpenDialog) {
         // Init subcomponents
+        entryList.init();
         entryPreview.init(getRootTag());
         mainWindowToolbar.setOpenDatabaseFileAction(showOpenDialog);
 
         // Bind preview to update when table selection changes
         entryPreview.entryProperty().bind(entryList.getSelectionModel().selectedItemProperty());
         entryList.tagProperty()
-                 .bind(BindingUtils.makeBinding(tagTree.getSelectionModel().selectedItemProperty(),
+                 .bind(BindingUtil.makeBinding(tagTree.getSelectionModel().selectedItemProperty(),
                                                 TreeItem::getValue, getRootTag()));
         mainWindowToolbar.setOnSearchRefreshAction((filter, searchEverywhere) -> {
             if (!searchEverywhere) {
@@ -62,14 +65,11 @@ public class MainWindowViewController extends BorderPane {
             }
             entryList.filterOnce(filter);
         });
+        mainWindowToolbar.setOnTreeViewRefresh(() -> tagTree.init(false, pmController));
 
         tagTree.init(false, pmController);
         // Prevent limbo state of no tag being selected
         tagTree.getSelectionModel().selectFirst();
-
-        entryList.setEntries(pmController.getPasswordManager().entriesObservable());
-
-        widthProperty().addListener((observable, oldWidth, newWidth) -> tagTree.setMaxWidth(newWidth.doubleValue()/5));
     }
 
     public void setPmController(PMController pmController) {

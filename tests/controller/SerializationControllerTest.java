@@ -289,7 +289,7 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tests writeEntriesToStream by passing multiple entries
+     * Tests writeEntriesToStream by passing multiple entries.
      * Expects entries to be printed into the OutputStream correctly.
      */
     @Test
@@ -327,7 +327,7 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tests writeEntriesToStream with a fully initialized Entry
+     * Tests writeEntriesToStream with a fully initialized Entry.
      */
     @Test
     public void testWriteEntriesToStreamFullyInitialized() {
@@ -391,8 +391,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tests parseEntries if a single record is passed
-     * Expects a single Entry and two tags to exist
+     * Tests parseEntries if a single record is passed.
+     * Expects a single Entry and two tags to exist.
      */
     @Test
     public void testParseEntriesOneEntry() {
@@ -415,8 +415,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tests parseEntries if multiple records are passed
-     * Expects two entries and two tags to exist
+     * Tests parseEntries if multiple records are passed.
+     * Expects two entries and two tags to exist.
      */
     @Test
     public void testParseEntriesTwoEntries() {
@@ -447,7 +447,7 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tests parseEntries with a fully initialized entry
+     * Tests parseEntries with a fully initialized entry.
      */
     @Test
     public void testParseEntriesFullyInitialized() {
@@ -473,8 +473,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs recording containing no tag paths
-     * Parsing should fail with a CvsException
+     * Tries parsing a cvs recording containing no tag paths.
+     * Parsing should fail with a CvsException.
      */
     @Test
     public void testParseEntriesWithEmptyTagPaths() {
@@ -486,8 +486,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs record containing a tag path with two empty paths
-     * Parsing should fail with a CvsException
+     * Tries parsing a cvs record containing a tag path with two empty paths.
+     * Parsing should fail with a CvsException.
      */
     @Test
     public void testParseEntriesWithTwoEmptyPaths() {
@@ -499,8 +499,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs record with less fields than specified in the header
-     * Parsing should fail with a CvsException
+     * Tries parsing a cvs record with less fields than specified in the header.
+     * Parsing should fail with a CvsException.
      */
     @Test
     public void testParseEntriesWithInconsistentRecord() {
@@ -513,8 +513,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs record with an invalid createdAt field
-     * Parsing should fail with a CvsException
+     * Tries parsing a cvs record with an invalid createdAt field.
+     * Parsing should fail with a CvsException.
      */
     @Test
     public void testParseEntriesWithInvalidCreatedAt() {
@@ -527,8 +527,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs record with an invalid lastModified field
-     * Parsing should fail with a CvsException
+     * Tries parsing a cvs record with an invalid lastModified field.
+     * Parsing should fail with a CvsException.
      */
     @Test
     public void testParseEntriesWithInvalidLastModified() {
@@ -541,8 +541,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs record with an invalid validUntil field
-     * Parsing should fail with a CvsException
+     * Tries parsing a cvs record with an invalid validUntil field.
+     * Parsing should fail with a CvsException.
      */
     @Test
     public void testParseEntriesWithInvalidValidUntil() {
@@ -555,8 +555,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs record with an invalid url field
-     * Parsing should fail with a CvsException
+     * Tries parsing a cvs record with an invalid url field.
+     * Parsing should fail with a CvsException.
      */
     @Test
     public void testParseEntriesWithInvalidUrl() {
@@ -569,8 +569,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs record with an empty createdAt field
-     * Parsing should succeed, with a default value in createdAt
+     * Tries parsing a cvs record with an empty createdAt field.
+     * Parsing should succeed, with a default value in createdAt.
      */
     @Test
     public void testParseEntriesWithEmptyCreatedAt() {
@@ -583,8 +583,8 @@ public class SerializationControllerTest extends SerializationController {
     }
 
     /**
-     * Tries parsing a cvs record with an empty lastModified field
-     * Parsing should succeed, with a default value in lastModified
+     * Tries parsing a cvs record with an empty lastModified field.
+     * Parsing should succeed, with a default value in lastModified.
      */
     @Test
     public void testParseEntriesWithEmptyLastModified() {

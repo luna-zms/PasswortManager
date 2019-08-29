@@ -15,7 +15,6 @@ import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -27,12 +26,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import model.Entry;
 import model.Tag;
-import util.BindingUtils;
-import util.ClipboardUtils;
-import util.WindowFactory;
+import util.BindingUtil;
+import util.ClipboardUtil;
+import factory.WindowFactory;
 
 public class EntryListViewController extends TableView<Entry> {
-    private ObjectProperty<ObservableList<Entry>> entries = new SimpleObjectProperty<>();
+    private ObservableList<Entry> entries;
     private ObjectProperty<Tag> tag = new SimpleObjectProperty<>();
     private PMController pmController;
 
@@ -74,11 +73,29 @@ public class EntryListViewController extends TableView<Entry> {
 
         setContextMenu(buildContextMenu());
 
-        // Set cell factory to adjust text color
+        // Highlight expired tags
         columns.forEach(col -> col.setCellFactory(innerCol -> new EntryListCell()));
+        getSelectionModel().selectedItemProperty().addListener((obs, oldEntry, newEntry) -> {
+            if (newEntry != null && newEntry.getValidUntil() != null &&
+                newEntry.getValidUntil().isBefore(LocalDate.now())) {
+                setStyle("-fx-selection-bar: red;");
+            } else {
+                setStyle("");
+            }
+        });
 
         setRowFactory(table -> {
             TableRow<Entry> row = new TableRow<>();
+
+            // Cursed bind
+            row.styleProperty().bind(BindingUtil.makeBinding(row.itemProperty(), entry -> {
+                if (getSelectionModel().getSelectedItem() != entry && entry.getValidUntil() != null &&
+                    entry.getValidUntil().isBefore(LocalDate.now())) {
+                    return "-fx-background-color: darkred";
+                } else {
+                    return "";
+                }
+            }, "", getSelectionModel().selectedItemProperty()));
 
             // Clear selection on background click
             row.setOnMouseClicked(event -> {
@@ -90,25 +107,33 @@ public class EntryListViewController extends TableView<Entry> {
         });
 
         // Entry setting and filtering
-        setEntries(FXCollections.emptyObservableList());
-        entries.addListener((obs, oldEntries, newEntries) -> applyFilter());
         tag.addListener((obs, oldTag, newTag) -> applyFilter());
 
         setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
-                CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
-                Entry entry = getSelectionModel().getSelectedItem();
-                if (entry != null) {
-                    createModifyEntryViewController.setOldEntry(entry);
-                } else {
-                    createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
-                }
-
-                WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
-
-                // TODO: Maybe update displayed entry if necessary
+                modifyEntry(tag);
             }
         });
+
+        this.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if( keyEvent.getCode() == KeyCode.ENTER ) {
+                keyEvent.consume();
+
+                modifyEntry(tag);
+            }
+        });
+    }
+
+    private void modifyEntry(ObjectProperty<Tag> tag) {
+        CreateModifyEntryViewController createModifyEntryViewController = createCreateModifyEntryViewController();
+        Entry entry = getSelectionModel().getSelectedItem();
+        if (entry != null) {
+            createModifyEntryViewController.setOldEntry(entry);
+        } else {
+            createModifyEntryViewController.setCheckedTags(Collections.singletonList(tag.getValue()));
+        }
+
+        WindowFactory.showDialog("Eintrag erstellen", createModifyEntryViewController);
     }
 
     private static MenuItem createMenuItem(
@@ -126,13 +151,9 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     public void filterOnce(Predicate<Entry> predicate) {
-        setItems(entries.getValue().filtered(predicate));
+        setItems(entries.filtered(predicate));
     }
 
-    public void setEntries(ObservableList<Entry> entries) {
-        assert entries != null;
-        this.entries.set(entries);
-    }
 
     public void setPmController(PMController pmController) {
         this.pmController = pmController;
@@ -142,16 +163,19 @@ public class EntryListViewController extends TableView<Entry> {
         return tag;
     }
 
+    public void init() {
+        entries = pmController.getPasswordManager().entriesObservable();
+        setItems(entries);
+    }
+
     private void applyFilter() {
-        // Always non-null as it's initialized to an empty list
-        ObservableList<Entry> newEntries = entries.getValue();
         // Always non-null as it's initialized to the root tag
         Tag newTag = tag.getValue();
 
         // De-inlined because it gets massacred by autoformat otherwise
         Predicate<Entry> predicate = entry -> entry.getTags().contains(newTag);
         // FilteredList cannot be sorted => wrap in SortedList
-        SortedList<Entry> sortedList = new SortedList<>(newEntries.filtered(predicate));
+        SortedList<Entry> sortedList = new SortedList<>(entries.filtered(predicate));
         // Necessary if manually passing a SortedList to setItems
         sortedList.comparatorProperty().bind(comparatorProperty());
 
@@ -160,7 +184,7 @@ public class EntryListViewController extends TableView<Entry> {
 
     private ContextMenu buildContextMenu() {
         ObservableValue<Entry> entry = getSelectionModel().selectedItemProperty();
-        ObservableValue<Boolean> entryIsNull = BindingUtils.makeStaticBinding(entry, false, true);
+        ObservableValue<Boolean> entryIsNull = BindingUtil.makeStaticBinding(entry, false, true);
 
         // Totally didn't steal the accelerators for these from KeePass
         // TODO: Maybe deduplicate the clipboard code a bit more
@@ -181,7 +205,7 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     private List<MenuItem> createUrlItems(ObservableValue<Entry> entry) {
-        ObservableValue<Boolean> urlIsNull = BindingUtils.makeBinding(entry,
+        ObservableValue<Boolean> urlIsNull = BindingUtil.makeBinding(entry,
                                                                       currEntry -> currEntry.getUrl() == null,
                                                                       true);
         List<MenuItem> menuItems = new ArrayList<>();
@@ -198,7 +222,7 @@ public class EntryListViewController extends TableView<Entry> {
         // For some reason, IntelliJ wants to break this one into multiple lines but not the others
         // ¯\_(ツ)_/¯
         menuItems.add(createMenuItem("URL kopieren",
-                                     event -> ClipboardUtils.copyToClipboard(entry, Entry::getUrlString),
+                                     event -> ClipboardUtil.copyToClipboard(entry, Entry::getUrlString),
                                      urlIsNull,
                                      new KeyCharacterCombination("U",
                                                                  KeyCombination.CONTROL_DOWN,
@@ -212,19 +236,19 @@ public class EntryListViewController extends TableView<Entry> {
     ) {
 
         return createMenuItem("Passwort kopieren",
-                              event -> ClipboardUtils.copyToClipboard(entry, Entry::getPassword),
+                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getPassword),
                               entryIsNull,
                               new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
     }
 
     private MenuItem createCopyUsername(ObservableValue<Entry> entry) {
 
-        ObservableValue<Boolean> usernameIsNull = BindingUtils.makeBinding(entry,
+        ObservableValue<Boolean> usernameIsNull = BindingUtil.makeBinding(entry,
                                                                            currEntry -> currEntry.getUsername() == null,
                                                                            true);
 
         return createMenuItem("Nutzername kopieren",
-                              event -> ClipboardUtils.copyToClipboard(entry, Entry::getUsername),
+                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getUsername),
                               usernameIsNull,
                               new KeyCharacterCombination("B", KeyCombination.CONTROL_DOWN));
     }
@@ -291,7 +315,7 @@ public class EntryListViewController extends TableView<Entry> {
             }
 
             if (entry != null && entry.getValidUntil() != null && entry.getValidUntil().isBefore(LocalDate.now())) {
-                setTextFill(Color.RED);
+                setTextFill(Color.WHITE);
             }
         }
     }

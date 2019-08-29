@@ -11,8 +11,9 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import model.PasswordManager;
 import model.Tag;
+import util.BadPasswordException;
 import util.CsvException;
-import util.WindowFactory;
+import factory.WindowFactory;
 import view.MainWindowViewController;
 import view.SetMasterPasswordViewController;
 import view.StartWindowViewController;
@@ -21,7 +22,6 @@ import view.StartWindowViewController;
 public class Main extends Application {
     private MainWindowViewController mainWindowViewController;
     private PMController pmController;
-    private Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -45,15 +45,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-
         try {
             mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
             primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));
             primaryStage.show();
 
-            showOpenDialog(null);
+            if (!showOpenDialog(null)) primaryStage.close();
         } catch (Exception e) {
             WindowFactory.showError("Kritischer Fehler",
                                     "Aufgrund eines kritischen Fehlers muss die Anwendung beendet werden.\n\nNähere Informationen:\n" + e
@@ -61,7 +59,7 @@ public class Main extends Application {
         }
     }
 
-    public void showOpenDialog(Path initialPath) {
+    private boolean showOpenDialog(Path initialPath) {
         boolean successfulInit;
         do {
             StartWindowViewController startWindowViewController = new StartWindowViewController();
@@ -71,56 +69,82 @@ public class Main extends Application {
 
             Optional<Boolean> tmp = initApplication(startWindowViewController);
             if (!tmp.isPresent()) {
-                primaryStage.close();
-                return;
+                return false;
             } else {
                 successfulInit = tmp.get();
             }
         } while (!successfulInit);
+
+        return true;
+    }
+
+    private boolean initApplicationWithCreate(Path path) {
+        pmController.setSavePath(path);
+
+        SetMasterPasswordViewController setMasterPasswordViewController = new SetMasterPasswordViewController();
+        setMasterPasswordViewController.setPmController(pmController);
+        setMasterPasswordViewController.setMode(false);
+        WindowFactory.showDialog("Master-Passwort setzen", setMasterPasswordViewController);
+
+        boolean ret = true;
+
+        // User pressed cancel or closed window => go back to start
+        if (!setMasterPasswordViewController.getPasswordSet()) {
+            ret = false;
+        }
+        // Root tag is null otherwise
+        else {
+            PasswordManager passwordManager = pmController.getPasswordManager();
+            passwordManager.getEntries().clear();
+            passwordManager.setRootTag(getRootTagFromPath(path));
+            pmController.setPasswordManager(passwordManager);
+        }
+
+        return ret;
+    }
+
+    private boolean initApplicationWithOpen(Path path, String password) {
+        pmController.setMasterPassword(password);
+        pmController.setSavePath(path);
+
+        boolean ret = true;
+
+        try {
+            // Hack to not have to copy `ret = false` into each catch
+            ret = false;
+            pmController.getLoadSaveController().load(path);
+            ret = true;
+        } catch (CsvException csvException) {
+            WindowFactory.showError("Die Datei ist vermutlich beschädigt.",
+                    "Aufgrund von internen Formatfehlern konnte die Datei nicht geladen werden.\n\nNähere Informationen:\n" + csvException
+                            .getMessage());
+        } catch (BadPasswordException badPasswordException) {
+            WindowFactory.showError("Falsches Passwort",
+                    "Die Datei kann nicht sinnvoll entschlüsselt werden. Geben Sie das Passwort erneut ein.");
+        } catch (IOException ioException) {
+            WindowFactory.showError("Datei konnte nicht geöffnet werden.",
+                    "Aufgrund eines unspezifizierten Fehlers ist das Öffnen der Datei fehlgeschlagen.\n\nNähere Informationen:\n" + ioException
+                            .getLocalizedMessage());
+        } catch (RuntimeException runtimeException) {
+            WindowFactory.showError("Interner Fehler beim Laden", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht geladen werden:\n\n"
+                    + runtimeException.getLocalizedMessage());
+        }
+
+        checkMasterPasswordExpiration();
+
+        return ret;
     }
 
     private Optional<Boolean> initApplication(StartWindowViewController startWindowViewController) {
         // I felt dirty writing this tbh
         if (startWindowViewController.getPath() == null) return Optional.empty();
 
-        boolean ret = true;
+        boolean ret;
         Path path = startWindowViewController.getPath();
         if (startWindowViewController.create()) {
-            pmController.setSavePath(path);
-
-            SetMasterPasswordViewController setMasterPasswordViewController = new SetMasterPasswordViewController();
-            setMasterPasswordViewController.setPmController(pmController);
-            setMasterPasswordViewController.setMode(false);
-            WindowFactory.showDialog("Master-Passwort setzen", setMasterPasswordViewController);
-
-            // User pressed cancel or closed window => go back to start
-            if (!setMasterPasswordViewController.getPasswordSet()) {
-                ret = false;
-            }
-            // Root tag is null otherwise
-            else {
-                pmController.getPasswordManager().setRootTag(getRootTagFromPath(path));
-            }
+            ret = initApplicationWithCreate(path);
         } else {
-            pmController.setMasterPassword(startWindowViewController.getPassword());
-            pmController.setSavePath(path);
-
-            try {
-                // Hack to not have to copy `ret = false` into each catch
-                ret = false;
-                pmController.getLoadSaveController().load(path);
-                ret = true;
-            } catch (CsvException e) {
-                WindowFactory.showError("Die Datei ist vermutlich beschädigt.",
-                                        "Aufgrund von internen Formatfehlern konnte die Datei nicht geladen werden.\n\nNähere Informationen:\n" + e
-                                                .getMessage());
-            } catch (IOException e) {
-                WindowFactory.showError("Datei konnte nicht geöffnet werden.",
-                                        "Aufgrund eines unspezifizierten Fehlers ist das Öffnen der Datei fehlgeschlagen.\n\nNähere Informationen:\n" + e
-                                                .getLocalizedMessage());
-            }
-
-            checkMasterPasswordExpiration();
+            ret = initApplicationWithOpen(path, startWindowViewController.getPassword());
         }
 
         if (ret) mainWindowViewController.init(this::showOpenDialog);
@@ -128,7 +152,8 @@ public class Main extends Application {
     }
 
     private void checkMasterPasswordExpiration() {
-        if (!pmController.getPasswordManager().getValidUntil().isBefore(LocalDateTime.now())) {
+        LocalDateTime validUntil = pmController.getPasswordManager().getValidUntil();
+        if (validUntil == null || !validUntil.isBefore(LocalDateTime.now())) {
             return;
         }
 

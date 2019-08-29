@@ -1,9 +1,9 @@
 package view;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 import controller.PMController;
 import javafx.fxml.FXML;
@@ -12,8 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 public class StartWindowViewController extends GridPane {
 
@@ -47,6 +48,8 @@ public class StartWindowViewController extends GridPane {
             e.printStackTrace();
         }
 
+        loadPathFromProps();
+
         initFileChooser();
 
         openButton.setOnAction(event -> {
@@ -65,7 +68,7 @@ public class StartWindowViewController extends GridPane {
                 return;
         	}
         	if(customPasswordField.getText().isEmpty()) {
-        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben sie das Paswort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
+        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben sie das Passwort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
         		return;
         	}
         	path = file.toPath();
@@ -75,6 +78,7 @@ public class StartWindowViewController extends GridPane {
 
         createArchiveButton.setOnAction(event -> {
         	Stage dialog = WindowFactory.createStage();
+        	dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             fileChooser.setTitle("Erstelle neues Passwort-Archiv");
@@ -94,9 +98,24 @@ public class StartWindowViewController extends GridPane {
 
     }
 
+    private void loadPathFromProps() {
+        try (FileInputStream fis = new FileInputStream(PMController.configFile);
+             InputStreamReader isr = new InputStreamReader(fis);
+             BufferedReader reader = new BufferedReader(isr)
+        ) {
+            Properties properties = new Properties();
+            properties.load(reader);
+
+            setPath(Paths.get(properties.getProperty("savePath")));
+        } catch (IOException e) {
+            // No need to do anything as it's just a convenience feature
+        }
+    }
+
     private void initFileChooser() {
         fileButton.setOnAction(event -> {
         	Stage dialog = WindowFactory.createStage();
+        	dialog.initModality(Modality.APPLICATION_MODAL);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 

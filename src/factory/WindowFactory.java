@@ -1,4 +1,4 @@
-package util;
+package factory;
 
 import application.Main;
 import javafx.scene.Parent;
@@ -69,6 +69,8 @@ public class WindowFactory {
         Alert alert = new Alert(type, content);
         // Necessary because content text gets truncated otherwise
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        // Initialize Header to null in case someone doesn't want to set it
+        alert.setHeaderText(null);
 
         return alert;
     }
