@@ -14,7 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 public class StartWindowViewController extends GridPane {
 
@@ -68,7 +68,7 @@ public class StartWindowViewController extends GridPane {
                 return;
         	}
         	if(customPasswordField.getText().isEmpty()) {
-        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben Sie das Paswort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
+        		WindowFactory.showError("Passwortfeld ist leer", "Bitte geben Sie das Passwort für das gewählte Archiv ein oder erstellen Sie ein neues Archiv");
         		return;
         	}
         	path = file.toPath();

@@ -23,7 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Entry;
 import util.CsvException;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 public class MainWindowToolbarViewController extends GridPane {
 
@@ -177,6 +177,8 @@ public class MainWindowToolbarViewController extends GridPane {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines Ausgabefehlers ist das Speichern " +
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
+            } catch (RuntimeException exception) {
+                WindowFactory.showError("Interner Fehler beim Speichern", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht gespeichert werden:\n\n" + exception.getLocalizedMessage());
             }
         });
     }

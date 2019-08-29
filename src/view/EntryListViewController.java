@@ -18,8 +18,6 @@ import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -31,10 +29,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import model.Entry;
 import model.Tag;
-import util.BindingUtils;
-import util.ClipboardUtils;
+import util.BindingUtil;
+import util.ClipboardUtil;
 import util.DateFormatUtil;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 public class EntryListViewController extends TableView<Entry> {
     private ObservableList<Entry> entries;
@@ -97,7 +95,7 @@ public class EntryListViewController extends TableView<Entry> {
             TableRow<Entry> row = new TableRow<>();
 
             // Cursed bind
-            row.styleProperty().bind(BindingUtils.makeBinding(row.itemProperty(), entry -> {
+            row.styleProperty().bind(BindingUtil.makeBinding(row.itemProperty(), entry -> {
                 if (getSelectionModel().getSelectedItem() != entry && entry.getValidUntil() != null &&
                     entry.getValidUntil().isBefore(LocalDate.now())) {
                     return "-fx-background-color: darkred";
@@ -193,7 +191,7 @@ public class EntryListViewController extends TableView<Entry> {
 
     private ContextMenu buildContextMenu() {
         ObservableValue<Entry> entry = getSelectionModel().selectedItemProperty();
-        ObservableValue<Boolean> entryIsNull = BindingUtils.makeStaticBinding(entry, false, true);
+        ObservableValue<Boolean> entryIsNull = BindingUtil.makeStaticBinding(entry, false, true);
 
         // Totally didn't steal the accelerators for these from KeePass
         // TODO: Maybe deduplicate the clipboard code a bit more
@@ -214,7 +212,7 @@ public class EntryListViewController extends TableView<Entry> {
     }
 
     private List<MenuItem> createUrlItems(ObservableValue<Entry> entry) {
-        ObservableValue<Boolean> urlIsNull = BindingUtils.makeBinding(entry,
+        ObservableValue<Boolean> urlIsNull = BindingUtil.makeBinding(entry,
                                                                       currEntry -> currEntry.getUrl() == null,
                                                                       true);
         List<MenuItem> menuItems = new ArrayList<>();
@@ -231,7 +229,7 @@ public class EntryListViewController extends TableView<Entry> {
         // For some reason, IntelliJ wants to break this one into multiple lines but not the others
         // ¯\_(ツ)_/¯
         menuItems.add(createMenuItem("URL kopieren",
-                                     event -> ClipboardUtils.copyToClipboard(entry, Entry::getUrlString),
+                                     event -> ClipboardUtil.copyToClipboard(entry, Entry::getUrlString),
                                      urlIsNull,
                                      new KeyCharacterCombination("U",
                                                                  KeyCombination.CONTROL_DOWN,
@@ -245,19 +243,19 @@ public class EntryListViewController extends TableView<Entry> {
     ) {
 
         return createMenuItem("Passwort kopieren",
-                              event -> ClipboardUtils.copyToClipboard(entry, Entry::getPassword),
+                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getPassword),
                               entryIsNull,
                               new KeyCharacterCombination("C", KeyCombination.CONTROL_DOWN));
     }
 
     private MenuItem createCopyUsername(ObservableValue<Entry> entry) {
 
-        ObservableValue<Boolean> usernameIsNull = BindingUtils.makeBinding(entry,
+        ObservableValue<Boolean> usernameIsNull = BindingUtil.makeBinding(entry,
                                                                            currEntry -> currEntry.getUsername() == null,
                                                                            true);
 
         return createMenuItem("Nutzername kopieren",
-                              event -> ClipboardUtils.copyToClipboard(entry, Entry::getUsername),
+                              event -> ClipboardUtil.copyToClipboard(entry, Entry::getUsername),
                               usernameIsNull,
                               new KeyCharacterCombination("B", KeyCombination.CONTROL_DOWN));
     }
@@ -338,7 +336,7 @@ public class EntryListViewController extends TableView<Entry> {
                 setTextFill(Color.WHITE);
             } else {
                 // Necessary for highlighting to have the proper font color
-                textFillProperty().bind(BindingUtils.makeBinding(getSelectionModel().selectedItemProperty(), newEntry -> {
+                textFillProperty().bind(BindingUtil.makeBinding(getSelectionModel().selectedItemProperty(), newEntry -> {
                     if (newEntry == entry) return Color.WHITE;
                     else return Color.BLACK;
                 }, Color.BLACK));

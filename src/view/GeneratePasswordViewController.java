@@ -20,7 +20,7 @@ import static util.CharGroup.*;
 
 import util.PasswordGeneratorSettings;
 import util.PasswordQualityUtil;
-import util.WindowFactory;
+import factory.WindowFactory;
 
 public class GeneratePasswordViewController extends GridPane {
 
@@ -100,7 +100,7 @@ public class GeneratePasswordViewController extends GridPane {
                 return 0.0;
             }
         });
-        
+
         lengthSpinner.getEditor().textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -204,7 +204,7 @@ public class GeneratePasswordViewController extends GridPane {
 
         pwField.setText(pwController.generatePassword(pwGenSettings));
     }
-    
+
     private String getNumber(String value) {
         String n = "";
         try {

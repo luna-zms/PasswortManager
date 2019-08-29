@@ -9,8 +9,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 
-public class BindingUtils {
-    private BindingUtils() {
+public class BindingUtil {
+    private BindingUtil() {
     }
 
     public static <T, V> ObjectBinding<V> makeBinding(

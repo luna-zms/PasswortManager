@@ -17,7 +17,7 @@ import model.Entry;
 import model.Tag;
 import util.DateFormatUtil;
 
-import static util.BindingUtils.makeBinding;
+import static util.BindingUtil.makeBinding;
 
 public class EntryPreviewViewController extends HBox {
     private ObjectProperty<Entry> entry = new SimpleObjectProperty<>();
