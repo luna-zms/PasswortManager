@@ -316,8 +316,15 @@ public class EntryListViewController extends TableView<Entry> {
                 setText(item);
             }
 
+            textFillProperty().unbind();
             if (entry != null && entry.getValidUntil() != null && entry.getValidUntil().isBefore(LocalDate.now())) {
                 setTextFill(Color.WHITE);
+            } else {
+                // Necessary for highlighting to have the proper font color
+                textFillProperty().bind(BindingUtils.makeBinding(getSelectionModel().selectedItemProperty(), newEntry -> {
+                    if (newEntry == entry) return Color.WHITE;
+                    else return Color.BLACK;
+                }, Color.BLACK));
             }
         }
     }
