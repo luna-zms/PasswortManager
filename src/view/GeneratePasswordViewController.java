@@ -5,12 +5,16 @@ import java.util.HashMap;
 
 import controller.PMController;
 import controller.PasswordController;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -147,6 +151,11 @@ public class GeneratePasswordViewController extends GridPane {
             setPassword("");
             stage.close();
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> canButton.getOnAction().handle(null)));
 
         accButton.setOnAction(e -> {
             Stage stage = (Stage) getScene().getWindow();

@@ -16,6 +16,7 @@ import java.util.function.Predicate;
 import controller.PMController;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,9 @@ import javafx.scene.effect.BlurType;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -159,6 +163,15 @@ public class MainWindowToolbarViewController extends GridPane {
         initializeActionsSearchButton();
 
         selectedColumnsSearchbar.setGraphic(new ImageView(filterButtonImage));
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.R,
+                KeyCombination.CONTROL_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination, () -> {
+            searchFieldSearchbar.clear();
+            searchButtonSearchbar.getOnAction().handle(null);
+            searchFieldSearchbar.requestFocus();
+        }));
     }
 
     /**
@@ -175,6 +188,11 @@ public class MainWindowToolbarViewController extends GridPane {
         addEntryToolbar.setOnAction(event -> {
             WindowFactory.showCreateModifyEntryView(pmController);
         });
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.PLUS,
+                KeyCombination.CONTROL_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> addEntryToolbar.getOnAction().handle(null)));
     }
 
     private void initializeActionsSaveDatabase() {
@@ -200,8 +218,13 @@ public class MainWindowToolbarViewController extends GridPane {
                     Duration.millis(2000),
                     ae -> saveDatabaseToolbar.setEffect(null)));
             timeline.play();
-
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.S,
+                KeyCombination.CONTROL_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> saveDatabaseToolbar.getOnAction().handle(null)));
     }
 
     private void initializeActionsSaveAsDatabase() {
@@ -227,6 +250,12 @@ public class MainWindowToolbarViewController extends GridPane {
                         "zu ihr existiert.");
             }
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.S,
+                KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> saveAsDatabaseToolbar.getOnAction().handle(null)));
     }
 
     private void initializeActionsOpenDatabase() {
@@ -247,6 +276,16 @@ public class MainWindowToolbarViewController extends GridPane {
 
             openDatabaseFileAction.accept(pmController.getSavePath());
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.O,
+                KeyCombination.CONTROL_DOWN);
+        KeyCombination keyCombination2 = new KeyCodeCombination(KeyCode.N,
+                KeyCombination.CONTROL_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> openDatabaseToolbar.getOnAction().handle(null)));
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination2,
+                () -> openDatabaseToolbar.getOnAction().handle(null)));
     }
 
     private void initializeActionsSetMasterPassword() {
@@ -256,6 +295,12 @@ public class MainWindowToolbarViewController extends GridPane {
             dialogController.setMode(true);
             WindowFactory.showDialog("Einstellungen: Master-Passwort setzen", dialogController);
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.S,
+                KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> setMasterPasswordToolbar.getOnAction().handle(null)));
     }
 
     private void initializeActionsImportDatabase() {
@@ -287,6 +332,12 @@ public class MainWindowToolbarViewController extends GridPane {
             WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich importiert!")
                     .showAndWait();
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.I,
+                KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> importDatabaseToolbar.getOnAction().handle(null)));
     }
 
     private void initializeActionsExportDatabase() {
@@ -312,6 +363,12 @@ public class MainWindowToolbarViewController extends GridPane {
             WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich exportiert!")
                     .showAndWait();
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.E,
+                KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> exportDatabaseToolbar.getOnAction().handle(null)));
     }
 
     private void initializeActionsGeneratePassword() {
@@ -320,15 +377,28 @@ public class MainWindowToolbarViewController extends GridPane {
             dialogController.setPmController(pmController);
             WindowFactory.showDialog("Extra: Passwort generieren", dialogController, false);
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.G,
+                KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> generatePasswordToolbar.getOnAction().handle(null)));
     }
 
     private void checkExpiredExisting() {
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.E,
+                KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN);
         if( !pmController.getEntryController().filter(Entry::isExpired).isEmpty() ) {
             showExpiredEntriesToolbar.setManaged(true);
             showExpiredEntriesToolbar.setVisible(true);
+
+            getScene().getAccelerators().put(keyCombination,
+                    () -> showExpiredEntriesToolbar.getOnAction().handle(null));
         } else {
             showExpiredEntriesToolbar.setManaged(false);
             showExpiredEntriesToolbar.setVisible(false);
+
+            getScene().getAccelerators().remove(keyCombination);
         }
     }
 
@@ -338,7 +408,7 @@ public class MainWindowToolbarViewController extends GridPane {
             onSearchRefreshAction.accept(filterExpired, new Tuple<>(true, false));
         });
 
-        checkExpiredExisting();
+        Platform.runLater(this::checkExpiredExisting);
 
         pmController.getPasswordManager().entriesObservable().addListener(
                 (InvalidationListener) event -> checkExpiredExisting()
@@ -417,6 +487,12 @@ public class MainWindowToolbarViewController extends GridPane {
                 return notYetFound.isEmpty();
             }), new Tuple<>(searchEverywhere, ghostsActivated));
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.F,
+                KeyCombination.CONTROL_DOWN);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> searchFieldSearchbar.requestFocus()));
     }
 
     public void setPmController(PMController pmController) {

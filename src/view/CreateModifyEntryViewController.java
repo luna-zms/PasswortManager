@@ -9,6 +9,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -122,6 +125,11 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
             stage.close();
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> cancelButton.getOnAction().handle(null)));
 
         okButton.setOnAction(event -> {
             String entryNameString = entryName.getText();

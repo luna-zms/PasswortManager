@@ -5,11 +5,15 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import controller.PMController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import util.PasswordQualityUtil;
@@ -114,6 +118,11 @@ public class SetMasterPasswordViewController extends GridPane {
             Stage stage = (Stage) getScene().getWindow();
             stage.close();
         });
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+        Platform.runLater(() -> getScene().getAccelerators().put(keyCombination,
+                () -> cancelButton.getOnAction().handle(null)));
 
         okButton.setOnAction(event -> {
             if (mode) {
