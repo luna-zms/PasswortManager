@@ -115,13 +115,6 @@ public class CustomExpirationDateViewController extends GridPane {
             }
             return null;
         };
-        /*
-        daysUntilExpiration.getEditor().textProperty().addListener((obs , old , newVal) -> {
-        	if (obs.equals(KeyCode.ENTER)){
-        		if (newVal.equals("")) daysUntilExpiration.getValueFactory().setValue(1);
-        	}
-        });
-        */
         daysUntilExpiration.getEditor().setTextFormatter(
         	    new TextFormatter<Integer>(new IntegerStringConverter(), 1, integerFilter));
         
