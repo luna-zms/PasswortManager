@@ -103,21 +103,6 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
         passwordQualityBar.setQuality(0);
 
-        this.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, evt -> {
-        	System.out.println("Test");
-            if (isModified()) {
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Abbrechen bestätigen");
-                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
-                alert.setContentText("Alle ihre Änderungen gehen verloren!");
-                Optional<ButtonType> result = alert.showAndWait();
-
-                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
-                	evt.consume();
-                }
-            }
-        });
-
         cancelButton.setOnAction(event -> {
             Stage stage = (Stage) getScene().getWindow();
 
@@ -134,9 +119,9 @@ public class CreateModifyEntryViewController extends AnchorPane {
                     stage.close();
                     return;
                 }
-            }
 
-            event.consume();
+                event.consume();
+            }
         });
 
         okButton.setOnAction(event -> {

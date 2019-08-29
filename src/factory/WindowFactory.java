@@ -120,19 +120,21 @@ public class WindowFactory {
     private static void showStageWithCloseConfirmation(CreateModifyEntryViewController controller) {
         Stage stage = prepareDialog("Eintrag erstellen", controller, false);
         stage.setOnCloseRequest(evt -> {
-            if (controller.isModified()) {
-                Alert alert = WindowFactory.createAlert(AlertType.CONFIRMATION,
-                                        "Alle ihre Änderungen gehen verloren!");
+            if (!controller.isModified()) {
+                return;
+            }
 
-                alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-                alert.setTitle("Abbrechen bestätigen");
-                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
-                Optional<ButtonType> result = alert.showAndWait();
+            Alert alert = WindowFactory.createAlert(AlertType.CONFIRMATION,
+                                    "Alle ihre Änderungen gehen verloren!");
 
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    stage.close();
-                    return;
-                }
+            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+            alert.setTitle("Abbrechen bestätigen");
+            alert.setHeaderText("Wollen Sie wirklich abbrechen?");
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.YES) {
+                stage.close();
+                return;
             }
 
             evt.consume();

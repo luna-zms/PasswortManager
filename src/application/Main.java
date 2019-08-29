@@ -63,9 +63,9 @@ public class Main extends Application {
                         primaryStage.close();
                         return;
                     }
-                }
 
-                evt.consume();
+                    evt.consume();
+                }
             });
 
             primaryStage.show();
