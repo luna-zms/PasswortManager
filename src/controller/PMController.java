@@ -28,7 +28,7 @@ import model.PasswordManager;
  */
 public class PMController {
 
-    public static final File configFile = new File(System.getenv("HOME"), ".config/sopra-pwm/settings.properties");
+    public static final File CONFIG_FILE = new File(System.getenv("HOME"), ".config/sopra-pwm/settings.properties");
 
     static final byte[] INSECURE_SALT = "\0si\0ro\0D".getBytes();
 
@@ -174,9 +174,9 @@ public class PMController {
         properties.setProperty("savePath", savePath.toString());
 
         // Create directory tree if it doesn't exist yet
-        configFile.getParentFile().mkdirs();
+        CONFIG_FILE.getParentFile().mkdirs();
         try (
-                FileOutputStream fos = new FileOutputStream(configFile);
+                FileOutputStream fos = new FileOutputStream(CONFIG_FILE);
                 OutputStreamWriter osw = new OutputStreamWriter(fos);
                 BufferedWriter writer = new BufferedWriter(osw)
         ) {
