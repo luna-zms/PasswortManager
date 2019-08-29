@@ -8,6 +8,7 @@ import java.util.Optional;
 import controller.*;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import model.PasswordManager;
 import model.Tag;
@@ -37,7 +38,7 @@ public class Main extends Application {
         pmController.setPasswordController(new PasswordController());
         pmController.setEntryController(new EntryController(pmController));
         pmController.setTagController(new TagController());
-        pmController.setLoadSaveController(new LoadSaveController(passwordManager));
+        pmController.setLoadSaveController(new LoadSaveController(pmController));
         pmController.setImportExportController(new ImportExportController(passwordManager));
 
         pmController.getTagController().setPMController(pmController);
@@ -50,6 +51,23 @@ public class Main extends Application {
             mainWindowViewController = new MainWindowViewController();
             mainWindowViewController.setPmController(pmController);
             primaryStage.setScene(WindowFactory.createScene(mainWindowViewController));
+
+            primaryStage.setOnCloseRequest(evt -> {
+                if (pmController.isDirty()) {
+                    Alert alert = WindowFactory.createAlert(Alert.AlertType.CONFIRMATION, "Sie haben ungespeicherte Änderungen. Alle ihre Änderungen gehen verloren!");
+                    alert.setTitle("Beenden bestätigen");
+                    alert.setHeaderText("Wollen Sie GateKeeper wirklich beenden?");
+                    Optional<ButtonType> result = alert.showAndWait();
+
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        primaryStage.close();
+                        return;
+                    }
+                }
+
+                evt.consume();
+            });
+
             primaryStage.show();
 
             if (!showOpenDialog(null)) primaryStage.close();

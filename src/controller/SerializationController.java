@@ -8,6 +8,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import util.CsvException;
+import util.DateFormatUtil;
 import util.Tuple;
 
 import java.io.IOException;
@@ -101,9 +102,9 @@ public abstract class SerializationController {
                     entry.getUsername(),
                     entry.getPassword(),
                     entry.getUrl(),
-                    (entry.getCreatedAt() != null) ? entry.getCreatedAt().format(DATE_TIME_FORMAT) : "",
-                    (entry.getCreatedAt() != null) ? entry.getLastModified().format(DATE_TIME_FORMAT) : "",
-                    (entry.getValidUntil() != null) ? entry.getValidUntil().format(DATE_FORMAT) : "",
+                    DateFormatUtil.formatDate(entry.getCreatedAt(), DATE_TIME_FORMAT),
+                    DateFormatUtil.formatDate(entry.getLastModified(), DATE_TIME_FORMAT),
+                    DateFormatUtil.formatDate(entry.getValidUntil(), DATE_FORMAT),
                     entry.getNote(),
                     (entry.getSecurityQuestion() != null) ? entry.getSecurityQuestion().getQuestion() : "",
                     (entry.getSecurityQuestion() != null) ? entry.getSecurityQuestion().getAnswer() : "",
