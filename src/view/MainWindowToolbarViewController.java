@@ -176,12 +176,15 @@ public class MainWindowToolbarViewController extends GridPane {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines internen Fehler ist das Speichern " +
                         "fehlgeschlagen. Versuchen Sie es später erneut und starten sie eventuell Ihren Computer neu. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
+                return;
             } catch (IOException ioExc) {
                 errorMessage("Speichern fehlgeschlagen", "Aufgrund eines Ausgabefehlers ist das Speichern " +
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
+                return;
             } catch (RuntimeException exception) {
                 WindowFactory.showError("Interner Fehler beim Speichern", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht gespeichert werden:\n\n" + exception.getLocalizedMessage());
+                return;
             }
              saveDatabaseToolbar.setEffect(new InnerShadow(BlurType.TWO_PASS_BOX, Color.LIGHTGREEN, 50, 0.2, 0.0, 0.0));
             Timeline timeline = new Timeline(new KeyFrame(
@@ -253,6 +256,7 @@ public class MainWindowToolbarViewController extends GridPane {
                 errorMessage("Fehler beim Import", "Beim Importieren der Datei ist ein Fehler aufgetreten. " +
                         "Überprüfen Sie, ob die Datei das nötige Format erfüllt. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
+                return;
             }
             if( onTreeViewRefresh != null ) onTreeViewRefresh.run();
             // if( on)
@@ -279,6 +283,7 @@ public class MainWindowToolbarViewController extends GridPane {
                 errorMessage("Fehler beim Export", "Beim Exportieren der Datenbank ist ein Fehler " +
                         "aufgetreten. Starten Sie das Programm erneut, wenn weiterhin Fehler auftreten. " +
                         "Nähere Beschreibung: \"" + exc.getMessage() + "\"");
+                return;
             }
 
             WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Ihre Daten wurden erfolgreich exportiert!")
