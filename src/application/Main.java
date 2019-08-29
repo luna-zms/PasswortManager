@@ -56,7 +56,7 @@ public class Main extends Application {
                 if (pmController.isDirty()) {
                     Alert alert = WindowFactory.createAlert(Alert.AlertType.CONFIRMATION, "Sie haben ungespeicherte Änderungen. Alle ihre Änderungen gehen verloren!");
                     alert.setTitle("Beenden bestätigen");
-                    alert.setHeaderText("Wollen Sie Gatekeeper wirklich beenden?");
+                    alert.setHeaderText("Wollen Sie GateKeeper wirklich beenden?");
                     Optional<ButtonType> result = alert.showAndWait();
 
                     if (result.isPresent() && result.get() == ButtonType.OK) {
