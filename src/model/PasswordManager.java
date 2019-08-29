@@ -1,13 +1,10 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -27,7 +24,7 @@ public class PasswordManager {
 
     private Tag rootTag;
 
-    private ObservableList<Entry> entries = FXCollections.observableArrayList(Entry.observableProps);
+    private ObservableList<Entry> entries = FXCollections.observableArrayList(Entry.OBSERVABLE_PROPS);
 
     public PasswordManager() {
         this(null);

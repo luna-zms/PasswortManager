@@ -3,7 +3,6 @@ package model;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import controller.PMController;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -18,13 +17,13 @@ import javafx.util.Callback;
  */
 @SuppressWarnings("PMD.ShortClassName")
 public class Tag {
-    public static final Callback<Tag, Observable[]> observableProps = tag -> new Observable[]{
+    public static final Callback<Tag, Observable[]> OBSERVABLE_PROPS = tag -> new Observable[]{
             tag.nameProperty(),
             tag.subTagsObservable()
     };
 
     private StringProperty name = new SimpleStringProperty();
-    private ObservableList<Tag> subTags = FXCollections.observableArrayList(observableProps);
+    private ObservableList<Tag> subTags = FXCollections.observableArrayList(OBSERVABLE_PROPS);
 
     public Tag() {
         this("");

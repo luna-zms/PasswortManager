@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -23,7 +22,7 @@ import javafx.util.Callback;
  *
  */
 public class Entry {
-    public static final Callback<Entry, Observable[]> observableProps = entry -> new Observable[]{
+    public static final Callback<Entry, Observable[]> OBSERVABLE_PROPS = entry -> new Observable[]{
             entry.tagsObservable()
     };
 
@@ -32,7 +31,7 @@ public class Entry {
     private LocalDateTime createdAt, lastModified;
     private LocalDate validUntil;
     private SecurityQuestion securityQuestion;
-    private ObservableList<Tag> tags = FXCollections.observableArrayList(Tag.observableProps);
+    private ObservableList<Tag> tags = FXCollections.observableArrayList(Tag.OBSERVABLE_PROPS);
 
 
     /**
