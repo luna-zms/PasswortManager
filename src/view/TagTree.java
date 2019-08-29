@@ -26,6 +26,8 @@ import java.util.Collections;
 
 public class TagTree extends TreeView<Tag> {
     private PMController pmController;
+    
+    private boolean addingTag;
 
     public BorderPane createPaneWithButtons() {
         BorderPane outer = new BorderPane();
@@ -117,10 +119,11 @@ public class TagTree extends TreeView<Tag> {
 
         TreeItem<Tag> parent = item.getParent();
 
-        if (parent != null) {  // Cannot delete root node
-            if (item.getValue() != null) {
-                pmController.getTagController().removeTag(parent.getValue(), item.getValue());
-            }
+        // Cannot delete root node
+        if (parent != null && item.getValue() != null) {
+            pmController.getTagController().removeTag(parent.getValue(), item.getValue());
+            // Hack until I (read: if I ever) get around to finding/fixing the root cause
+            parent.getChildren().remove(item);
         }
     }
 
@@ -129,6 +132,9 @@ public class TagTree extends TreeView<Tag> {
     }
 
     public void createBelowSelected() {
+    	if (addingTag) return;
+    	
+    	addingTag = true;
         TreeItem<Tag> selected = getSelectedItem();
         TagTreeItem newItem = new TagTreeItem(null);
 
@@ -299,6 +305,7 @@ public class TagTree extends TreeView<Tag> {
 
         private void finishEdit(String str) {
             if (getTreeItem() == null) return;
+            
 
             TreeItem<Tag> parentTag = getTreeItem().getParent();
 
@@ -328,6 +335,7 @@ public class TagTree extends TreeView<Tag> {
                     tag = getItem();
                     pmController.getTagController().renameTag(tag, str);
                 }
+                addingTag = false;
 
                 commitEdit(tag);
             }

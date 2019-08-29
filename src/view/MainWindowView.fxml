@@ -11,7 +11,7 @@
 <fx:root xmlns:fx="http://javafx.com/fxml/1" prefHeight="690.0" type="javafx.scene.layout.BorderPane"
          xmlns="http://javafx.com/javafx/8.0.999-ea">
     <center>
-        <HBox prefHeight="583.0" prefWidth="790.0" BorderPane.alignment="CENTER">
+        <HBox prefHeight="583.0" prefWidth="850.0" BorderPane.alignment="CENTER">
             <children>
                 <VBox prefHeight="583.0" prefWidth="779.0" HBox.hgrow="ALWAYS">
                     <children>

@@ -121,7 +121,7 @@ public class LoadSaveController extends SerializationController {
 
                 String fileName = path.getFileName().toString();
 
-                readRootTag.setName(fileName.substring(0, fileName.lastIndexOf(".pwds")));
+                readRootTag.setName(fileName.substring(0, fileName.lastIndexOf(".gate")));
 
                 passwordManager.setRootTag(readRootTag);
                 passwordManager.setEntries(entries);
