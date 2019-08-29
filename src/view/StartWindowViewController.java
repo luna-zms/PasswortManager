@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import controller.PMController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -47,11 +48,10 @@ public class StartWindowViewController extends GridPane {
 
             e.printStackTrace();
         }
-
+        
         loadPathFromProps();
-
         initFileChooser();
-
+        
         openButton.setOnAction(event -> {
         	if(choosePasswordAchivePath.getText().isEmpty()) {
         		WindowFactory.showError("Pfad nicht gesetzt", "Bitte geben Sie einen Pfad zu einem Archiv an oder erstellen Sie ein neues Archiv");
@@ -94,6 +94,12 @@ public class StartWindowViewController extends GridPane {
             stage.close();
         });
 
+    }
+    
+    public void initialize() {
+    	Platform.runLater(() -> {
+    		customPasswordField.requestFocus();
+    	});
     }
 
     private void loadPathFromProps() {

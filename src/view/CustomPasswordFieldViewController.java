@@ -151,4 +151,14 @@ public class CustomPasswordFieldViewController extends HBox {
         copyButton.setDisable(!enabled);
         eyeButton.setDisable(!enabled);
     }
+    
+    @Override
+    public void requestFocus() {
+    	if(textField.isVisible()) {
+    		textField.requestFocus();
+    	}
+    	else {
+    		passwordField.requestFocus();
+    	}
+    }
 }
