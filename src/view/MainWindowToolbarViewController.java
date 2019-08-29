@@ -7,20 +7,27 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import controller.PMController;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import model.Entry;
 import util.CsvException;
 import factory.WindowFactory;
@@ -175,6 +182,12 @@ public class MainWindowToolbarViewController extends GridPane {
             } catch (RuntimeException exception) {
                 WindowFactory.showError("Interner Fehler beim Speichern", "Die Datei konnte aufgrund eines unspezifizierten Fehlers nicht gespeichert werden:\n\n" + exception.getLocalizedMessage());
             }
+             saveDatabaseToolbar.setEffect(new InnerShadow(BlurType.TWO_PASS_BOX, Color.LIGHTGREEN, 50, 0.2, 0.0, 0.0));
+            Timeline timeline = new Timeline(new KeyFrame(
+                    Duration.millis(2000),
+                    ae -> saveDatabaseToolbar.setEffect(null)));
+            timeline.play();
+
         });
     }
 
@@ -202,8 +215,6 @@ public class MainWindowToolbarViewController extends GridPane {
                         "fehlgeschlagen. Stellen Sie sicher, dass Sie Zugriffsrechte auf die Datei haben und der Pfad " +
                         "zu ihr existiert.");
             }
-            WindowFactory.createAlert(Alert.AlertType.INFORMATION, "Speichern erfolgreich!")
-                    .showAndWait();
         });
     }
 
