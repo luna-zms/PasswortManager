@@ -1,14 +1,15 @@
 package factory;
 
-import java.util.List;import java.util.Optional;
+import java.util.List;
+import java.util.Optional;
 
 import application.Main;
 import controller.PMController;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -48,7 +49,7 @@ public class WindowFactory {
         Stage stage = prepareDialog(title, content, resizable);
         stage.showAndWait();
     }
-    
+
     public static Stage prepareDialog(String title, Parent content, boolean resizable) {
         Stage stage = createStage(title);
         stage.setScene(createScene(content));
@@ -87,78 +88,55 @@ public class WindowFactory {
 
         return alert;
     }
-    
+
     public static void showCreateModifyEntryView(PMController pmController, Entry oldEntry) {
-    	CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
-    	controller.setPmController(pmController);
-    	controller.init();
-    	controller.setOldEntry(oldEntry);
+        CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
+        controller.setPmController(pmController);
+        controller.init();
+        controller.setOldEntry(oldEntry);
 
-    	
-    	Stage stage = prepareDialog("Eintrag bearbeiten", controller, false);
-    	stage.setOnCloseRequest(evt -> {
-    		if (controller.isModified()) {
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Abbrechen bestätigen");
-                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
-                alert.setContentText("Alle ihre Änderungen gehen verloren!");
-                Optional<ButtonType> result = alert.showAndWait();
-                
-                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
-                	evt.consume();
-                	return;
-                }
-            }
-            stage.close();
-    	});
-    	stage.showAndWait();
+
+        showStageWithCloseConfirmation(controller);
     }
-    
+
     public static void showCreateModifyEntryView(PMController pmController, List<Tag> checkedTags) {
-    	CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
-    	controller.setPmController(pmController);
-    	controller.init();
-    	controller.setCheckedTags(checkedTags);
+        CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
+        controller.setPmController(pmController);
+        controller.init();
+        controller.setCheckedTags(checkedTags);
 
-    	
-    	Stage stage = prepareDialog("Eintrag erstellen", controller, false);
-    	stage.setOnCloseRequest(evt -> {
-    		if (controller.isModified()) {
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Abbrechen bestätigen");
-                alert.setHeaderText("Wollen Sie wirklich abbrechen?");
-                alert.setContentText("Alle ihre Änderungen gehen verloren!");
-                Optional<ButtonType> result = alert.showAndWait();
-                
-                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
-                	return;
-                }
-            }
-            stage.close();
-    	});
-    	stage.showAndWait();
+
+        showStageWithCloseConfirmation(controller);
     }
-    
+
     public static void showCreateModifyEntryView(PMController pmController) {
-    	CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
-    	controller.setPmController(pmController);
-    	controller.init();
-    	
-    	Stage stage = prepareDialog("Eintrag erstellen", controller, false);
-    	stage.setOnCloseRequest(evt -> {
-    		if (controller.isModified()) {
-                Alert alert = new Alert(AlertType.CONFIRMATION);
+        CreateModifyEntryViewController controller = new CreateModifyEntryViewController();
+        controller.setPmController(pmController);
+        controller.init();
+
+        showStageWithCloseConfirmation(controller);
+    }
+
+    private static void showStageWithCloseConfirmation(CreateModifyEntryViewController controller) {
+        Stage stage = prepareDialog("Eintrag erstellen", controller, false);
+        stage.setOnCloseRequest(evt -> {
+            if (controller.isModified()) {
+                Alert alert = WindowFactory.createAlert(AlertType.CONFIRMATION,
+                                        "Alle ihre Änderungen gehen verloren!");
+
+                alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
                 alert.setTitle("Abbrechen bestätigen");
                 alert.setHeaderText("Wollen Sie wirklich abbrechen?");
-                alert.setContentText("Alle ihre Änderungen gehen verloren!");
                 Optional<ButtonType> result = alert.showAndWait();
-                
-                if (result.isPresent() && result.get() == ButtonType.CANCEL) {
-                	return;
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    stage.close();
+                    return;
                 }
             }
-            stage.close();
-    	});
-    	stage.showAndWait();
+
+            evt.consume();
+        });
+        stage.showAndWait();
     }
 }

@@ -46,6 +46,8 @@ public class PMController {
 
     private Path savePath;
 
+    private boolean dirty;
+
     /**
      * Set a new master password. The master password is encrypted via a KDF and
      * then this method will update the current PasswordManager instance.
@@ -74,6 +76,8 @@ public class PMController {
         }
 
         passwordManager.setMasterPasswordKey(aesKey);
+
+        dirty = true;
     }
 
     /**
@@ -184,5 +188,13 @@ public class PMController {
         } catch (IOException e) {
             // No need to handle this further as it's just a helpful addition and not needed for program operation
         }
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 }

@@ -31,6 +31,8 @@ public class EntryController {
         if (entry == null) throw new IllegalArgumentException();
         PasswordManager passwordManager = pmController.getPasswordManager();
         passwordManager.getEntries().add(entry);
+
+        pmController.setDirty(true);
     }
 
     /**
@@ -54,6 +56,8 @@ public class EntryController {
         if (entry == null) throw new IllegalArgumentException();
         PasswordManager passwordManager = pmController.getPasswordManager();
         passwordManager.getEntries().remove(entry);
+
+        pmController.setDirty(true);
     }
 
     /**

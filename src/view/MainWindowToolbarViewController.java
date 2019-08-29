@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -219,6 +220,20 @@ public class MainWindowToolbarViewController extends GridPane {
 
     private void initializeActionsOpenDatabase() {
         openDatabaseToolbar.setOnAction(event -> {
+            if (pmController.isDirty()) {
+                Alert alert = WindowFactory.createAlert(Alert.AlertType.CONFIRMATION, "Sie haben ungespeicherte Änderungen. Alle ihre Änderungen gehen verloren!");
+
+                alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                alert.setTitle("Verwerfen bestätigen");
+                alert.setHeaderText("Möchten Sie ihre Änderungen wirklich verwerfen?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (!result.isPresent() || result.get() != ButtonType.YES) {
+                    return;
+                }
+            }
+
             openDatabaseFileAction.accept(pmController.getSavePath());
         });
     }

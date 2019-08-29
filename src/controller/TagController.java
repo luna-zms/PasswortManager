@@ -21,6 +21,8 @@ public class TagController {
             throw new NullPointerException();
         }
         parent.getSubTags().add(child);
+
+        pmController.setDirty(true);
     }
 
     /**
@@ -37,6 +39,8 @@ public class TagController {
         for (Entry entry : pmController.getPasswordManager().getEntries()) {
             entry.getTags().remove(child);
         }
+
+        pmController.setDirty(true);
     }
 
     /**
@@ -50,6 +54,8 @@ public class TagController {
             throw new NullPointerException();
         }
         tag.setName(rename);
+
+        pmController.setDirty(true);
     }
 
     public void setPMController(PMController controller) {

@@ -1,12 +1,10 @@
 package controller;
 
 import model.Entry;
-import model.PasswordManager;
 import model.Tag;
 import org.apache.commons.csv.CSVParser;
 import util.BadPasswordException;
 import util.Tuple;
-import factory.WindowFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -39,8 +37,12 @@ import java.util.zip.ZipOutputStream;
  */
 @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.CyclomaticComplexity"})
 public class LoadSaveController extends SerializationController {
-    public LoadSaveController(PasswordManager passwordManager) {
-        super(passwordManager);
+    private final PMController pmController;
+
+    public LoadSaveController(PMController pmController) {
+        super(pmController.getPasswordManager());
+
+        this.pmController = pmController;
     }
 
     /**
@@ -231,6 +233,9 @@ public class LoadSaveController extends SerializationController {
                 e.printStackTrace();
                 throw e;
             }
+
+            // If we got here, the file got save so we can safely reset the dirty flag
+            pmController.setDirty(false);
         } catch (NoSuchPaddingException | InvalidKeyException | IOException | NoSuchAlgorithmException exception) {
             // The java installation does not support AES encryption for some reason
             throw new RuntimeException(exception);
