@@ -115,7 +115,7 @@ public class CreateModifyEntryViewController extends AnchorPane {
 
             if (isModified()) {
                 Alert alert = WindowFactory.createAlert(AlertType.CONFIRMATION,
-                                        "Alle ihre Änderungen gehen verloren!");
+                                        "Alle Ihre Änderungen gehen verloren!");
 
                 alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
                 alert.setTitle("Abbrechen bestätigen");

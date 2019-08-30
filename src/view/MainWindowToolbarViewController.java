@@ -266,11 +266,11 @@ public class MainWindowToolbarViewController extends GridPane {
     private void initializeActionsOpenDatabase() {
         openDatabaseToolbar.setOnAction(event -> {
             if (pmController.isDirty()) {
-                Alert alert = WindowFactory.createAlert(Alert.AlertType.CONFIRMATION, "Sie haben ungespeicherte Änderungen. Alle ihre Änderungen gehen verloren!");
+                Alert alert = WindowFactory.createAlert(Alert.AlertType.CONFIRMATION, "Sie haben ungespeicherte Änderungen. Alle Ihre Änderungen gehen verloren!");
 
                 alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
                 alert.setTitle("Verwerfen bestätigen");
-                alert.setHeaderText("Möchten Sie ihre Änderungen wirklich verwerfen?");
+                alert.setHeaderText("Möchten Sie Ihre Änderungen wirklich verwerfen?");
 
                 Optional<ButtonType> result = alert.showAndWait();
 
