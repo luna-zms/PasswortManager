@@ -5,12 +5,12 @@ In diesem Repository entsteht euer erstes Projekt im Sopra. Für Planung, Modell
 # teammember
 Miao chen   
 Sebastian Schmidt   
-Alexander Korn 
-Daniel Ginter 
-Partrick Rog 
-Markus Mügge 
-Felix Buchheit 
-Simon Engmann 
+Alexander Korn  
+Daniel Ginter  
+Partrick Rog  
+Markus Mügge  
+Felix Buchheit  
+Simon Engmann  
 
 ## PMD-Bericht
 
