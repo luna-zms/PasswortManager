@@ -2,6 +2,16 @@
 
 In diesem Repository entsteht euer erstes Projekt im Sopra. Für Planung, Modellierung und generelle gruppeninterne Angelegenheiten, verwendet das Wiki des Projektes. 
 
+# teammember
+Miao chen
+Sebastian Schmidt
+Alexander Korn
+Daniel Ginter
+Partrick Rog
+Markus Mügge
+Felix Buchheit
+Simon Engmann
+
 ## PMD-Bericht
 
 Wenn programmiert wird, vergesst nicht, regelmäßig den PMD-Bericht hier oder direkt in Eclipse zu überprüfen.
