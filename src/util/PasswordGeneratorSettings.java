@@ -6,7 +6,7 @@ public class PasswordGeneratorSettings {
     private int length = 1;
     private EnumSet<CharGroup> charGroups = EnumSet.noneOf(CharGroup.class);
 
-    public void selectCharGroup(CharGroup group) {
+	public void selectCharGroup(CharGroup group) {
         charGroups.add(group);
     }
 
